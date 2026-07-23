@@ -1,0 +1,21 @@
+@media print {
+  body {
+    background: #ffffff !important;
+  }
+
+  button,
+  a {
+    display: none !important;
+  }
+
+  * {
+    box-shadow: none !important;
+  }
+
+  main,
+  section,
+  div {
+    color: #111827 !important;
+    background: #ffffff !important;
+  }
+}

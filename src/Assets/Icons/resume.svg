@@ -1,0 +1,27 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Resume AI builder icon">
+  <defs>
+    <linearGradient id="resumeStroke" x1="12" y1="8" x2="55" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EA580C"/>
+      <stop offset="1" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="resumeFill" x1="18" y1="8" x2="50" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7ED"/>
+      <stop offset="1" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <filter id="resumeShadow" x="6" y="4" width="56" height="58" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#EA580C" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect x="1" y="1" width="62" height="62" rx="22" fill="#FFEDD5" fill-opacity="0.42"/>
+  <rect x="14" y="14" width="30" height="39" rx="7" fill="#FFFFFF" stroke="#FDBA74" stroke-width="3" opacity="0.82"/>
+  <rect x="20" y="9.5" width="30" height="43" rx="7" fill="url(#resumeFill)" stroke="url(#resumeStroke)" stroke-width="3" filter="url(#resumeShadow)"/>
+
+  <circle cx="31" cy="22.5" r="4.5" fill="#FED7AA" stroke="#EA580C" stroke-width="2.5"/>
+  <path d="M25 33H43" stroke="#C2410C" stroke-width="3" stroke-linecap="round"/>
+  <path d="M25 40H38" stroke="#FB923C" stroke-width="3" stroke-linecap="round"/>
+  <path d="M25 47H42" stroke="#C2410C" stroke-width="3" stroke-linecap="round" opacity="0.75"/>
+
+  <path d="M49 9L52 14L57 17L52 20L49 25L46 20L41 17L46 14L49 9Z" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2.7" stroke-linejoin="round"/>
+  <path d="M52.5 29L54 31.7L56.7 33.2L54 34.7L52.5 37.4L51 34.7L48.3 33.2L51 31.7L52.5 29Z" fill="#FFF7ED" stroke="#EA580C" stroke-width="2.2" stroke-linejoin="round"/>
+</svg>

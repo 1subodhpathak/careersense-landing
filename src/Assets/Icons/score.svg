@@ -1,0 +1,27 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Career readiness score icon">
+  <defs>
+    <linearGradient id="scoreStroke" x1="10" y1="10" x2="55" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#D97706"/>
+      <stop offset="1" stop-color="#FACC15"/>
+    </linearGradient>
+    <linearGradient id="scoreFill" x1="12" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFBEB"/>
+      <stop offset="1" stop-color="#FEF3C7"/>
+    </linearGradient>
+    <filter id="scoreShadow" x="5" y="6" width="56" height="54" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#D97706" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect x="1" y="1" width="62" height="62" rx="22" fill="#FEF3C7" fill-opacity="0.42"/>
+  <rect x="10.5" y="13" width="43" height="38" rx="11" fill="url(#scoreFill)" stroke="url(#scoreStroke)" stroke-width="3" filter="url(#scoreShadow)"/>
+
+  <path d="M18 37C18 28.7 24.3 22 32 22C39.7 22 46 28.7 46 37" stroke="#D97706" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M32 37L40.5 27.5" stroke="#F59E0B" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="32" cy="37" r="4.7" fill="#D97706"/>
+
+  <path d="M18 44H46" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  <path d="M22 37H18M46 37H42M23.2 28.3L20.5 25.6M40.8 28.3L43.5 25.6" stroke="#D97706" stroke-width="2.6" stroke-linecap="round" opacity="0.56"/>
+
+  <circle cx="48" cy="18" r="4.5" fill="#FFFFFF" stroke="#F59E0B" stroke-width="2.5"/>
+</svg>

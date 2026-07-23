@@ -1,0 +1,74 @@
+<svg width="672" height="666" viewBox="0 0 672 666" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bodyGradient" x1="210" y1="210" x2="470" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="0.32" stop-color="#2563EB"/>
+      <stop offset="0.66" stop-color="#06B6D4"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+    <radialGradient id="headGradient" cx="0" cy="0" r="1" gradientTransform="translate(315 245) rotate(49) scale(105)">
+      <stop stop-color="#F97316"/>
+      <stop offset="0.48" stop-color="#EC4899"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </radialGradient>
+    <filter id="softShadow" x="150" y="150" width="380" height="390" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Multicolor energy rays -->
+  <g stroke-linecap="round" stroke-width="8">
+    <line x1="336" y1="54" x2="336" y2="102" stroke="#7C3AED"/>
+    <line x1="413" y1="65" x2="400" y2="111" stroke="#8B5CF6"/>
+    <line x1="482" y1="96" x2="456" y2="137" stroke="#EC4899"/>
+    <line x1="540" y1="145" x2="505" y2="178" stroke="#F43F5E"/>
+    <line x1="582" y1="210" x2="540" y2="234" stroke="#F97316"/>
+    <line x1="606" y1="285" x2="559" y2="297" stroke="#F59E0B"/>
+    <line x1="610" y1="364" x2="562" y2="364" stroke="#EAB308"/>
+    <line x1="596" y1="442" x2="550" y2="430" stroke="#84CC16"/>
+    <line x1="561" y1="512" x2="520" y2="487" stroke="#22C55E"/>
+    <line x1="508" y1="568" x2="474" y2="534" stroke="#10B981"/>
+    <line x1="442" y1="607" x2="418" y2="565" stroke="#14B8A6"/>
+    <line x1="367" y1="628" x2="355" y2="581" stroke="#06B6D4"/>
+
+    <line x1="289" y1="628" x2="301" y2="581" stroke="#0EA5E9"/>
+    <line x1="214" y1="607" x2="238" y2="565" stroke="#3B82F6"/>
+    <line x1="148" y1="568" x2="182" y2="534" stroke="#6366F1"/>
+    <line x1="95" y1="512" x2="136" y2="487" stroke="#8B5CF6"/>
+    <line x1="60" y1="442" x2="106" y2="430" stroke="#A855F7"/>
+    <line x1="46" y1="364" x2="94" y2="364" stroke="#D946EF"/>
+    <line x1="50" y1="285" x2="97" y2="297" stroke="#EC4899"/>
+    <line x1="74" y1="210" x2="116" y2="234" stroke="#F43F5E"/>
+    <line x1="116" y1="145" x2="151" y2="178" stroke="#F97316"/>
+    <line x1="174" y1="96" x2="200" y2="137" stroke="#F59E0B"/>
+    <line x1="243" y1="65" x2="256" y2="111" stroke="#EAB308"/>
+  </g>
+
+  <!-- Person -->
+  <g filter="url(#softShadow)">
+    <circle cx="329" cy="269" r="46" fill="url(#headGradient)"/>
+    <path d="M214 224
+             C197 224 194 239 195 255
+             L198 290
+             C201 327 219 351 247 370
+             L268 384
+             L274 468
+             C275 478 282 484 292 484
+             H368
+             C378 484 385 478 386 468
+             L392 384
+             L413 370
+             C441 351 459 327 462 290
+             L465 255
+             C466 239 463 224 446 224
+             C429 224 424 238 423 254
+             L420 287
+             C417 316 399 334 371 342
+             C358 346 344 348 329 348
+             C314 348 300 346 287 342
+             C259 334 241 316 238 287
+             L235 254
+             C234 238 231 224 214 224Z"
+          fill="url(#bodyGradient)"/>
+  </g>
+</svg>

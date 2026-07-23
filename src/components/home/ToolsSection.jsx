@@ -1,0 +1,518 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, ExternalLink, PenLine, ShieldCheck, X } from "lucide-react";
+import { Link } from "react-router-dom";
+import { toolCards } from "../../data/homePageData";
+
+import InterviewImg from "../../Assets/Interview.png";
+import ResumeImg from "../../Assets/Resume.png";
+import ATSImg from "../../Assets/ATS.png";
+import CoverLetterImg from "../../Assets/CoverLetter.png";
+import SkillCertificationImg from "../../Assets/SkillCertification.png";
+
+const cardThemes = [
+  {
+    image: ResumeImg,
+    accent: "from-cyan-400 to-teal-400",
+    iconBg: "bg-cyan-400/15 text-cyan-100 ring-cyan-300/20",
+    button: "bg-cyan-400 text-slate-950 hover:bg-cyan-300",
+    glow: "group-hover:shadow-cyan-500/20",
+    fallback:
+      "Build a polished, recruiter-ready resume with strong keywords and clean formatting.",
+    chips: ["Resume Score", "ATS Ready", "Better Bullets"],
+  },
+  {
+    image: InterviewImg,
+    accent: "from-blue-400 to-indigo-400",
+    iconBg: "bg-blue-400/15 text-blue-100 ring-blue-300/20",
+    button: "bg-blue-500 text-white hover:bg-blue-400",
+    glow: "group-hover:shadow-blue-500/20",
+    fallback:
+      "Practice realistic interview rounds and improve your answers with AI feedback.",
+    chips: ["Mock Rounds", "AI Feedback", "Confidence"],
+  },
+  {
+    image: ATSImg,
+    accent: "from-emerald-400 to-teal-400",
+    iconBg: "bg-emerald-400/15 text-emerald-100 ring-emerald-300/20",
+    button: "bg-emerald-500 text-white hover:bg-emerald-400",
+    glow: "group-hover:shadow-emerald-500/20",
+    fallback:
+      "Compare your resume with the job description and identify missing keywords fast.",
+    chips: ["JD Match", "Keyword Gaps", "Fix Plan"],
+  },
+];
+
+const secondaryTools = [
+  {
+    icon: PenLine,
+    title: "Cover Letter Builder",
+    text: "Create a tailored cover letter that matches the role and highlights your strengths professionally.",
+    button: "Build your First Cover Letter Free",
+    href: "https://coverletter.careersenseai.com/",
+    image: CoverLetterImg,
+    accent: "from-orange-400 to-amber-400",
+    iconStyle: "bg-orange-400/15 text-orange-100 ring-orange-300/20",
+    buttonStyle: "bg-orange-500 text-white hover:bg-orange-400",
+    glow: "group-hover:shadow-orange-500/20",
+    chips: ["Tailored Draft", "Role Match", "Quick Edits"],
+    status: "live",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Skill Certification",
+    text: "Validate your skills with structured practice, role-based assessments, and certification-ready prep.",
+    button: "Get Free Certification",
+    href: "https://certifi.careersenseai.com/",
+    image: SkillCertificationImg,
+    accent: "from-blue-400 to-indigo-400",
+    iconStyle: "bg-blue-400/15 text-blue-100 ring-blue-300/20",
+    buttonStyle: "bg-indigo-500 text-white hover:bg-indigo-400",
+    glow: "group-hover:shadow-blue-500/20",
+    chips: ["Assessments", "Proof of Skill", "Certificates"],
+    status: "live",
+  },
+];
+
+function getStatusUi(status) {
+  if (status === "live") {
+    return {
+      badgeClass:
+        "border border-emerald-300/35 bg-emerald-400/18 text-emerald-100 ring-1 ring-emerald-300/25",
+      badgeText: "LIVE",
+      dotClass: "bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,0.9)]",
+      showDot: true,
+      buttonIcon: ExternalLink,
+      external: true,
+    };
+  }
+
+  return {
+    badgeClass:
+      "border border-white/35 bg-[linear-gradient(135deg,rgba(103,232,249,0.96),rgba(45,212,191,0.95),rgba(96,165,250,0.94))] text-slate-950 shadow-[0_10px_24px_rgba(14,165,233,0.28)] ring-1 ring-white/20",
+    badgeText: "COMING SOON",
+    dotClass: "",
+    showDot: false,
+    buttonIcon: ArrowRight,
+    external: false,
+  };
+}
+
+function getTimeLeftParts(targetDate, now) {
+  const totalMs = Math.max(targetDate.getTime() - now.getTime(), 0);
+  const totalSeconds = Math.floor(totalMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return { totalMs, days, hours, minutes, seconds };
+}
+
+function formatCountdownUnit(value) {
+  return String(value).padStart(2, "0");
+}
+
+function formatLaunchDate(launchAt) {
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZone: "Asia/Kolkata",
+    timeZoneName: "short",
+  }).format(new Date(launchAt));
+}
+
+function ComingSoonModal({ tool, onClose }) {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setNow(new Date());
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [onClose]);
+
+  const countdown = useMemo(
+    () => getTimeLeftParts(new Date(tool.launchAt), now),
+    [tool.launchAt, now]
+  );
+
+  const countdownBlocks = [
+    { label: "Days", value: formatCountdownUnit(countdown.days) },
+    { label: "Hours", value: formatCountdownUnit(countdown.hours) },
+    { label: "Minutes", value: formatCountdownUnit(countdown.minutes) },
+    { label: "Seconds", value: formatCountdownUnit(countdown.seconds) },
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="coming-soon-title"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-[rgba(6,21,47,0.62)] backdrop-blur-md" />
+      <div
+        className="relative z-10 w-full max-w-[820px] overflow-hidden rounded-[32px] border border-white/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(241,248,255,0.95))] p-6 shadow-[0_30px_90px_rgba(8,47,73,0.28)] sm:p-8"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-[linear-gradient(90deg,#22d3ee,#14b8a6,#60a5fa)]" />
+        <div className="pointer-events-none absolute -left-16 top-20 h-40 w-40 rounded-full bg-cyan-200/55 blur-3xl" />
+        <div className="pointer-events-none absolute -right-16 bottom-0 h-44 w-44 rounded-full bg-blue-200/50 blur-3xl" />
+
+        <div className="relative">
+          <div className="flex items-start justify-between gap-4">
+            <div className="max-w-[560px]">
+              <span className="inline-flex rounded-full border border-cyan-200 bg-[linear-gradient(135deg,#ecfeff,#def7ff,#e0f2fe)] px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-sky-700 shadow-[0_8px_18px_rgba(14,165,233,0.12)]">
+                Coming Soon
+              </span>
+              <h3
+                id="coming-soon-title"
+                className="mt-5 text-[34px] font-black leading-none tracking-tight text-slate-950 sm:text-[48px]"
+              >
+                {tool.title}
+              </h3>
+              <p className="mt-5 max-w-[620px] text-[16px] leading-8 text-slate-600 sm:text-[18px]">
+                Launching on <span className="font-semibold text-slate-900">{formatLaunchDate(tool.launchAt)}</span>. The countdown below shows exactly how long is left.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:border-cyan-200 hover:text-slate-900"
+              aria-label="Close coming soon dialog"
+            >
+              <X size={24} strokeWidth={2.5} />
+            </button>
+          </div>
+
+          <div className="mt-8 grid gap-3 sm:grid-cols-4 sm:gap-4">
+            {countdownBlocks.map((block) => (
+              <div
+                key={block.label}
+                className="rounded-[24px] border border-slate-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,246,255,0.94))] px-4 py-6 text-center shadow-[0_14px_30px_rgba(148,163,184,0.12)]"
+              >
+                <div className="bg-[linear-gradient(135deg,#0891b2,#14b8a6,#2563eb)] bg-clip-text text-[38px] font-black leading-none text-transparent sm:text-[44px]">
+                  {block.value}
+                </div>
+                <div className="mt-4 text-[11px] font-black uppercase tracking-[0.34em] text-slate-500">
+                  {block.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ToolAction({ href, label, className, external, onClick, children }) {
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={className}>
+        {label}
+        {children}
+      </button>
+    );
+  }
+
+  if (external) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        className={className}
+      >
+        {label}
+        {children}
+      </a>
+    );
+  }
+
+  return (
+    <Link to={href} className={className}>
+      {label}
+      {children}
+    </Link>
+  );
+}
+
+function useInViewOnce() {
+  const ref = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.18 }
+    );
+
+    observer.observe(ref.current);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return { ref, isVisible };
+}
+
+function MainToolCard({ tool, index, isVisible }) {
+  const theme = cardThemes[index % cardThemes.length];
+  const statusUi = getStatusUi(tool.status);
+  const StatusIcon = statusUi.buttonIcon;
+  const isComingSoon = tool.status === "coming-soon";
+
+  return (
+    <div
+      className={`group relative h-[290px] overflow-hidden rounded-[26px] bg-slate-950 shadow-[0_18px_48px_rgba(15,23,42,0.15)] transition-all duration-500 ease-out sm:h-[305px] lg:h-[315px] ${theme.glow} ${
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+      }`}
+      style={{ transitionDelay: `${index * 110}ms` }}
+    >
+      <img
+        src={theme.image}
+        alt={`${tool.title} visual`}
+        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100 group-hover:brightness-110"
+      />
+
+      <div className="absolute inset-0 rounded-[26px] bg-[linear-gradient(180deg,rgba(2,6,23,0.14),rgba(2,6,23,0.52)_44%,rgba(2,6,23,0.94))]" />
+      <div className="absolute inset-0 rounded-[26px] bg-[radial-gradient(circle_at_30%_16%,rgba(255,255,255,0.18),transparent_34%)]" />
+
+      <div
+        className={`absolute left-5 top-5 h-1 w-16 rounded-full bg-gradient-to-r ${theme.accent}`}
+      />
+
+      <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5">
+        <div>
+          <div className="flex justify-end">
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-[10px] font-black uppercase tracking-[0.22em] backdrop-blur-md ${statusUi.badgeClass}`}
+            >
+              {statusUi.showDot ? (
+                <span className={`h-1.5 w-1.5 rounded-full ${statusUi.dotClass}`} />
+              ) : null}
+              {statusUi.badgeText}
+            </span>
+          </div>
+
+          <h3 className="mt-12 max-w-[14ch] text-[22px] leading-[1.1] tracking-tight text-white sm:text-[24px] lg:text-[26px]">
+            {tool.title}
+          </h3>
+
+          <p className="mt-2.5 max-w-[36ch] text-[12px] font-medium leading-5 text-white/75 sm:text-[13px] sm:leading-5">
+            {tool.description || theme.fallback}
+          </p>
+        </div>
+
+        <div>
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {theme.chips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white/75 ring-1 ring-white/10 backdrop-blur-md"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+
+          <ToolAction
+            href={tool.href}
+            external={statusUi.external}
+            onClick={tool.onOpen}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-extrabold shadow-lg transition-all duration-300 active:scale-95 sm:px-5 sm:py-2.5 sm:text-[13px] ${theme.button}`}
+          >
+            {isComingSoon ? "View Launch Details" : tool.button}
+            <StatusIcon
+              size={15}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </ToolAction>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SecondaryToolCard({ item, index, isVisible }) {
+  const statusUi = getStatusUi(item.status);
+  const StatusIcon = statusUi.buttonIcon;
+
+  return (
+    <div
+      className={`group relative h-[290px] overflow-hidden rounded-[26px] bg-slate-950 shadow-[0_18px_48px_rgba(15,23,42,0.15)] transition-all duration-500 ease-out sm:h-[305px] lg:h-[315px] ${item.glow} ${
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+      }`}
+      style={{ transitionDelay: `${360 + index * 110}ms` }}
+    >
+      <img
+        src={item.image}
+        alt={`${item.title} visual`}
+        className="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 ease-out group-hover:scale-[1.03] group-hover:opacity-100 group-hover:brightness-110"
+      />
+      <div className="absolute inset-0 rounded-[26px] bg-[linear-gradient(180deg,rgba(2,6,23,0.14),rgba(2,6,23,0.52)_44%,rgba(2,6,23,0.94))]" />
+      <div className="absolute inset-0 rounded-[26px] bg-[radial-gradient(circle_at_30%_16%,rgba(255,255,255,0.18),transparent_34%)]" />
+      <div
+        className={`absolute left-5 top-5 h-1 w-16 rounded-full bg-gradient-to-r ${item.accent}`}
+      />
+
+      <div className="relative z-10 flex h-full flex-col justify-between p-4 sm:p-5">
+        <div>
+          <div className="flex justify-end">
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-[10px] font-black uppercase tracking-[0.22em] backdrop-blur-md ${statusUi.badgeClass}`}
+            >
+              {statusUi.showDot ? (
+                <span className={`h-1.5 w-1.5 rounded-full ${statusUi.dotClass}`} />
+              ) : null}
+              {statusUi.badgeText}
+            </span>
+          </div>
+
+          <h3 className="mt-12 max-w-[14ch] text-[22px] leading-[1.1] tracking-tight text-white sm:text-[24px] lg:text-[26px]">
+            {item.title}
+          </h3>
+
+          <p className="mt-2.5 max-w-[36ch] text-[12px] font-medium leading-5 text-white/75 sm:text-[13px] sm:leading-5">
+            {item.text}
+          </p>
+        </div>
+
+        <div>
+          <div className="mb-3 flex flex-wrap gap-1.5">
+            {item.chips.map((chip) => (
+              <span
+                key={chip}
+                className="rounded-full bg-white/10 px-2.5 py-1 text-[10px] font-bold text-white/75 ring-1 ring-white/10 backdrop-blur-md"
+              >
+                {chip}
+              </span>
+            ))}
+          </div>
+
+          <ToolAction
+            href={item.href}
+            external={statusUi.external}
+            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-extrabold shadow-lg transition-all duration-300 active:scale-95 sm:px-5 sm:py-2.5 sm:text-[13px] ${item.buttonStyle}`}
+          >
+            {item.button}
+            <StatusIcon
+              size={15}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </ToolAction>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function ToolsSection() {
+  const { ref, isVisible } = useInViewOnce();
+  const [activeComingSoonTool, setActiveComingSoonTool] = useState(null);
+
+  const toolCardsWithActions = useMemo(
+    () =>
+      toolCards.map((tool) => ({
+        ...tool,
+        onOpen:
+          tool.status === "coming-soon"
+            ? () => setActiveComingSoonTool(tool)
+            : undefined,
+      })),
+    []
+  );
+
+  return (
+    <>
+      <section
+        id="career-tools"
+        ref={ref}
+        className="relative px-5 py-6 sm:px-6 lg:min-h-screen lg:py-6"
+      >
+        <div className="relative mx-auto flex min-h-[calc(100vh-64px)] max-w-[1320px] flex-col justify-center">
+        <div
+          className={`mx-auto mb-4 max-w-3xl text-center transition-all duration-700 ${
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
+          }`}
+        >
+        
+
+          <h2 className="text-[28px] font-black leading-tight tracking-tight text-black sm:text-[32px] md:text-[34px]">
+            Everything You Need in{" "}
+            <span className="bg-gradient-to-r from-cyan-700 via-teal-600 to-blue-400 bg-clip-text text-transparent">
+              One Career Platform
+            </span>
+          </h2>
+
+          <p className="mx-auto mt-2 max-w-xl text-[13px] font-medium leading-6 text-slate-600 sm:max-w-2xl">
+            Build resumes, prepare for interviews, check ATS readiness, and earn
+            certifications with one focused workflow.
+          </p>
+        </div>
+
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {toolCardsWithActions.slice(0, 3).map((tool, index) => (
+            <MainToolCard
+              key={tool.title}
+              tool={tool}
+              index={index}
+              isVisible={isVisible}
+            />
+          ))}
+        </div>
+
+        <div className="mt-3 grid gap-4 lg:grid-cols-2">
+          {secondaryTools.map((item, index) => (
+            <SecondaryToolCard
+              key={item.title}
+              item={item}
+              index={index}
+              isVisible={isVisible}
+            />
+          ))}
+        </div>
+        </div>
+      </section>
+
+      {activeComingSoonTool ? (
+        <ComingSoonModal
+          tool={activeComingSoonTool}
+          onClose={() => setActiveComingSoonTool(null)}
+        />
+      ) : null}
+    </>
+  );
+}

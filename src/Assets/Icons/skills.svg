@@ -1,0 +1,28 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Skills certification icon">
+  <defs>
+    <linearGradient id="skillsStroke" x1="12" y1="8" x2="55" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#059669"/>
+      <stop offset="1" stop-color="#10B981"/>
+    </linearGradient>
+    <linearGradient id="skillsFill" x1="14" y1="10" x2="52" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ECFDF5"/>
+      <stop offset="1" stop-color="#D1FAE5"/>
+    </linearGradient>
+    <filter id="skillsShadow" x="5" y="5" width="56" height="58" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#059669" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect x="1" y="1" width="62" height="62" rx="22" fill="#D1FAE5" fill-opacity="0.36"/>
+  <rect x="12.5" y="10.5" width="39" height="34" rx="8" fill="url(#skillsFill)" stroke="url(#skillsStroke)" stroke-width="3" filter="url(#skillsShadow)"/>
+
+  <path d="M22 23H42" stroke="#047857" stroke-width="3" stroke-linecap="round"/>
+  <path d="M22 31H36" stroke="#34D399" stroke-width="3" stroke-linecap="round"/>
+
+  <circle cx="42" cy="42" r="9.5" fill="#FFFFFF" stroke="#059669" stroke-width="3"/>
+  <path d="M38.8 42.2L41.1 44.5L45.8 39.5" stroke="#10B981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M37.5 50.2L34.8 58L42 54.6L49.2 58L46.5 50.2" fill="#ECFDF5" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <path d="M18 16H22" stroke="#10B981" stroke-width="2.8" stroke-linecap="round" opacity="0.75"/>
+  <path d="M42 16H46" stroke="#10B981" stroke-width="2.8" stroke-linecap="round" opacity="0.75"/>
+</svg>

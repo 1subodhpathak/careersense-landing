@@ -1,0 +1,29 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interview practice icon">
+  <defs>
+    <linearGradient id="interviewStroke" x1="10" y1="8" x2="55" y2="55" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="interviewFill" x1="12" y1="12" x2="52" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EEF2FF"/>
+      <stop offset="1" stop-color="#EDE9FE"/>
+    </linearGradient>
+    <filter id="interviewShadow" x="4" y="7" width="58" height="54" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#4F46E5" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+
+  <rect x="1" y="1" width="62" height="62" rx="22" fill="#E0E7FF" fill-opacity="0.38"/>
+  <path d="M15 15H43C47.4 15 51 18.6 51 23V34C51 38.4 47.4 42 43 42H28.5L17 52V42H15C10.6 42 7 38.4 7 34V23C7 18.6 10.6 15 15 15Z" fill="url(#interviewFill)" stroke="url(#interviewStroke)" stroke-width="3" stroke-linejoin="round" filter="url(#interviewShadow)"/>
+
+  <path d="M20 29H21" stroke="#4F46E5" stroke-width="5" stroke-linecap="round"/>
+  <path d="M29 29H30" stroke="#6366F1" stroke-width="5" stroke-linecap="round"/>
+  <path d="M38 29H39" stroke="#8B5CF6" stroke-width="5" stroke-linecap="round"/>
+
+  <path d="M51 22C55 24.1 57.5 28 57.5 33C57.5 38 55 41.9 51 44" stroke="#8B5CF6" stroke-width="3" stroke-linecap="round" opacity="0.62"/>
+  <path d="M53.5 28C55.2 29.3 56.2 31 56.2 33C56.2 35 55.2 36.7 53.5 38" stroke="#4F46E5" stroke-width="2.5" stroke-linecap="round" opacity="0.45"/>
+
+  <path d="M18 10V6" stroke="#8B5CF6" stroke-width="2.7" stroke-linecap="round"/>
+  <path d="M13.5 11.5L10.6 8.7" stroke="#4F46E5" stroke-width="2.7" stroke-linecap="round"/>
+  <path d="M22.5 11.5L25.4 8.7" stroke="#4F46E5" stroke-width="2.7" stroke-linecap="round"/>
+</svg>
