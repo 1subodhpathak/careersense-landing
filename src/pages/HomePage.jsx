@@ -17,6 +17,7 @@ import LogoSection from "../components/home/LogoSection";
 import FeedbackLaptopShowcase from "../components/home/FeedbackLaptopShowcase";
 import CertificateAnatomy from "../components/home/CertificateAnatomySection";
 import YouTubePannel from "../components/home/YouTubePannel";
+import DemoVideoSection from "../components/home/DemoVideoSection";
 import useHeroTheme from "../hooks/useHeroTheme";
 
 function GradientSeparator({ direction = "right" }) {
@@ -63,6 +64,7 @@ export default function HomePage() {
       <div className="relative z-10">
         
         <StatsStrip />
+        <DemoVideoSection />
         <ProblemSection />
 
         <GradientSeparator direction="center" />

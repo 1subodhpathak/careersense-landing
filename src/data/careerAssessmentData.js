@@ -232,6 +232,13 @@ export const readinessLevels = [
   },
 ];
 
+const get28DaysLaunchDate = () => {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  d.setUTCDate(d.getUTCDate() + 28);
+  return d.toISOString();
+};
+
 export const toolRecommendations = {
   resume: {
     title: "Strengthen your resume",
@@ -240,7 +247,7 @@ export const toolRecommendations = {
     cta: "Build My Resume",
     href: "/resume-builder",
     status: "coming-soon",
-    launchAt: "2026-08-01T10:00:00+05:30",
+    launchAt: get28DaysLaunchDate(),
   },
   ats: {
     title: "Improve your ATS score",
@@ -257,7 +264,7 @@ export const toolRecommendations = {
     cta: "Start Interview Practice",
     href: "/interview-simulator",
     status: "coming-soon",
-    launchAt: "2026-09-04T10:00:00+05:30",
+    launchAt: get28DaysLaunchDate(),
   },
   skills: {
     title: "Validate your skills",

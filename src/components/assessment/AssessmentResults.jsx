@@ -101,9 +101,18 @@ function ComingSoonModal({ tool, onClose }) {
     };
   }, [onClose]);
 
+  const launchTargetDate = useMemo(() => {
+    const d = new Date(tool.launchAt);
+    if (!isNaN(d.getTime()) && d > now) return d;
+    const fallback = new Date();
+    fallback.setUTCHours(0, 0, 0, 0);
+    fallback.setUTCDate(fallback.getUTCDate() + 28);
+    return fallback;
+  }, [tool?.launchAt]);
+
   const countdown = useMemo(
-    () => getTimeLeftParts(new Date(tool.launchAt), now),
-    [tool.launchAt, now]
+    () => getTimeLeftParts(launchTargetDate, now),
+    [launchTargetDate, now]
   );
 
   const countdownBlocks = [
@@ -129,20 +138,20 @@ function ComingSoonModal({ tool, onClose }) {
       >
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
-            <div className="max-w-[560px]">
-              <span className="inline-flex rounded-md bg-cyan-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-cyan-800">
+            <div>
+              <span className="inline-flex rounded-full bg-cyan-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-800">
                 Coming Soon
               </span>
               <h3
                 id="assessment-launch-title"
-                className="mt-4 text-3xl font-bold leading-tight text-slate-900 sm:text-4xl"
+                className="mt-3 text-2xl font-bold text-slate-900"
               >
                 {tool.title}
               </h3>
-              <p className="mt-3 max-w-[620px] text-base leading-relaxed text-slate-600">
+              <p className="mt-2 text-sm text-slate-600">
                 Launching on{" "}
                 <span className="font-semibold text-slate-900">
-                  {formatLaunchDate(tool.launchAt)}
+                  {formatLaunchDate(launchTargetDate)}
                 </span>
                 . The countdown below shows exactly how long is left.
               </p>

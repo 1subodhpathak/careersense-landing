@@ -89,6 +89,13 @@ export const platformFeatures = [
   },
 ];
 
+const get28DaysLaunchDate = () => {
+  const d = new Date();
+  d.setUTCHours(0, 0, 0, 0);
+  d.setUTCDate(d.getUTCDate() + 28);
+  return d.toISOString();
+};
+
 export const toolCards = [
   {
     icon: FileText,
@@ -99,7 +106,7 @@ export const toolCards = [
     featured: false,
     href: "/resume-builder",
     status: "coming-soon",
-    launchAt: "2026-08-01T10:00:00+05:30",
+    launchAt: get28DaysLaunchDate(),
   },
   {
     icon: MessagesSquare,
@@ -110,7 +117,7 @@ export const toolCards = [
     featured: true,
     href: "/interview-simulator",
     status: "coming-soon",
-    launchAt: "2026-09-04T10:00:00+05:30",
+    launchAt: get28DaysLaunchDate(),
   },
   {
     icon: SearchCheck,

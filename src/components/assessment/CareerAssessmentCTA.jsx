@@ -23,7 +23,7 @@ export default function CareerAssessmentCTA() {
 
         {/* Right CTA Area */}
         <a
-          href="/career-assessment"
+          href="/career-gps"
           className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-md bg-cyan-500 px-5 text-sm font-semibold text-white transition-colors hover:bg-cyan-600 sm:w-auto"
         >
           Check Career Readiness

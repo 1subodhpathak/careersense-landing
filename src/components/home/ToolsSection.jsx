@@ -154,9 +154,18 @@ function ComingSoonModal({ tool, onClose }) {
     };
   }, [onClose]);
 
+  const launchTargetDate = useMemo(() => {
+    const d = new Date(tool.launchAt);
+    if (!isNaN(d.getTime()) && d > now) return d;
+    const fallback = new Date();
+    fallback.setUTCHours(0, 0, 0, 0);
+    fallback.setUTCDate(fallback.getUTCDate() + 28);
+    return fallback;
+  }, [tool?.launchAt]);
+
   const countdown = useMemo(
-    () => getTimeLeftParts(new Date(tool.launchAt), now),
-    [tool.launchAt, now]
+    () => getTimeLeftParts(launchTargetDate, now),
+    [launchTargetDate, now]
   );
 
   const countdownBlocks = [
@@ -171,32 +180,33 @@ function ComingSoonModal({ tool, onClose }) {
       className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
-      aria-labelledby="coming-soon-title"
+      aria-labelledby="tool-launch-title"
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-[rgba(6,21,47,0.62)] backdrop-blur-md" />
+      {/* ENTERPRISE STYLING: Flat solid backdrop, no heavy glassmorphism */}
+      <div className="absolute inset-0 bg-slate-900/80" />
       <div
-        className="relative z-10 w-full max-w-[820px] overflow-hidden rounded-[32px] border border-white/50 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(241,248,255,0.95))] p-6 shadow-[0_30px_90px_rgba(8,47,73,0.28)] sm:p-8"
+        className="relative z-10 w-full max-w-[820px] overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-1.5 bg-[linear-gradient(90deg,#22d3ee,#14b8a6,#60a5fa)]" />
-        <div className="pointer-events-none absolute -left-16 top-20 h-40 w-40 rounded-full bg-cyan-200/55 blur-3xl" />
-        <div className="pointer-events-none absolute -right-16 bottom-0 h-44 w-44 rounded-full bg-blue-200/50 blur-3xl" />
-
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
             <div className="max-w-[560px]">
-              <span className="inline-flex rounded-full border border-cyan-200 bg-[linear-gradient(135deg,#ecfeff,#def7ff,#e0f2fe)] px-4 py-2 text-[11px] font-black uppercase tracking-[0.28em] text-sky-700 shadow-[0_8px_18px_rgba(14,165,233,0.12)]">
+              <span className="inline-flex rounded-md bg-cyan-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-cyan-800">
                 Coming Soon
               </span>
               <h3
-                id="coming-soon-title"
-                className="mt-5 text-[34px] font-black leading-none tracking-tight text-slate-950 sm:text-[48px]"
+                id="tool-launch-title"
+                className="mt-4 text-3xl font-bold leading-tight text-slate-900 sm:text-4xl"
               >
                 {tool.title}
               </h3>
-              <p className="mt-5 max-w-[620px] text-[16px] leading-8 text-slate-600 sm:text-[18px]">
-                Launching on <span className="font-semibold text-slate-900">{formatLaunchDate(tool.launchAt)}</span>. The countdown below shows exactly how long is left.
+              <p className="mt-3 max-w-[620px] text-base leading-relaxed text-slate-600">
+                Launching on{" "}
+                <span className="font-semibold text-slate-900">
+                  {formatLaunchDate(launchTargetDate)}
+                </span>
+                . The countdown below shows exactly how long is left.
               </p>
             </div>
 

@@ -39,7 +39,7 @@ export default function FinalCTASection() {
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
-                to="/career-assessment"
+                to="/career-gps"
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-5 py-3 text-[13px] font-bold text-white shadow-[0_18px_36px_rgba(37,99,235,0.24)] transition hover:brightness-105"
               >
                 Start Free Career Check <ArrowRight size={14} />

@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import DashboardPage from "./pages/DashboardPage";
 import ServicePlaceholderPage from "./pages/ServicePlaceholderPage";
 import CareerAssessment from "./pages/CareerAssessment";
+import CareerGpsPage from "./pages/CareerGpsPage";
 
 function ProtectedRoute({ children }) {
   return (
@@ -26,6 +27,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <CareerAssessment />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/career-gps"
+          element={
+            <ProtectedRoute>
+              <CareerGpsPage />
             </ProtectedRoute>
           }
         />

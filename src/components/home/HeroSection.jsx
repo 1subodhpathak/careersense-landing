@@ -116,7 +116,7 @@ export default function HeroSection({ heroTheme = "dark" }) {
 
               <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
                 <Link
-                  to="/career-assessment"
+                  to="/career-gps"
                   className="inline-flex h-12 w-full items-center justify-center rounded-lg bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-8 text-[15px] font-semibold text-white shadow-[0_18px_36px_rgba(37,99,235,0.24)] transition hover:brightness-105 sm:w-auto"
                 >
                   Start Free Career Check
