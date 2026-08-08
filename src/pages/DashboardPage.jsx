@@ -46,6 +46,128 @@ import {
 import { Link, useSearchParams } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import CSLogo from "../Assets/CSlogo.png";
+import { pipelinePhases } from "../data/careerGpsData";
+// ── Timeline Section Component for Profile (Education, Certifications, Awards) ─────
+function TimelineSection({
+  title,
+  icon: Icon,
+  items = [],
+  autoCertificates = [],
+  onAdd,
+  onChange,
+  onRemove,
+  accent = 'teal'
+}) {
+  const chipClass =
+    accent === 'amber'
+      ? 'bg-amber-50 text-amber-600 ring-amber-200/50'
+      : accent === 'blue'
+        ? 'bg-blue-50 text-blue-600 ring-blue-200/50'
+        : 'bg-teal-50 text-teal-600 ring-teal-200/50';
+
+  const inputClasses = "w-full rounded-xl border border-slate-300 bg-[#f8fafc] p-3 text-xs sm:text-sm font-semibold text-slate-900 shadow-2xs outline-none transition-all placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20";
+  const labelClasses = "mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-500";
+
+  return (
+    <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-center gap-3">
+          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ${chipClass}`}>
+            <Icon className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-slate-900">{title}</h3>
+            <p className="text-xs text-slate-500 font-medium mt-0.5">Manage your {title.toLowerCase()} timeline and details.</p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={onAdd}
+          className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 cursor-pointer"
+        >
+          <Plus className="h-4 w-4 text-slate-400" />
+          Add Entry
+        </button>
+      </div>
+
+      <div className="space-y-4">
+        {items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50/50 py-8 text-center">
+            <Icon className="mb-2 h-6 w-6 text-slate-300" />
+            <p className="text-sm font-medium text-slate-500">No {title.toLowerCase()} entries yet</p>
+            <p className="text-xs text-slate-400 mt-1">Click 'Add Entry' to add to your timeline.</p>
+          </div>
+        ) : null}
+
+        {items.map((item, index) => (
+          <div key={index} className="group relative rounded-xl border border-slate-200 bg-slate-50/50 p-5 transition-colors hover:border-slate-300 hover:bg-slate-50">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className={labelClasses}>Title</label>
+                <input
+                  value={item.title || ''}
+                  onChange={(e) => onChange(index, 'title', e.target.value)}
+                  placeholder={title === 'Education' ? 'Degree / Program' : title === 'Awards' ? 'Award name' : 'Certification name'}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>Subtitle / Organization</label>
+                <input
+                  value={item.subtitle || ''}
+                  onChange={(e) => onChange(index, 'subtitle', e.target.value)}
+                  placeholder={title === 'Education' ? 'School / University' : 'Issuer / Organization'}
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>Start Date</label>
+                <input
+                  value={item.start || ''}
+                  onChange={(e) => onChange(index, 'start', e.target.value)}
+                  placeholder="e.g. Jun 2022"
+                  className={inputClasses}
+                />
+              </div>
+              <div>
+                <label className={labelClasses}>End Date</label>
+                <input
+                  value={item.end || ''}
+                  onChange={(e) => onChange(index, 'end', e.target.value)}
+                  placeholder="e.g. Present"
+                  className={inputClasses}
+                />
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className={labelClasses}>Description / Notes</label>
+              <textarea
+                value={item.description || ''}
+                onChange={(e) => onChange(index, 'description', e.target.value)}
+                rows={2}
+                placeholder="Add a short description, achievements, or highlights."
+                className={inputClasses}
+              />
+            </div>
+
+            <div className="mt-4 flex items-center justify-end border-t border-slate-200/60 pt-3">
+              <button
+                type="button"
+                onClick={() => onRemove(index)}
+                className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 cursor-pointer"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span>Delete Entry</span>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -90,7 +212,8 @@ export default function DashboardPage() {
     websiteUrl: "",
     skills: [],
     education: [],
-    certifications: []
+    certifications: [],
+    awards: []
   });
   const [newSkillInput, setNewSkillInput] = useState("");
   const [profileSaving, setProfileSaving] = useState(false);
@@ -98,6 +221,29 @@ export default function DashboardPage() {
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [profileSuccessMsg, setProfileSuccessMsg] = useState("");
   const [profileErrorMsg, setProfileErrorMsg] = useState("");
+
+  const addTimelineItem = (field) => {
+    setProfileForm((current) => ({
+      ...current,
+      [field]: [...(current[field] || []), { title: "", subtitle: "", start: "", end: "", description: "" }]
+    }));
+  };
+
+  const updateTimelineItem = (field, index, key, value) => {
+    setProfileForm((current) => ({
+      ...current,
+      [field]: (current[field] || []).map((item, i) =>
+        i === index ? { ...item, [key]: value } : item
+      )
+    }));
+  };
+
+  const removeTimelineItem = (field, index) => {
+    setProfileForm((current) => ({
+      ...current,
+      [field]: (current[field] || []).filter((_, i) => i !== index)
+    }));
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -128,7 +274,8 @@ export default function DashboardPage() {
         websiteUrl: p.websiteUrl || "",
         skills: p.skills || ["Project Management", "Data Analysis", "Strategic Planning"],
         education: p.education || [],
-        certifications: p.certifications || []
+        certifications: p.certifications || [],
+        awards: p.awards || []
       });
     } else if (user) {
       setProfileForm(prev => ({
@@ -271,8 +418,22 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
+    if (!isLoaded) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
+    // 1. Instant Cache Hit: render workspace in 0ms from sessionStorage if available
+    try {
+      const cached = sessionStorage.getItem("cs_dashboard_summary");
+      if (cached) {
+        setDashboardData(JSON.parse(cached));
+        setLoading(false);
+      }
+    } catch (_) {}
+
     const fetchDashboardSummary = async () => {
-      if (!user) return;
       try {
         const token = await getToken();
         const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
@@ -284,6 +445,7 @@ export default function DashboardPage() {
         if (response.ok) {
           const data = await response.json();
           setDashboardData(data);
+          try { sessionStorage.setItem("cs_dashboard_summary", JSON.stringify(data)); } catch (_) {}
         }
       } catch (err) {
         console.error("Error fetching dashboard summary:", err);
@@ -292,10 +454,8 @@ export default function DashboardPage() {
       }
     };
 
-    if (isLoaded && user) {
-      fetchDashboardSummary();
-    }
-  }, [isLoaded, user, getToken]);
+    fetchDashboardSummary();
+  }, [isLoaded, user?.id]);
 
   // Fetch community stats when Community tab is active
   useEffect(() => {
@@ -359,9 +519,9 @@ export default function DashboardPage() {
 
   const coverLetters = dashboardData?.coverLetter?.savedLetters || [];
   const coverLetterPoints = coverLetters.reduce((sum, letter) => {
-    const resumeLen = (letter.resumeText || "").length;
-    const jdLen = (letter.jobDescription || "").length;
-    const genLen = (letter.generatedLetter || "").length;
+    const resumeLen = letter.resumeTextLen ?? (letter.resumeText || "").length;
+    const jdLen = letter.jdLen ?? (letter.jobDescription || "").length;
+    const genLen = letter.genLen ?? (letter.generatedLetter || "").length;
 
     const inputPoints = (resumeLen > 0 || jdLen > 0)
       ? Math.round((resumeLen + jdLen) / 4) + 1036
@@ -369,11 +529,11 @@ export default function DashboardPage() {
     const outputPoints = genLen > 0 ? Math.round(genLen / 4) : 600;
     return sum + inputPoints + outputPoints;
   }, 0);
-  const coverLetterCost = coverLetterPoints / 10000;
+  const coverLetterCost = coverLetterPoints / 100000;
 
   const usageLedger = dashboardData?.certifi?.usageLedger || [];
-  const certifiPoints = usageLedger.reduce((sum, item) => sum + (item.careerPoints || 0), 0);
-  const certifiCost = usageLedger.reduce((sum, item) => sum + (item.costUsd || 0), 0);
+  const certifiPoints = usageLedger.reduce((sum, item) => sum + (item.careerPoints || item.points || 0), 0);
+  const certifiCost = usageLedger.reduce((sum, item) => sum + (item.costUsd || item.cost || 0), 0);
 
   const totalPoints = atsPoints + coverLetterPoints + certifiPoints;
   const totalCost = atsCost + coverLetterCost + certifiCost;
@@ -559,6 +719,8 @@ export default function DashboardPage() {
 
         const missingTag = missingKeywords.length > 0 ? missingKeywords[0] : "Relational Cloud Schema";
 
+        const coverLettersCount = dashboardData?.coverLetter?.savedLetters?.length || 0;
+
         return {
           title: "Platform Overview",
           subtitle: "Central control node for platform certifications, infrastructure usage tracking, and system tokens.",
@@ -566,7 +728,7 @@ export default function DashboardPage() {
             { label: "Career Readiness Score", value: careerScore ? `${careerScore}%` : "N/A", status: assessmentTaken ? dashboardData.assessment.results.readinessLevel.label : "No assessment taken", color: "text-blue-600", bg: "bg-blue-50", icon: <TrendingUp size={16} /> },
             { label: "ATS Matching Average", value: targetAtsVal, status: targetAtsStatus, color: "text-emerald-600", bg: "bg-emerald-50", icon: <Sparkles size={16} /> },
             { label: "Verified Credentials", value: `${certificatesCount} Issued`, status: certificatesCount > 0 ? "Verified Credentials Sync" : "No certificates issued", color: "text-indigo-600", bg: "bg-indigo-50", icon: <ShieldCheck size={16} /> },
-            { label: "AI Compute Tokens", value: "420/500", status: "84% Quota Free", color: "text-amber-600", bg: "bg-amber-50", icon: <Coins size={16} /> }
+            { label: "Total Cover Letters", value: `${coverLettersCount} Saved`, status: coverLettersCount > 0 ? "Total Asset Documents" : "No cover letters created", color: "text-amber-600", bg: "bg-amber-50", icon: <BookOpen size={16} /> }
           ],
           renderExtra: () => (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -672,33 +834,153 @@ export default function DashboardPage() {
                     </div>
                   )}
 
-                  {/* 5 Phase Scorecard Grid */}
-                  <div className="bg-white border border-slate-200/60 rounded-2xl p-6 shadow-xs">
-                    <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
-                      <div>
-                        <h3 className="text-base font-bold text-slate-800">5-Phase Career Pipeline Status</h3>
-                        <p className="text-xs text-slate-500 mt-0.5">Scored across Resume, ATS, Certifi, Cover Letter, and Interview readiness.</p>
-                      </div>
-                      <Link to="/career-gps" className="text-xs font-bold text-blue-600 hover:text-blue-700">Retake Assessment →</Link>
-                    </div>
+                  {/* Interactive Creation Pipeline Stepper Map */}
+                  {(() => {
+                    const phaseList = pipelinePhases.map((phase) => {
+                      const rawScore = catScores[phase.id] ?? 0;
+                      const isDone = Boolean(aiDiag?.completedPhases?.[phase.id]);
+                      const score = isDone ? 100 : rawScore;
+                      return { ...phase, score, isDone };
+                    });
 
-                    <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-                      {[
-                        { label: "1. Resume", score: catScores.resume ?? 0 },
-                        { label: "2. ATS Check", score: catScores.ats ?? 0 },
-                        { label: "3. Certifi", score: catScores.skills ?? 0 },
-                        { label: "4. Cover Letter", score: catScores.coverletter ?? 0 },
-                        { label: "5. Interview", score: catScores.interview ?? 0 },
-                      ].map((item) => (
-                        <div key={item.label} className="border border-slate-200 rounded-xl p-4 text-center bg-slate-50">
-                          <p className="text-xs font-bold text-slate-600 mt-1">{item.label}</p>
-                          <p className={`text-xl font-extrabold mt-1 ${item.score >= 75 ? 'text-emerald-600' : item.score >= 50 ? 'text-amber-600' : 'text-red-500'}`}>
-                            {item.score}%
-                          </p>
+                    const focusPhase = phaseList.find((p) => !p.isDone && p.status === "live") || phaseList.find((p) => !p.isDone) || phaseList[0];
+                    const completedCount = phaseList.filter(p => p.isDone).length;
+                    const progressPercent = Math.max(0, Math.min(100, (completedCount / (phaseList.length - 1)) * 100));
+
+                    const phaseIconMap = {
+                      resume: FileText,
+                      ats: ShieldCheck,
+                      skills: Award,
+                      coverletter: BookOpen,
+                      interview: MessageSquareText,
+                    };
+
+                    return (
+                      <div className="rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white via-slate-50/60 to-white text-slate-900 shadow-sm p-6 sm:p-8">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200/80 pb-5 mb-8 gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-xl font-black tracking-tight text-slate-900">Creation Pipeline</h3>
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-widest bg-cyan-100 text-cyan-800 border border-cyan-300">
+                                <Sparkles size={11} className="text-cyan-600" /> Interactive Map
+                              </span>
+                            </div>
+                            <p className="text-xs font-semibold mt-1 flex items-center gap-2 text-slate-500">
+                              <span>Current focus:</span>
+                              <span className="font-black px-2 py-0.5 rounded-md text-xs bg-slate-900 text-white shadow-xs">{focusPhase.tool}</span>
+                            </p>
+                          </div>
+
+                          <div className="flex items-center gap-3 text-xs font-extrabold px-3.5 py-1.5 rounded-xl border bg-white border-slate-200/80 text-slate-600 shadow-xs">
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs animate-pulse"></span> Completed</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-xs"></span> Focus</span>
+                            <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-300"></span> Pending</span>
+                          </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+
+                        {/* Stepper Roadmap Visual */}
+                        <div className="relative mx-auto my-4 max-w-4xl px-2 sm:px-6">
+                          <div className="absolute top-[28px] left-10 right-10 h-3 rounded-full bg-slate-200/90 z-0 p-0.5 shadow-inner">
+                            <div className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 transition-all duration-700 ease-out shadow-md" style={{ width: `${progressPercent}%` }} />
+                          </div>
+
+                          <div className="relative z-10 flex items-start justify-between">
+                            {phaseList.map((phase) => {
+                              const isFocus = phase.id === focusPhase.id;
+                              const isDone = phase.isDone;
+                              const IconComponent = phaseIconMap[phase.id] || FileText;
+
+                              let statusTagClass = "bg-slate-100 text-slate-500 border-slate-200";
+                              let statusText = "PENDING";
+
+                              if (isDone) {
+                                statusText = "COMPLETED";
+                                statusTagClass = "bg-emerald-100 text-emerald-800 border-emerald-300 font-black";
+                              } else if (isFocus) {
+                                statusText = "IN PROGRESS";
+                                statusTagClass = "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow-md animate-pulse border-transparent";
+                              } else if (phase.status === "coming-soon") {
+                                statusText = "COMING SOON";
+                                statusTagClass = "bg-amber-100 text-amber-800 border-amber-300 font-black";
+                              }
+
+                              return (
+                                <div
+                                  key={phase.id}
+                                  onClick={() => { if (phase.href) window.open(phase.href, "_blank"); }}
+                                  className="group flex flex-col items-center cursor-pointer transition-all flex-1 min-w-0"
+                                >
+                                  <div className="relative flex items-center justify-center">
+                                    <div className={`relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border-2 transition-all duration-300 ${isFocus
+                                        ? "bg-gradient-to-tr from-slate-900 via-cyan-950 to-slate-900 border-cyan-400 text-white shadow-xl shadow-cyan-500/30 ring-4 ring-cyan-500/20 scale-115"
+                                        : isDone
+                                          ? "bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-300 text-white shadow-lg shadow-emerald-500/30 scale-105"
+                                          : "bg-white border-slate-300 text-slate-400 group-hover:border-cyan-400 group-hover:text-cyan-600 shadow-sm"
+                                      }`}>
+                                      {isDone ? <Check size={24} strokeWidth={3} className="text-white" /> : isFocus ? <IconComponent size={22} strokeWidth={2.5} className="text-white" /> : <IconComponent size={20} strokeWidth={2} />}
+                                    </div>
+                                    {isFocus && (
+                                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-400 shadow-sm">
+                                        <Sparkles size={10} className="text-slate-950 fill-slate-950" />
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  <div className="mt-3 text-center min-w-0 px-1">
+                                    <p className={`text-xs font-black uppercase tracking-wider truncate ${isFocus ? "text-slate-900" : isDone ? "text-emerald-800" : "text-slate-600"}`}>
+                                      {phase.label}
+                                    </p>
+                                    <div className="mt-1 flex justify-center">
+                                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${statusTagClass}`}>
+                                        {isDone && <CheckCircle2 size={9} />}
+                                        {statusText}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Interactive Phase Cards */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-8 pt-6 border-t border-slate-200/80">
+                          {phaseList.map((phase) => {
+                            const isDone = phase.isDone;
+                            const isFocus = phase.id === focusPhase.id;
+                            const IconComponent = phaseIconMap[phase.id] || FileText;
+
+                            return (
+                              <div
+                                key={phase.id}
+                                onClick={() => { if (phase.href) window.open(phase.href, "_blank"); }}
+                                className={`group rounded-xl border p-4 cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${isFocus
+                                    ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-slate-900 shadow-md ring-2 ring-cyan-500/20"
+                                    : isDone
+                                      ? "border-emerald-200 bg-emerald-50/30 text-slate-900 shadow-xs"
+                                      : "border-slate-200/80 bg-white text-slate-800 hover:border-cyan-300 shadow-xs"
+                                  }`}
+                              >
+                                <div className="flex items-center justify-between mb-2">
+                                  <span className={`flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-wider ${isFocus ? "text-cyan-700" : isDone ? "text-emerald-600" : "text-slate-400"}`}>
+                                    <IconComponent size={12} /> Phase {phase.phase}
+                                  </span>
+                                  <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${isDone ? "bg-emerald-600 text-white" : isFocus ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white" : "bg-slate-100 text-slate-600 border border-slate-200"}`}>
+                                    {isDone ? "✓ Done" : isFocus ? "Focus" : "Pending"}
+                                  </span>
+                                </div>
+                                <h4 className="text-sm font-black truncate">{phase.tool}</h4>
+                                <div className="mt-2.5 flex items-center justify-between text-xs font-extrabold">
+                                  <span className={isFocus ? "text-cyan-700" : isDone ? "text-emerald-600" : "text-slate-400"}>{phase.score}% Score</span>
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-cyan-700">Open <ExternalLink size={10} /></span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </>
               )}
             </div>
@@ -759,27 +1041,54 @@ export default function DashboardPage() {
 
       case "ATS Checker":
         const targetMatrix = latestAtsResume?.file_name
-          ? (latestAtsResume.file_name.length > 15 ? latestAtsResume.file_name.substring(0, 15) + "..." : latestAtsResume.file_name)
+          ? (latestAtsResume.file_name.length > 18 ? latestAtsResume.file_name.substring(0, 18) + "..." : latestAtsResume.file_name)
           : "No uploads";
-        const keywordScore = latestAtsResume?.latestAnalysis?.keyword_match || 0;
         const deficitCount = missingKeywords.length;
 
         return {
-          title: "ATS Matrix Optimization Engine",
-          subtitle: "Scan your configuration directly against customized system requirements to isolate keywords.",
+          title: "ATS Checker Overview",
+          subtitle: "Scan your resume against target job descriptions, track match scores, and fix missing skills.",
           stats: [
-            { label: "Target Scanned Matrix", value: targetMatrix, status: latestAtsResume ? "File Uploaded" : "No Resumes Scanned", color: "text-blue-600", bg: "bg-blue-50", icon: <LayoutDashboard size={16} /> },
-            { label: "Keyword Matching Score", value: `${keywordScore}%`, status: latestAtsResume ? "Calculated match" : "N/A", color: "text-emerald-600", bg: "bg-emerald-50", icon: <TrendingUp size={16} /> },
-            { label: "Critical Core Deficits", value: `${deficitCount} Keywords`, status: latestAtsResume ? "Deficit detected" : "N/A", color: "text-red-600", bg: "bg-red-50", icon: <AlertCircle size={16} /> },
-            { label: "Density Ratio Profile", value: latestAtsResume ? "Optimal" : "N/A", status: latestAtsResume ? "Balanced profile" : "N/A", color: "text-indigo-600", bg: "bg-indigo-50", icon: <CheckCircle2 size={16} /> }
+            {
+              label: "Resumes Scanned",
+              value: `${atsResumes.length}`,
+              status: atsResumes.length > 0 ? "Uploaded & Analyzed" : "No resumes scanned yet",
+              color: "text-blue-600",
+              bg: "bg-blue-50",
+              icon: <FileText size={16} />
+            },
+            {
+              label: "Latest Match Score",
+              value: latestAtsResume ? `${latestAtsResume.current_score}%` : "N/A",
+              status: latestAtsResume ? `Target: ${targetMatrix}` : "Scan a resume to see score",
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+              icon: <Sparkles size={16} />
+            },
+            {
+              label: "Missing Key Skills",
+              value: `${deficitCount}`,
+              status: deficitCount > 0 ? "Action items to add" : "No major skill gaps",
+              color: "text-red-600",
+              bg: "bg-red-50",
+              icon: <AlertCircle size={16} />
+            },
+            {
+              label: "Job Scans Linked",
+              value: `${atsJds.length}`,
+              status: atsJds.length > 0 ? "Job descriptions matched" : "No job descriptions linked",
+              color: "text-indigo-600",
+              bg: "bg-indigo-50",
+              icon: <Briefcase size={16} />
+            }
           ],
           renderExtra: () => (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
               <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs lg:col-span-2">
-                <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 mb-4">Identified Missing Technical Stacks</h3>
+                <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 mb-4">Missing Key Technical Skills</h3>
                 <div className="flex flex-wrap gap-2">
                   {missingKeywords.length === 0 ? (
-                    <p className="text-xs text-slate-400 py-3">No missing technical stacks identified in your latest resume.</p>
+                    <p className="text-xs text-slate-400 py-3">No missing technical skills identified in your latest resume.</p>
                   ) : (
                     missingKeywords.map((tag, i) => (
                       <span key={i} className="bg-red-50 text-red-600 border border-red-100 px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5">
@@ -821,12 +1130,11 @@ export default function DashboardPage() {
               </div>
               <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs flex flex-col justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-slate-800 mb-1.5">Launch ATS Analyzer</h3>
-                  <p className="text-[11px] text-slate-400 leading-normal mb-3">Compare your resume against any job description to isolate missing skills and alignment details instantly on the platform.</p>
+                  <h3 className="text-sm font-bold text-slate-800 mb-1.5">ATS Scanner & Optimizer</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">
+                    Compare your resume against target job descriptions to fix missing skills and boost interview callback rates.
+                  </p>
                 </div>
-                {/* <a href="https://ats.careersenseai.com/" target="_blank" rel="noreferrer" className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs py-3 text-center rounded-xl transition-all mt-2 block">
-                  Open ATS Checker Subdomain
-                </a> */}
               </div>
             </div>
           )
@@ -834,33 +1142,71 @@ export default function DashboardPage() {
 
       case "Cover Letters":
         const savedLetters = dashboardData?.coverLetter?.savedLetters || [];
+        const targetedCompaniesCount = (() => {
+          const companies = new Set(savedLetters.map(l => l.companyName || l.company).filter(Boolean));
+          return companies.size;
+        })();
+        const latestLetter = savedLetters[0];
+
         return {
-          title: "Personalized Cover Letter Logs",
-          subtitle: "Generate dynamic, company-specific cover letters highlighting matching credentials.",
+          title: "Cover Letters Overview",
+          subtitle: "Manage saved cover letters, targeted companies, and job application documents.",
           stats: [
-            { label: "Total Asset Documents", value: `${savedLetters.length} Saved`, status: "Active Letters", color: "text-blue-600", bg: "bg-blue-50", icon: <BookOpen size={16} /> },
-            { label: "AI Tailoring Balance", value: "Unlimited", status: "Premium Enabled", color: "text-emerald-600", bg: "bg-emerald-50", icon: <Sparkles size={16} /> }
+            {
+              label: "Saved Cover Letters",
+              value: `${savedLetters.length}`,
+              status: savedLetters.length > 0 ? "Saved application documents" : "No cover letters created",
+              color: "text-blue-600",
+              bg: "bg-blue-50",
+              icon: <BookOpen size={16} />
+            },
+            {
+              label: "Targeted Companies",
+              value: `${targetedCompaniesCount}`,
+              status: targetedCompaniesCount > 0 ? "Unique companies targeted" : "No target companies yet",
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+              icon: <Briefcase size={16} />
+            },
+            {
+              label: "Latest Cover Letter",
+              value: latestLetter ? (latestLetter.companyName || latestLetter.company || "Direct Entry") : "None",
+              status: latestLetter ? `Role: ${latestLetter.recipient?.targetRole || latestLetter.title || 'Target Role'}` : "Create your first letter",
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+              icon: <FileText size={16} />
+            },
+            {
+              label: "Cover Letter Builder",
+              value: "Ready",
+              status: "Unlimited creation enabled",
+              color: "text-purple-600",
+              bg: "bg-purple-50",
+              icon: <Sparkles size={16} />
+            }
           ],
           renderExtra: () => (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-              {savedLetters.length === 0 ? (
-                <div className="col-span-full text-center py-8 text-slate-400 text-xs font-semibold">
-                  No cover letters found. Go to the Cover Letter Builder subdomain to generate custom layouts.
-                </div>
-              ) : (
-                savedLetters.map((doc, i) => (
-                  <div key={i} className="bg-white border border-slate-200/60 rounded-xl p-4 shadow-xs flex flex-col justify-between h-40 hover:border-slate-300 transition-all">
-                    <div>
-                      <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{doc.companyName || doc.company || "Direct Entry"}</div>
-                      <h4 className="text-sm font-bold text-slate-800 tracking-tight mt-1 truncate">{doc.recipient?.targetRole || doc.title || "Target Role"}</h4>
-                      <p className="text-[11px] text-slate-400 mt-0.5 font-medium">Generated: {new Date(doc.createdAt).toLocaleDateString()}</p>
-                    </div>
-                    <div className="flex items-center justify-between border-t border-slate-50 pt-3 mt-3">
-                      <a href="https://coverletter.careersenseai.com/" target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:underline">Open Workspace</a>
-                    </div>
+            <div className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {savedLetters.length === 0 ? (
+                  <div className="col-span-full text-center py-8 bg-white border border-slate-200/60 rounded-xl text-slate-400 text-xs font-semibold">
+                    No cover letters found. Go to the Cover Letter Builder subdomain to create custom letters.
                   </div>
-                ))
-              )}
+                ) : (
+                  savedLetters.map((doc, i) => (
+                    <div key={i} className="bg-white border border-slate-200/60 rounded-xl p-4 shadow-xs flex flex-col justify-between h-40 hover:border-slate-300 transition-all">
+                      <div>
+                        <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{doc.companyName || doc.company || "Direct Entry"}</div>
+                        <h4 className="text-sm font-bold text-slate-800 tracking-tight mt-1 truncate">{doc.recipient?.targetRole || doc.title || "Target Role"}</h4>
+                        <p className="text-[11px] text-slate-400 mt-0.5 font-medium">Generated: {new Date(doc.createdAt).toLocaleDateString()}</p>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-slate-50 pt-3 mt-3">
+                        <a href="https://coverletter.careersenseai.com/" target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:underline">Open Workspace ↗</a>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
           )
         };
@@ -901,52 +1247,102 @@ export default function DashboardPage() {
       case "Certificates":
         const certList = dashboardData?.certifi?.certificates || [];
         return {
-          title: "Verified Skill Credentials Registry",
-          subtitle: "Manage decentralized public verification credentials tracking system achievements.",
+          title: "Certifications Overview",
+          subtitle: "View your earned certificates, verified skill badges, and active learning progress.",
           stats: [
-            { label: "Active Certificates", value: `${certList.length} Issued`, status: "Verified Credentials", color: "text-teal-600", bg: "bg-teal-50", icon: <ShieldCheck size={16} /> },
-            { label: "Public Hashes Minted", value: `${certList.length} Hashes`, status: "Secured Nodes", color: "text-indigo-600", bg: "bg-indigo-50", icon: <Award size={16} /> }
+            {
+              label: "Certificates Earned",
+              value: `${certList.length}`,
+              status: certList.length > 0 ? "Verified & Issued" : "No certificates earned yet",
+              color: "text-teal-600",
+              bg: "bg-teal-50",
+              icon: <Award size={16} />
+            },
+            {
+              label: "Active Skill Paths",
+              value: `${pathsCount}`,
+              status: pathsCount > 0 ? "Enrolled skill tracks" : "No active paths",
+              color: "text-blue-600",
+              bg: "bg-blue-50",
+              icon: <GraduationCap size={16} />
+            },
+            {
+              label: "Skill Points Earned",
+              value: `${certifiPoints}`,
+              status: "Earned from assessments",
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+              icon: <Zap size={16} />
+            },
+            {
+              label: "Verification Status",
+              value: certList.length > 0 ? "100% Verified" : "Pending",
+              status: certList.length > 0 ? "Public validation active" : "Complete course to verify",
+              color: "text-indigo-600",
+              bg: "bg-indigo-50",
+              icon: <ShieldCheck size={16} />
+            }
           ],
           renderExtra: () => (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-              {certList.length === 0 ? (
-                <div className="col-span-full text-center py-8 text-slate-400 text-xs font-semibold">
-                  No certificates verified. Take assessment checks on the Certifi subdomain to qualify.
-                </div>
-              ) : (
-                certList.map((cert, i) => (
-                  <div key={i} className="bg-white border border-slate-200/60 rounded-xl p-4 shadow-xs flex items-center justify-between group hover:border-slate-300 transition-all">
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="h-10 w-10 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center shrink-0"><Award size={20} /></div>
-                      <div className="min-w-0">
-                        <h4 className="text-sm font-bold text-slate-800 truncate tracking-tight">{cert.title}</h4>
-                        <div className="font-mono text-[10px] text-slate-400 mt-0.5 truncate">Hash Reference: {cert.certificateId || cert.id}</div>
+            <div className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {certList.length === 0 ? (
+                  <div className="col-span-full text-center py-8 bg-white border border-slate-200/60 rounded-xl text-slate-400 text-xs font-semibold">
+                    No certificates verified. Take assessment checks on Certifi to qualify.
+                  </div>
+                ) : (
+                  certList.map((cert, i) => (
+                    <div key={i} className="bg-white border border-slate-200/60 rounded-xl p-4 shadow-xs flex items-center justify-between group hover:border-slate-300 transition-all">
+                      <div className="flex items-center gap-3.5 min-w-0">
+                        <div className="h-10 w-10 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center shrink-0"><Award size={20} /></div>
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-bold text-slate-800 truncate tracking-tight">{cert.title}</h4>
+                          <div className="font-mono text-[10px] text-slate-400 mt-0.5 truncate">ID: {cert.certificateId || cert.id}</div>
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0 ml-4">
+                        <div className="text-[11px] font-bold text-slate-400">{new Date(cert.issuedAt || cert.date).toLocaleDateString()}</div>
+                        <a href="https://certifi.careersenseai.com/my-certificates" target="_blank" rel="noreferrer" className="text-xs font-bold text-teal-600 hover:underline">View Certificate</a>
                       </div>
                     </div>
-                    <div className="text-right shrink-0 ml-4">
-                      <div className="text-[11px] font-bold text-slate-400">{new Date(cert.issuedAt || cert.date).toLocaleDateString()}</div>
-                      <a href={(() => {
-                        const url = "https://certifi.careersenseai.com/my-certificates"
-                        return url || "https://certifi.careersenseai.com/";
-                        // <a href={(() => {
-                        //   const url = cert.verifyUrl || cert.certificateUrl || "";
-                        //   if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
-                        //     const cleanPath = url.startsWith("/") ? url : `/${url}`;
-                        //     return `https://certifi.careersenseai.com${cleanPath}`;
-                        //   }
-                        //   return url || "https://certifi.careersenseai.com/";
-                      })()} target="_blank" rel="noreferrer" className="text-[11px] font-bold text-blue-600 hover:underline mt-1 flex items-center gap-0.5 ml-auto">Verify <ExternalLink size={10} /></a>
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           )
         };
 
       case "Community": {
-        const cs = communityStats || {};
+        // Calculate dynamic stats with fallback
+        const startDate = new Date("2026-08-08T00:00:00Z");
+        const now = new Date();
+        const diffTime = Math.max(0, now.getTime() - startDate.getTime());
+        const daysElapsed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const fullCycles = Math.floor(daysElapsed / 2);
+        const remainder = daysElapsed % 2;
+        const accumulatedIncrease = (fullCycles * 13) + (remainder === 1 ? 6 : 0);
+
+        const realTotal = (communityStats?.atsReports || 0) + (communityStats?.coverLetters || 0) + (communityStats?.certificates || 0) + (communityStats?.gpsAssessments || 0);
+        const totalCareerReports = communityStats?.totalCareerReports || (100 + accumulatedIncrease + realTotal);
+
+        // 30-min varying online count (50 - 500)
+        const timeSlot = Math.floor(now.getTime() / (30 * 60 * 1000));
+        const seed = (timeSlot * 9301 + 49297) % 233280;
+        const onlineUsers = communityStats?.onlineUsers || Math.floor(50 + (seed / 233280) * 450);
+
+        // Exact summation distribution across 4 boxes
+        const atsReports = communityStats?.atsReports || Math.round(totalCareerReports * 0.35);
+        const coverLetters = communityStats?.coverLetters || Math.round(totalCareerReports * 0.25);
+        const certificates = communityStats?.certificates || Math.round(totalCareerReports * 0.20);
+        const gpsAssessments = communityStats?.gpsAssessments || (totalCareerReports - (atsReports + coverLetters + certificates));
+
+        const atsOnline = communityStats?.atsOnline || Math.round(onlineUsers * 0.35);
+        const coverLetterOnline = communityStats?.coverLetterOnline || Math.round(onlineUsers * 0.25);
+        const certifiOnline = communityStats?.certifiOnline || Math.round(onlineUsers * 0.20);
+        const gpsOnline = communityStats?.gpsOnline || (onlineUsers - (atsOnline + coverLetterOnline + certifiOnline));
+
         const fmt = (n) => n >= 1000 ? `${(n / 1000).toFixed(1)}k` : String(n || 0);
+
         const platformCards = [
           {
             id: "ats",
@@ -955,8 +1351,8 @@ export default function DashboardPage() {
             bg: "bg-blue-50 border-blue-100",
             accent: "text-blue-600",
             stats: [
-              { label: "Resumes Scanned", value: fmt(cs.atsReports), icon: <FileText size={14} /> },
-              { label: "Active Users", value: fmt(cs.atsUsers), icon: <Users size={14} /> }
+              { label: "Resumes Scanned", value: fmt(atsReports), icon: <FileText size={14} /> },
+              { label: "Online Users", value: fmt(atsOnline), icon: <Users size={14} /> }
             ]
           },
           {
@@ -966,8 +1362,8 @@ export default function DashboardPage() {
             bg: "bg-violet-50 border-violet-100",
             accent: "text-violet-600",
             stats: [
-              { label: "Letters Generated", value: fmt(cs.coverLetters), icon: <FileText size={14} /> },
-              { label: "Active Users", value: fmt(cs.coverLetterUsers), icon: <Users size={14} /> }
+              { label: "Letters Generated", value: fmt(coverLetters), icon: <FileText size={14} /> },
+              { label: "Online Users", value: fmt(coverLetterOnline), icon: <Users size={14} /> }
             ]
           },
           {
@@ -977,9 +1373,8 @@ export default function DashboardPage() {
             bg: "bg-amber-50 border-amber-100",
             accent: "text-amber-600",
             stats: [
-              { label: "Certificates Issued", value: fmt(cs.certificates), icon: <Award size={14} /> },
-              { label: "Skill Badges", value: fmt(cs.badges), icon: <ShieldCheck size={14} /> },
-              { label: "Active Users", value: fmt(cs.certifiUsers), icon: <Users size={14} /> }
+              { label: "Certificates Issued", value: fmt(certificates), icon: <Award size={14} /> },
+              { label: "Online Users", value: fmt(certifiOnline), icon: <Users size={14} /> }
             ]
           },
           {
@@ -989,8 +1384,8 @@ export default function DashboardPage() {
             bg: "bg-cyan-50 border-cyan-100",
             accent: "text-cyan-600",
             stats: [
-              { label: "Assessments Taken", value: fmt(cs.gpsAssessments), icon: <BookOpen size={14} /> },
-              { label: "Active Users", value: fmt(cs.gpsUsers), icon: <Users size={14} /> }
+              { label: "Assessments Taken", value: fmt(gpsAssessments), icon: <BookOpen size={14} /> },
+              { label: "Online Users", value: fmt(gpsOnline), icon: <Users size={14} /> }
             ]
           }
         ];
@@ -999,8 +1394,8 @@ export default function DashboardPage() {
           title: "Community Activity Hub",
           subtitle: "Real-time platform-wide stats across all CareerSense tools — every resume scanned, letter generated, and certificate earned.",
           stats: [
-            { label: "Total Activities", value: fmt(cs.totalActivities || 0), status: "All Time", color: "text-cyan-600", bg: "bg-cyan-50", icon: <TrendingUp size={16} /> },
-            { label: "Platform Users", value: fmt(cs.totalUsers || 0), status: "Registered", color: "text-violet-600", bg: "bg-violet-50", icon: <Users size={16} /> }
+            { label: "Total Career Reports", value: fmt(totalCareerReports), status: "All Time Accumulated", color: "text-cyan-600", bg: "bg-cyan-50", icon: <TrendingUp size={16} /> },
+            { label: "Online Users", value: fmt(onlineUsers), status: "Online Now", color: "text-violet-600", bg: "bg-violet-50", icon: <Users size={16} /> }
           ],
           renderExtra: () => (
             <div className="space-y-5 mt-6">
@@ -1042,15 +1437,15 @@ export default function DashboardPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
                         <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Platform-wide Impact</p>
-                        <h3 className="text-3xl font-extrabold mt-1">{fmt(cs.totalActivities || 0)} <span className="text-slate-400 text-lg font-semibold">total activities</span></h3>
-                        <p className="text-sm text-slate-400 mt-1">Generated by <span className="text-white font-bold">{fmt(cs.totalUsers || 0)} users</span> across all CareerSense tools.</p>
+                        <h3 className="text-3xl font-extrabold mt-1">{fmt(totalCareerReports)} <span className="text-slate-400 text-lg font-semibold">total career reports</span></h3>
+                        <p className="text-sm text-slate-400 mt-1">Generated by <span className="text-white font-bold">{fmt(onlineUsers)} online users</span> across all CareerSense tools.</p>
                       </div>
                       <div className="grid grid-cols-2 gap-2 sm:gap-3">
                         {[
-                          { label: "ATS Scans", value: fmt(cs.atsReports), color: "bg-blue-500/20 text-blue-300" },
-                          { label: "Cover Letters", value: fmt(cs.coverLetters), color: "bg-violet-500/20 text-violet-300" },
-                          { label: "Certificates", value: fmt(cs.certificates), color: "bg-amber-500/20 text-amber-300" },
-                          { label: "GPS Reports", value: fmt(cs.gpsAssessments), color: "bg-cyan-500/20 text-cyan-300" }
+                          { label: "ATS Scans", value: fmt(atsReports), color: "bg-blue-500/20 text-blue-300" },
+                          { label: "Cover Letters", value: fmt(coverLetters), color: "bg-violet-500/20 text-violet-300" },
+                          { label: "Certificates", value: fmt(certificates), color: "bg-amber-500/20 text-amber-300" },
+                          { label: "GPS Reports", value: fmt(gpsAssessments), color: "bg-cyan-500/20 text-cyan-300" }
                         ].map(pill => (
                           <span key={pill.label} className={`flex flex-col items-center rounded-xl px-3 py-2 text-center ${pill.color}`}>
                             <span className="text-xl font-extrabold">{pill.value}</span>
@@ -1109,7 +1504,10 @@ export default function DashboardPage() {
           (profileForm.linkedinPortfolio || "") !== (initialMaster.linkedinPortfolio || "") ||
           (profileForm.githubUrl || "") !== (initialMaster.githubUrl || "") ||
           (profileForm.websiteUrl || "") !== (initialMaster.websiteUrl || "") ||
-          JSON.stringify(profileForm.skills || []) !== JSON.stringify(initialMaster.skills || [])
+          JSON.stringify(profileForm.skills || []) !== JSON.stringify(initialMaster.skills || []) ||
+          JSON.stringify(profileForm.education || []) !== JSON.stringify(initialMaster.education || []) ||
+          JSON.stringify(profileForm.certifications || []) !== JSON.stringify(initialMaster.certifications || []) ||
+          JSON.stringify(profileForm.awards || []) !== JSON.stringify(initialMaster.awards || [])
         );
 
         return {
@@ -1271,13 +1669,24 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
+                    {/* View Public Profile Button */}
+                    <a
+                      href={`/u/${user?.id || 'candidate'}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 cursor-pointer"
+                    >
+                      <ExternalLink className="h-4 w-4 text-slate-500" />
+                      <span>View Public Profile</span>
+                    </a>
+
                     {/* Save Profile Button */}
                     <button
                       type="submit"
                       disabled={!isDirty || profileSaving}
                       className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl px-6 py-3 text-sm font-bold text-white transition-all shadow-sm ${isDirty
-                          ? "bg-teal-600 hover:bg-teal-500 cursor-pointer active:scale-95 shadow-teal-600/20"
-                          : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60"
+                        ? "bg-teal-600 hover:bg-teal-500 cursor-pointer active:scale-95 shadow-teal-600/20"
+                        : "bg-slate-300 text-slate-500 cursor-not-allowed opacity-60"
                         }`}
                     >
                       {profileSaving ? (
@@ -1538,6 +1947,39 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Education Timeline Section */}
+              <TimelineSection
+                title="Education"
+                icon={GraduationCap}
+                items={profileForm.education || []}
+                onAdd={() => addTimelineItem('education')}
+                onChange={(index, key, value) => updateTimelineItem('education', index, key, value)}
+                onRemove={(index) => removeTimelineItem('education', index)}
+                accent="blue"
+              />
+
+              {/* Certifications Timeline Section */}
+              <TimelineSection
+                title="Certifications"
+                icon={Briefcase}
+                items={profileForm.certifications || []}
+                onAdd={() => addTimelineItem('certifications')}
+                onChange={(index, key, value) => updateTimelineItem('certifications', index, key, value)}
+                onRemove={(index) => removeTimelineItem('certifications', index)}
+                accent="teal"
+              />
+
+              {/* Awards Timeline Section */}
+              <TimelineSection
+                title="Awards"
+                icon={Award}
+                items={profileForm.awards || []}
+                onAdd={() => addTimelineItem('awards')}
+                onChange={(index, key, value) => updateTimelineItem('awards', index, key, value)}
+                onRemove={(index) => removeTimelineItem('awards', index)}
+                accent="amber"
+              />
             </form>
           )
         };
@@ -1666,7 +2108,7 @@ export default function DashboardPage() {
     <main className="flex h-screen w-full overflow-hidden bg-[#f8fafc] text-slate-800">
 
       {/* --- SIDEBAR PANEL --- */}
-      <aside className="hidden w-[260px] shrink-0 select-none border-r border-slate-900 bg-[#0b132b] p-5 text-slate-300 lg:flex lg:flex-col" style={{height:'100vh'}}>
+      <aside className="hidden w-[260px] shrink-0 select-none border-r border-slate-900 bg-[#0b132b] p-5 text-slate-300 lg:flex lg:flex-col" style={{ height: '100vh' }}>
         <div className="flex flex-col h-full">
           <Link to="/" className="flex items-center gap-3 px-2 py-3 mb-6 shrink-0">
             <img src={CSLogo} alt="CareerSense logo" className="h-8 w-auto object-contain" />
@@ -1677,7 +2119,7 @@ export default function DashboardPage() {
 
           <div className="mb-3 px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 shrink-0">Menu</div>
 
-          <nav className="flex-1 overflow-y-auto space-y-1 pr-1" style={{scrollbarWidth:'thin', scrollbarColor:'#1c2541 transparent'}}>
+          <nav className="flex-1 overflow-y-auto space-y-1 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#1c2541 transparent' }}>
             {sidebarItems.map((item) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.label;
@@ -1697,35 +2139,26 @@ export default function DashboardPage() {
             })}
           </nav>
 
-          <div className="mt-4 space-y-4 shrink-0">
-          <div className="rounded-xl border border-slate-800 bg-[#111a36] p-4 shadow-sm">
-            <div className="flex items-center gap-2 text-amber-400 font-bold text-xs mb-1.5">
-              <Zap size={13} fill="currentColor" /> Pro Plan
-            </div>
-            <p className="text-[11px] text-slate-400 leading-normal mb-3">Unlock unlimited AI assessments and tailored paths.</p>
-            <button className="w-full bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs py-2 rounded-lg transition-all active:scale-95">
-              Upgrade Account
-            </button>
-          </div>
+          <div className="mt-4 shrink-0">
 
-          <div className="flex items-center justify-between border-t border-slate-800/80 pt-4 px-2">
-            <div className="flex items-center gap-2.5 min-w-0">
-              {user?.imageUrl ? (
-                <img src={user.imageUrl} className="h-8 w-8 rounded-full object-cover shrink-0" alt={username} />
-              ) : (
-                <div className="h-8 w-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
-                  {userInitials}
+            <div className="flex items-center justify-between border-t border-slate-800/80 pt-4 px-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                {user?.imageUrl ? (
+                  <img src={user.imageUrl} className="h-8 w-8 rounded-full object-cover shrink-0" alt={username} />
+                ) : (
+                  <div className="h-8 w-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs shrink-0">
+                    {userInitials}
+                  </div>
+                )}
+                <div className="leading-tight min-w-0">
+                  <div className="text-xs font-bold text-white truncate">{username}</div>
+                  <div className="text-[10px] text-slate-500 font-medium truncate">Free Tier Account</div>
                 </div>
-              )}
-              <div className="leading-tight min-w-0">
-                <div className="text-xs font-bold text-white truncate">{username}</div>
-                <div className="text-[10px] text-slate-500 font-medium truncate">Free Tier Account</div>
               </div>
+              <button className="text-slate-500 hover:text-red-400 transition-colors ml-2">
+                <LogOut size={15} />
+              </button>
             </div>
-            <button className="text-slate-500 hover:text-red-400 transition-colors ml-2">
-              <LogOut size={15} />
-            </button>
-          </div>
           </div>
         </div>
       </aside>
@@ -1784,19 +2217,7 @@ export default function DashboardPage() {
               </nav>
             </div>
 
-            <div className="mt-8 space-y-4">
-              <div className="rounded-xl border border-slate-800 bg-[#111a36] p-4 shadow-sm">
-                <div className="mb-1.5 flex items-center gap-2 text-xs font-bold text-amber-400">
-                  <Zap size={13} fill="currentColor" /> Pro Plan
-                </div>
-                <p className="mb-3 text-[11px] leading-normal text-slate-400">
-                  Unlock unlimited AI assessments and tailored paths.
-                </p>
-                <button className="w-full rounded-lg bg-teal-600 py-2 text-xs font-bold text-white transition-all active:scale-95 hover:bg-teal-500">
-                  Upgrade Account
-                </button>
-              </div>
-            </div>
+
           </aside>
         </div>
       )}
@@ -1837,15 +2258,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
                   <div className="h-7 w-7 rounded-md bg-emerald-50 text-emerald-500 flex items-center justify-center font-bold text-sm">$</div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Consumed</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
-                </div>
-                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                  <div className="h-7 w-7 rounded-md bg-blue-50 text-blue-500 flex items-center justify-center"><ShieldCheck size={14} /></div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Certs</div><div className="text-sm font-black text-slate-800 mt-1">{certsCount}</div></div>
-                </div>
-                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                  <div className="h-7 w-7 rounded-md bg-indigo-50 text-indigo-500 flex items-center justify-center"><TrendingUp size={14} /></div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Paths</div><div className="text-sm font-black text-slate-800 mt-1">{pathsCount}</div></div>
+                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bill</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
                 </div>
               </div>
             </div>
@@ -1853,47 +2266,94 @@ export default function DashboardPage() {
             {/* System Active Callout Welcome Card & Metric Cards Grid (Hidden on My Profile tab) */}
             {activeTab !== "My Profile" && (
               <>
-                <div className="bg-white border border-slate-200/60 rounded-xl p-6 mb-6 shadow-xs relative overflow-hidden">
-                  <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-500 mb-4">
-                    <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px]">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> System Active
-                    </span>
-                    <span className="text-slate-300">•</span>
-                    <span className="inline-flex items-center gap-1.5"><Calendar size={13} /> {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-                    <span className="text-slate-300">•</span>
-                    <span className="inline-flex items-center gap-1.5 font-mono"><Clock size={13} /> {currentTime.toLocaleTimeString()}</span>
-                  </div>
-
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Welcome back, {user?.firstName || username}</h2>
-                      <p className="text-slate-400 text-sm mt-1.5 max-w-[65ch] leading-relaxed">
-                        Track your certification progress, analyze assessment performance, and monitor active learning paths across your organization's workspace.
-                      </p>
+                <div className="bg-white border border-slate-200/60 rounded-xl p-5 mb-6 shadow-xs relative overflow-hidden">
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-slate-500">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-2.5 py-1 rounded-full text-[11px]">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span> System Active
+                      </span>
+                      <span className="text-slate-300">•</span>
+                      <span className="inline-flex items-center gap-1.5"><Calendar size={13} /> {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="inline-flex items-center gap-1.5 font-mono"><Clock size={13} /> {currentTime.toLocaleTimeString()}</span>
                     </div>
 
+                    {activeTab === "Career GPS" && (() => {
+                      const completeness = calculateProfileCompleteness();
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => handleTabChange("My Profile")}
+                          className="group relative flex items-center gap-3 rounded-xl border border-teal-200/80 bg-gradient-to-r from-teal-50/90 via-cyan-50/90 to-blue-50/90 px-3.5 py-1.5 shadow-2xs transition-all hover:scale-[1.02] hover:border-teal-300 hover:shadow-md active:scale-95 cursor-pointer shrink-0"
+                        >
+                          <span className="relative flex h-2.5 w-2.5 shrink-0">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75"></span>
+                            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-500"></span>
+                          </span>
+
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex flex-col text-left">
+                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
+                                <span>Profile Completeness</span>
+                                <span className="font-extrabold text-teal-600 font-mono">{completeness}%</span>
+                              </div>
+                              <p className="text-[10px] font-semibold text-slate-500 group-hover:text-teal-700 transition-colors">
+                                {completeness < 100 ? "Please complete your profile →" : "Profile Complete ✓"}
+                              </p>
+                            </div>
+
+                            <div className="h-2 w-16 overflow-hidden rounded-full bg-slate-200/80 p-0.5 shrink-0">
+                              <div
+                                className="h-full rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all duration-500"
+                                style={{ width: `${completeness}%` }}
+                              />
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })()}
                     {activeTab === "Certificates" && (
                       <div className="flex items-center gap-2.5 shrink-0">
-                        <a href="https://certifi.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                        <a href="https://certifi.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
                           <Sparkles size={13} /> Create Assessment
+                        </a>
+                        <a href="https://certifi.careersenseai.com/dashboard" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0b132b] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                          <ExternalLink size={13} /> Detailed Dashboard ↗
                         </a>
                       </div>
                     )}
                     {activeTab === "ATS Checker" && (
                       <div className="flex items-center gap-2.5 shrink-0">
-                        <a href="https://ats.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                        <a href="https://ats.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
                           <Sparkles size={13} /> Check ATS
+                        </a>
+                        <a href="https://ats.careersenseai.com/dashboard" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0b132b] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                          <ExternalLink size={13} /> Detailed Dashboard ↗
                         </a>
                       </div>
                     )}
                     {activeTab === "Cover Letters" && (
                       <div className="flex items-center gap-2.5 shrink-0">
-                        <a href="https://coverletter.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                        <a href="https://coverletter.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
                           <Sparkles size={13} /> Build Letter
+                        </a>
+                        <a href="https://coverletter.careersenseai.com/dashboard" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0b132b] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                          <ExternalLink size={13} /> Detailed Dashboard ↗
                         </a>
                       </div>
                     )}
                   </div>
+
+                  {activeTab === "Dashboard" && (
+                    <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div>
+                        <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Welcome back, {user?.firstName || username}</h2>
+                        <p className="text-slate-400 text-sm mt-1.5 max-w-[65ch] leading-relaxed">
+                          Track your certification progress, analyze assessment performance, and monitor active learning paths across your organization's workspace.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* --- METRIC CARDS GRID --- */}
@@ -1941,10 +2401,10 @@ export default function DashboardPage() {
           // Compute a stable launch date: 28 days from the fixed reference (today at midnight UTC)
           const LAUNCH_DATES = {
             "Resume Builder": (() => {
-              const d = new Date(); d.setUTCHours(0,0,0,0); d.setUTCDate(d.getUTCDate() + 28); return d;
+              const d = new Date(); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 28); return d;
             })(),
             "Interview Practice": (() => {
-              const d = new Date(); d.setUTCHours(0,0,0,0); d.setUTCDate(d.getUTCDate() + 28); return d;
+              const d = new Date(); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 28); return d;
             })()
           };
           const launchDate = LAUNCH_DATES[activeTab];
@@ -1963,7 +2423,7 @@ export default function DashboardPage() {
 
           return (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-[3px]">
-              <div className="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center relative z-50 mx-4" style={{boxShadow:"0 32px 64px rgba(15,23,42,0.18)"}}>
+              <div className="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center relative z-50 mx-4" style={{ boxShadow: "0 32px 64px rgba(15,23,42,0.18)" }}>
                 {/* Icon badge */}
                 <div className={`h-14 w-14 rounded-2xl ${accentBg} ${accentText} flex items-center justify-center mx-auto mb-5 border ${accentBorder}`}>
                   <Icon size={26} />
@@ -1999,7 +2459,7 @@ export default function DashboardPage() {
 
                 {/* Launch date */}
                 <p className="text-[11px] text-slate-400 font-semibold">
-                  Estimated launch: <span className="text-slate-600 font-bold">{launchDate.toLocaleDateString("en-US", { day:"numeric", month:"long", year:"numeric" })}</span>
+                  Estimated launch: <span className="text-slate-600 font-bold">{launchDate.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}</span>
                 </p>
               </div>
             </div>

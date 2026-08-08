@@ -10,7 +10,14 @@ function VideoLightbox({ onClose }) {
     // Lock body scroll while modal is open
     document.body.style.overflow = "hidden";
     if (videoRef.current) {
-      videoRef.current.play();
+      videoRef.current.play().catch(() => {});
+      if (videoRef.current.requestFullscreen) {
+        videoRef.current.requestFullscreen().catch(() => {});
+      } else if (videoRef.current.webkitRequestFullscreen) {
+        videoRef.current.webkitRequestFullscreen();
+      } else if (videoRef.current.msRequestFullscreen) {
+        videoRef.current.msRequestFullscreen();
+      }
     }
     // Close on Escape
     const handleKey = (e) => { if (e.key === "Escape") onClose(); };
@@ -23,34 +30,32 @@ function VideoLightbox({ onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: "rgba(2, 8, 23, 0.96)", backdropFilter: "blur(8px)" }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-md"
       onClick={onClose}
     >
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-5 right-5 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-sm transition hover:bg-white/20 hover:scale-105"
+        className="absolute top-6 right-6 z-[10000] flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 hover:scale-105"
         aria-label="Close video"
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
           <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
         </svg>
       </button>
 
-      {/* Video player */}
+      {/* Fullscreen Video Container */}
       <div
-        className="relative w-full max-w-5xl mx-4 rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full h-full flex items-center justify-center p-2 sm:p-6"
         onClick={(e) => e.stopPropagation()}
-        style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.08), 0 32px 80px rgba(0,0,0,0.7)" }}
       >
         <video
           ref={videoRef}
           src={demoVideo}
           controls
           autoPlay
-          className="w-full h-auto block bg-black"
-          style={{ maxHeight: "80vh" }}
+          playsInline
+          className="w-full h-full object-contain rounded-2xl bg-black shadow-2xl"
         />
       </div>
     </div>
@@ -85,17 +90,13 @@ export default function DemoVideoSection() {
         <div className="relative mx-auto max-w-5xl">
           {/* Section heading */}
           <div className="mb-10 text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-cyan-500/40 bg-cyan-50 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-cyan-600">
-              <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-500 animate-pulse" />
-              Platform Demo
-            </span>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
+            <h2 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl">
               See CareerSense{" "}
               <span className="bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 bg-clip-text text-transparent">
                 in action
               </span>
             </h2>
-            <p className="mt-3 text-sm text-slate-500 max-w-xl mx-auto">
+            <p className="mt-3 text-sm font-medium text-slate-500 sm:text-base max-w-4xl mx-auto whitespace-nowrap overflow-hidden text-ellipsis">
               Watch how CareerSense maps your career journey — from ATS score to certificates to your first interview call.
             </p>
           </div>

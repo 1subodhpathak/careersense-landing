@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { ExternalLink, X, ArrowRight, RotateCcw, Share2, Download, Calendar, Sparkles, CheckCircle, AlertTriangle } from "lucide-react";
+import { ExternalLink, X, ArrowRight, RotateCcw, Share2, Download, Calendar, Sparkles, CheckCircle, AlertTriangle, Check, FileText, ShieldCheck, Award, FileEdit, Video } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import {
@@ -97,122 +97,241 @@ function ScoreRing({ score, readinessLevel, isLight }) {
   );
 }
 
-// ─── Pipeline Phases Visual ──────────────────────────────────
+const phaseIconMap = {
+  resume: FileText,
+  ats: ShieldCheck,
+  skills: Award,
+  coverletter: FileEdit,
+  interview: Video,
+};
+
+// ─── Pipeline Phases Visual (Creation Pipeline Stepper) ──────
 function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComingSoon, isLight }) {
-  const colorMap = {
-    violet: {
-      strong: isLight ? "border-emerald-400 bg-white text-slate-900 shadow-sm" : "border-emerald-500/40 bg-emerald-950/30 text-emerald-200",
-      warn: isLight ? "border-amber-400 bg-white text-slate-900 shadow-sm" : "border-amber-500/40 bg-amber-950/30 text-amber-200",
-      weak: isLight ? "border-red-400 bg-white text-slate-900 shadow-sm" : "border-red-500/40 bg-red-950/30 text-red-200"
-    },
-    cyan: {
-      strong: isLight ? "border-emerald-400 bg-white text-slate-900 shadow-sm" : "border-emerald-500/40 bg-emerald-950/30 text-emerald-200",
-      warn: isLight ? "border-amber-400 bg-white text-slate-900 shadow-sm" : "border-amber-500/40 bg-amber-950/30 text-amber-200",
-      weak: isLight ? "border-red-400 bg-white text-slate-900 shadow-sm" : "border-red-500/40 bg-red-950/30 text-red-200"
-    },
-    emerald: {
-      strong: isLight ? "border-emerald-400 bg-white text-slate-900 shadow-sm" : "border-emerald-500/40 bg-emerald-950/30 text-emerald-200",
-      warn: isLight ? "border-amber-400 bg-white text-slate-900 shadow-sm" : "border-amber-500/40 bg-amber-950/30 text-amber-200",
-      weak: isLight ? "border-red-400 bg-white text-slate-900 shadow-sm" : "border-red-500/40 bg-red-950/30 text-red-200"
-    },
-    blue: {
-      strong: isLight ? "border-emerald-400 bg-white text-slate-900 shadow-sm" : "border-emerald-500/40 bg-emerald-950/30 text-emerald-200",
-      warn: isLight ? "border-amber-400 bg-white text-slate-900 shadow-sm" : "border-amber-500/40 bg-amber-950/30 text-amber-200",
-      weak: isLight ? "border-red-400 bg-white text-slate-900 shadow-sm" : "border-red-500/40 bg-red-950/30 text-red-200"
-    },
-    orange: {
-      strong: isLight ? "border-emerald-400 bg-white text-slate-900 shadow-sm" : "border-emerald-500/40 bg-emerald-950/30 text-emerald-200",
-      warn: isLight ? "border-amber-400 bg-white text-slate-900 shadow-sm" : "border-amber-500/40 bg-amber-950/30 text-amber-200",
-      weak: isLight ? "border-red-400 bg-white text-slate-900 shadow-sm" : "border-red-500/40 bg-red-950/30 text-red-200"
-    },
-  };
+  const phaseList = pipelinePhases.map((phase) => {
+    const rawScore = categoryScores[phase.id] ?? 0;
+    const isDone = Boolean(completedPhases?.[phase.id]);
+    const score = isDone ? 100 : rawScore;
+    return { ...phase, score, isDone };
+  });
+
+  // Determine focus phase: first live phase that's not done, or first not done, or last phase
+  const focusPhase = phaseList.find((p) => !p.isDone && p.status === "live") || phaseList.find((p) => !p.isDone) || phaseList[0];
+
+  const completedCount = phaseList.filter(p => p.isDone).length;
+  const progressPercent = Math.max(0, Math.min(100, (completedCount / (phaseList.length - 1)) * 100));
 
   return (
-    <div className="mt-4">
-      {/* Desktop horizontal pipeline */}
-      <div className="hidden lg:flex items-start gap-0">
-        {pipelinePhases.map((phase, i) => {
-          const rawScore = categoryScores[phase.id] ?? 0;
-          const isDone = Boolean(completedPhases?.[phase.id]) || rawScore >= 90;
-          const score = isDone ? 100 : rawScore;
-          const status = isDone ? "strong" : (score >= 75 ? "strong" : score >= 50 ? "warn" : "weak");
-          const statusLabel = isDone ? "✓ COMPLETED" : (status === "strong" ? "STRONG" : status === "warn" ? "FAIR" : "CRITICAL");
-          const c = colorMap[phase.color];
-          const isLast = i === pipelinePhases.length - 1;
+    <div className={`mt-4 rounded-3xl border p-6 sm:p-9 transition-all duration-300 ${
+      isLight 
+        ? "border-slate-200/90 bg-gradient-to-b from-white via-slate-50/60 to-white text-slate-900 shadow-xl shadow-slate-200/50" 
+        : "border-slate-800/90 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 text-white shadow-2xl shadow-black/60"
+    }`}>
+      {/* Header */}
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b pb-6 mb-10 gap-4 ${
+        isLight ? "border-slate-200/80" : "border-slate-800/80"
+      }`}>
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className={`text-2xl font-black tracking-tight ${isLight ? "text-slate-900" : "text-white"}`}>
+              Creation Pipeline
+            </h3>
+            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest ${
+              isLight ? "bg-cyan-100 text-cyan-800 border border-cyan-300" : "bg-cyan-950 text-cyan-300 border border-cyan-800/50"
+            }`}>
+              <Sparkles size={12} className="text-cyan-500" /> Interactive Map
+            </span>
+          </div>
+          <p className={`text-xs font-semibold mt-1.5 flex items-center gap-2 ${isLight ? "text-slate-500" : "text-slate-400"}`}>
+            <span>Current focus:</span>
+            <span className={`font-black px-2.5 py-0.5 rounded-lg text-xs tracking-wide shadow-xs ${
+              isLight 
+                ? "bg-slate-900 text-white" 
+                : "bg-gradient-to-r from-teal-500 to-cyan-500 text-slate-950 font-black"
+            }`}>{focusPhase.tool}</span>
+          </p>
+        </div>
 
-          function handleClick() {
-            if (phase.status === "coming-soon") { onOpenComingSoon(phase); return; }
-            if (phase.href) window.open(phase.href, "_blank");
-          }
+        <div className={`flex items-center gap-4 text-xs font-extrabold px-4 py-2 rounded-2xl border ${
+          isLight ? "bg-white border-slate-200/80 text-slate-600 shadow-xs" : "bg-slate-900/80 border-slate-800 text-slate-400"
+        }`}>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs shadow-emerald-500/50 animate-pulse"></span> Completed</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-xs shadow-cyan-500/50"></span> Focus</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700"></span> Pending</span>
+        </div>
+      </div>
 
-          return (
-            <div key={phase.id} className="flex items-center flex-1 min-w-0">
-              <div className="flex-1 min-w-0">
-                <button
-                  type="button"
-                  onClick={handleClick}
-                  className={`group w-full rounded-xl border-2 p-4 text-left transition-all hover:shadow-md hover:scale-[1.02] ${c[status]}`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <span className={`text-[11px] font-extrabold uppercase tracking-widest ${isLight ? "text-slate-600" : "text-slate-400"}`}>Phase {phase.phase}</span>
-                    <span className={`text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full ${isDone ? "bg-emerald-600 text-white" : status === "strong" ? "bg-emerald-600 text-white" : status === "warn" ? "bg-amber-600 text-white" : "bg-red-600 text-white"}`}>
-                      {statusLabel}
+      {/* Stepper Roadmap Visual */}
+      <div className="relative mx-auto my-6 max-w-4xl px-2 sm:px-8">
+        {/* Horizontal Track Background Line */}
+        <div className={`absolute top-[28px] left-12 right-12 h-3 rounded-full z-0 p-0.5 shadow-inner ${
+          isLight ? "bg-slate-200/90" : "bg-slate-800/90"
+        }`}>
+          {/* Animated Gradient Fill Bar */}
+          <div 
+            className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 transition-all duration-700 ease-out shadow-md shadow-emerald-500/30" 
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+
+        <div className="relative z-10 flex items-start justify-between">
+          {phaseList.map((phase) => {
+            const isFocus = phase.id === focusPhase.id;
+            const isDone = phase.isDone;
+            const IconComponent = phaseIconMap[phase.id] || FileText;
+
+            let statusTagClass = "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800/80 dark:text-slate-400 dark:border-slate-700/60";
+            let statusText = "PENDING";
+
+            if (isDone) {
+              statusText = "COMPLETED";
+              statusTagClass = "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/50 font-black";
+            } else if (isFocus) {
+              statusText = "IN PROGRESS";
+              statusTagClass = "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow-md shadow-cyan-500/25 animate-pulse border-transparent";
+            } else if (phase.status === "coming-soon") {
+              statusText = "COMING SOON";
+              statusTagClass = "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50 font-black";
+            }
+
+            function handleClick() {
+              if (phase.status === "coming-soon") { onOpenComingSoon(phase); return; }
+              if (phase.href) window.open(phase.href, "_blank");
+            }
+
+            return (
+              <div 
+                key={phase.id} 
+                onClick={handleClick}
+                className="group flex flex-col items-center cursor-pointer transition-all flex-1 min-w-0"
+              >
+                {/* Node Circle Wrapper */}
+                <div className="relative flex items-center justify-center">
+                  <div 
+                    className={`relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+                      isFocus 
+                        ? isLight 
+                          ? "bg-gradient-to-tr from-slate-900 via-cyan-950 to-slate-900 border-cyan-400 text-white shadow-xl shadow-cyan-500/30 ring-4 ring-cyan-500/20 scale-115 hover:scale-120" 
+                          : "bg-gradient-to-tr from-cyan-600 via-teal-500 to-blue-600 border-cyan-300 text-white shadow-xl shadow-cyan-500/40 ring-4 ring-cyan-400/30 scale-115 hover:scale-120"
+                        : isDone
+                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-300 text-white shadow-lg shadow-emerald-500/30 scale-105 hover:scale-110"
+                        : isLight 
+                        ? "bg-white border-slate-300 text-slate-400 group-hover:border-cyan-400 group-hover:text-cyan-600 shadow-sm hover:scale-105" 
+                        : "bg-slate-900 border-slate-800 text-slate-500 group-hover:border-cyan-500 group-hover:text-cyan-400 shadow-sm hover:scale-105"
+                    }`}
+                  >
+                    {isDone ? (
+                      <Check size={26} strokeWidth={3} className="text-white drop-shadow-sm" />
+                    ) : isFocus ? (
+                      <div className="relative flex items-center justify-center">
+                        <span className="absolute -inset-1 rounded-full bg-cyan-400/30 animate-ping" />
+                        <IconComponent size={24} strokeWidth={2.5} className="relative text-white drop-shadow-sm" />
+                      </div>
+                    ) : (
+                      <IconComponent size={20} strokeWidth={2} className="transition-transform group-hover:scale-110" />
+                    )}
+                  </div>
+
+                  {/* Active Focus Glow Badge */}
+                  {isFocus && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-cyan-400 shadow-sm shadow-cyan-400">
+                      <Sparkles size={10} className="text-slate-950 fill-slate-950" />
+                    </span>
+                  )}
+                </div>
+
+                {/* Text Labels */}
+                <div className="mt-3.5 text-center min-w-0 px-1">
+                  <p className={`text-xs font-black uppercase tracking-wider truncate transition-colors ${
+                    isFocus 
+                      ? isLight ? "text-slate-900 font-extrabold" : "text-white font-extrabold"
+                      : isDone 
+                      ? isLight ? "text-emerald-800" : "text-emerald-300"
+                      : isLight ? "text-slate-600" : "text-slate-400"
+                  }`}>
+                    {phase.label}
+                  </p>
+                  
+                  <div className="mt-1.5 flex justify-center">
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider border ${statusTagClass}`}>
+                      {isDone && <CheckCircle size={9} />}
+                      {statusText}
                     </span>
                   </div>
-                  <div className="mt-2">
-                    <p className={`text-sm font-bold ${isLight ? "text-slate-900" : "text-white"}`}>{phase.label}</p>
-                    <p className={`text-2xl font-extrabold tabular-nums mt-1 ${isDone ? "text-emerald-600 dark:text-emerald-400" : isLight ? "text-slate-900" : "text-cyan-400"}`}>{score}%</p>
-                  </div>
-                  {phase.status === "live" && (
-                    <div className={`mt-2 flex items-center gap-1 text-[11px] font-bold ${isDone ? "text-emerald-700 dark:text-emerald-400" : isLight ? "text-cyan-700 hover:text-cyan-800" : "text-cyan-400"}`}>
-                      {isDone ? "View Activity ✓" : "Open"} <ExternalLink size={10} />
-                    </div>
-                  )}
-                  {phase.status === "coming-soon" && (
-                    <div className={`mt-2 text-[11px] font-bold ${isLight ? "text-slate-500" : "text-slate-400"}`}>Coming Soon →</div>
-                  )}
-                </button>
-              </div>
-              {!isLast && (
-                <div className="flex-shrink-0 mx-1">
-                  <ArrowRight size={16} className={isLight ? "text-slate-400" : "text-slate-600"} />
                 </div>
-              )}
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
-      {/* Mobile vertical list */}
-      <div className="lg:hidden grid gap-3">
-        {pipelinePhases.map((phase) => {
-          const rawScore = categoryScores[phase.id] ?? 0;
-          const isDone = Boolean(completedPhases?.[phase.id]) || rawScore >= 90;
-          const score = isDone ? 100 : rawScore;
-          const status = isDone ? "strong" : (score >= 75 ? "strong" : score >= 50 ? "warn" : "weak");
-          const statusLabel = isDone ? "✓ COMPLETED" : (status === "strong" ? "STRONG" : status === "warn" ? "FAIR" : "CRITICAL");
-          const c = colorMap[phase.color];
+
+      {/* Grid of Interactive Phase Cards below Stepper */}
+      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-10 pt-6 border-t ${
+        isLight ? "border-slate-200/80" : "border-slate-800/80"
+      }`}>
+        {phaseList.map((phase) => {
+          const isDone = phase.isDone;
+          const isFocus = phase.id === focusPhase.id;
+          const IconComponent = phaseIconMap[phase.id] || FileText;
+
           function handleClick() {
             if (phase.status === "coming-soon") { onOpenComingSoon(phase); return; }
             if (phase.href) window.open(phase.href, "_blank");
           }
+
           return (
-            <button
+            <div
               key={phase.id}
-              type="button"
               onClick={handleClick}
-              className={`flex items-center gap-4 rounded-xl border-2 p-4 text-left transition-all hover:shadow-md ${c[status]}`}
+              className={`group rounded-2xl border p-4 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
+                isFocus
+                  ? isLight
+                    ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-slate-900 shadow-md ring-2 ring-cyan-500/20"
+                    : "border-cyan-500/70 bg-gradient-to-b from-slate-900 via-cyan-950/40 to-slate-900 text-white shadow-xl ring-2 ring-cyan-500/30"
+                  : isDone
+                  ? isLight
+                    ? "border-emerald-200 bg-emerald-50/30 text-slate-900 shadow-xs hover:border-emerald-300"
+                    : "border-emerald-900/50 bg-emerald-950/20 text-white hover:border-emerald-800"
+                  : isLight
+                  ? "border-slate-200/80 bg-white text-slate-800 hover:border-cyan-300 shadow-xs"
+                  : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700"
+              }`}
             >
-              <div className="flex-1 min-w-0">
-                <p className={`text-xs font-bold uppercase tracking-widest ${isLight ? "text-slate-600" : "text-slate-400"}`}>Phase {phase.phase}</p>
-                <p className={`text-sm font-bold ${isLight ? "text-slate-900" : "text-white"}`}>{phase.label}</p>
+              <div className="flex items-center justify-between mb-3">
+                <span className={`flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider ${
+                  isFocus 
+                    ? isLight ? "text-cyan-700" : "text-cyan-400" 
+                    : isDone 
+                    ? "text-emerald-600" 
+                    : "text-slate-400"
+                }`}>
+                  <IconComponent size={13} /> Phase {phase.phase}
+                </span>
+                <span className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-xs ${
+                  isDone 
+                    ? "bg-emerald-600 text-white" 
+                    : isFocus 
+                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black" 
+                    : isLight ? "bg-slate-100 text-slate-600 border border-slate-200" : "bg-slate-800 text-slate-400 border border-slate-700"
+                }`}>
+                  {isDone ? "✓ Done" : isFocus ? "Focus" : "Pending"}
+                </span>
               </div>
-              <div className="text-right">
-                <p className={`text-2xl font-extrabold tabular-nums ${isLight ? "text-slate-900" : "text-white"}`}>{score}%</p>
-                <p className={`text-[10px] font-bold mt-0.5 ${isDone ? "text-emerald-600" : status === "strong" ? "text-emerald-600" : status === "warn" ? "text-amber-600" : "text-red-600"}`}>
-                  {statusLabel}
-                </p>
+              
+              <h4 className={`text-sm font-black truncate transition-colors ${
+                isFocus ? isLight ? "text-slate-900" : "text-white" : isDone ? isLight ? "text-emerald-900" : "text-emerald-200" : ""
+              }`}>{phase.tool}</h4>
+              
+              <div className="mt-3 flex items-center justify-between text-xs font-extrabold">
+                <span className={isFocus ? isLight ? "text-cyan-700" : "text-cyan-400" : isDone ? "text-emerald-600" : "text-slate-400"}>
+                  {phase.score}% Score
+                </span>
+                <span className={`inline-flex items-center gap-1 text-[11px] font-black transition-transform group-hover:translate-x-0.5 ${
+                  isFocus ? isLight ? "text-slate-900" : "text-cyan-300" : isDone ? "text-emerald-600" : "text-slate-400"
+                }`}>
+                  {phase.status === "coming-soon" ? "Soon" : isDone ? "View" : "Open"} <ExternalLink size={11} />
+                </span>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
@@ -768,7 +887,40 @@ export default function GpsResults({
         </div>
       </div>
 
-      {/* AI Diagnosis Insights Panel */}
+      {/* 1. Your Career Pipeline (FIRST after header) */}
+      <div className="mb-8">
+        <div className="mb-4">
+          <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Your Career Pipeline</h2>
+          <p className={`text-sm mt-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>5 phases, scored. Click any phase to open the tool.</p>
+        </div>
+        <PipelinePhases categoryScores={categoryScores} archetype={archetype} completedPhases={aiDiagnosis?.completedPhases} onOpenComingSoon={setComingSoonPhase} isLight={isLight} />
+      </div>
+
+      {/* 2. Overall Score + Archetype Insight Box */}
+      <div className={`mb-8 grid gap-6 lg:grid-cols-[auto_1fr] items-center rounded-2xl border p-7 sm:p-9 ${isLight ? "border-slate-200 bg-white shadow-md text-slate-900" : "border-slate-700/80 bg-slate-900 text-white"}`}>
+        <div className="flex flex-col items-center gap-3 text-center">
+          <ScoreRing score={overallScore} readinessLevel={readinessLevel} isLight={isLight} />
+          <div>
+            <p className={`text-sm font-bold ${isLight ? "text-slate-600" : "text-slate-400"}`}>Overall Readiness</p>
+            <p className="text-lg font-extrabold mt-0.5 bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+              {readinessLevel.label}
+            </p>
+          </div>
+        </div>
+        <div>
+          <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${isLight ? "text-cyan-700" : "text-cyan-400"}`}>
+            {archetype?.label} · Your GPS Insight
+          </p>
+          <p className={`text-base leading-relaxed ${isLight ? "text-slate-700" : "text-slate-300"}`}>
+            {archetype?.actionIntro || readinessLevel.summary}
+          </p>
+          <div className={`mt-4 p-3.5 rounded-xl text-sm leading-relaxed ${isLight ? "bg-slate-50 border border-slate-200 text-slate-700" : "bg-slate-800 text-slate-400"}`}>
+            {readinessLevel.summary}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. AI Diagnosis Insights Panel */}
       {aiDiagnosis && (
         <div className={`mb-8 rounded-2xl border p-7 sm:p-8 shadow-xl transition-all ${isLight ? "border-cyan-300 bg-white text-slate-900" : "border-cyan-500/30 bg-slate-900 text-white"}`}>
           <div className="flex items-center justify-between gap-3 mb-3">
@@ -809,45 +961,12 @@ export default function GpsResults({
         </div>
       )}
 
-      {/* Overall Score + Archetype intro */}
-      <div className={`mb-8 grid gap-6 lg:grid-cols-[auto_1fr] items-center rounded-2xl border p-7 sm:p-9 ${isLight ? "border-slate-200 bg-white shadow-md text-slate-900" : "border-slate-700/80 bg-slate-900 text-white"}`}>
-        <div className="flex flex-col items-center gap-3 text-center">
-          <ScoreRing score={overallScore} readinessLevel={readinessLevel} isLight={isLight} />
-          <div>
-            <p className={`text-sm font-bold ${isLight ? "text-slate-600" : "text-slate-400"}`}>Overall Readiness</p>
-            <p className="text-lg font-extrabold mt-0.5 bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
-              {readinessLevel.label}
-            </p>
-          </div>
-        </div>
-        <div>
-          <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${isLight ? "text-cyan-700" : "text-cyan-400"}`}>
-            {archetype?.label} · Your GPS Insight
-          </p>
-          <p className={`text-base leading-relaxed ${isLight ? "text-slate-700" : "text-slate-300"}`}>
-            {archetype?.actionIntro || readinessLevel.summary}
-          </p>
-          <div className={`mt-4 p-3.5 rounded-xl text-sm leading-relaxed ${isLight ? "bg-slate-50 border border-slate-200 text-slate-700" : "bg-slate-800 text-slate-400"}`}>
-            {readinessLevel.summary}
-          </div>
-        </div>
-      </div>
-
-      {/* Section 1: Pipeline Phases */}
-      <div className="mb-8">
-        <div className="mb-4">
-          <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Your Career Pipeline</h2>
-          <p className={`text-sm mt-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>5 phases, scored. Click any phase to open the tool.</p>
-        </div>
-        <PipelinePhases categoryScores={categoryScores} archetype={archetype} completedPhases={aiDiagnosis?.completedPhases} onOpenComingSoon={setComingSoonPhase} isLight={isLight} />
-      </div>
-
-      {/* Section 2: AI Day-Wise Execution Strategy */}
+      {/* 4. AI Day-Wise Execution Strategy (7-Day Sprint) */}
       <div className="mb-8">
         <SprintSection sprintPlan={aiDiagnosis?.sprintPlan} completedPhases={aiDiagnosis?.completedPhases} onOpenComingSoon={setComingSoonPhase} isLight={isLight} />
       </div>
 
-      {/* Section 3: Personalized Action Plan */}
+      {/* 5. Personalized 3-Step Action Plan */}
       <div className="mb-8">
         <div className="mb-4">
           <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Your 3-Step Action Plan</h2>
@@ -858,7 +977,7 @@ export default function GpsResults({
         <RoadmapTimeline archetype={archetype} categoryScores={categoryScores} onOpenComingSoon={setComingSoonPhase} aiDiagnosis={aiDiagnosis} isLight={isLight} />
       </div>
 
-      {/* Section 4: Score Breakdown */}
+      {/* 6. Score Breakdown */}
       <div className="mb-8">
         <div className="mb-4">
           <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Full Score Breakdown</h2>

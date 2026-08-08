@@ -52,15 +52,29 @@ function getNextThemeChangeTime(date) {
   return nextChange;
 }
 
+function getInitialTheme() {
+  try {
+    const now = new Date();
+    const currentWindowKey = getThemeWindowKey(now);
+    const savedOverride = window.localStorage.getItem(HERO_THEME_OVERRIDE_KEY);
+    if (savedOverride) {
+      const parsedOverride = JSON.parse(savedOverride);
+      if (parsedOverride?.theme && parsedOverride?.windowKey === currentWindowKey) {
+        return parsedOverride.theme;
+      }
+    }
+  } catch (e) {}
+  return "light";
+}
+
 export default function useHeroTheme() {
-  const [heroTheme, setHeroTheme] = useState("dark");
+  const [heroTheme, setHeroTheme] = useState(getInitialTheme);
   const [themeWindowKey, setThemeWindowKey] = useState(() =>
     getThemeWindowKey(new Date())
   );
 
   useEffect(() => {
     const now = new Date();
-    const autoTheme = getAutoTheme(now);
     const currentWindowKey = getThemeWindowKey(now);
     const savedOverride = window.localStorage.getItem(HERO_THEME_OVERRIDE_KEY);
 
@@ -83,7 +97,7 @@ export default function useHeroTheme() {
     }
 
     window.localStorage.removeItem(HERO_THEME_OVERRIDE_KEY);
-    setHeroTheme(autoTheme);
+    setHeroTheme("light");
   }, []);
 
   useEffect(() => {

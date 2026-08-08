@@ -135,6 +135,15 @@ function getLocalCache() {
   }
 }
 
+function getGuestSessionCache() {
+  try {
+    const raw = sessionStorage.getItem("cs_guest_active_session_report");
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) {
+    return null;
+  }
+}
+
 function setLocalCache(payload) {
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(payload));
@@ -150,45 +159,59 @@ export default function CareerGpsPage() {
   const { getToken } = useAuth();
   const isLight = heroTheme === "light";
 
-  // Synchronously initialize state from localStorage cache if available
+  // Synchronous state initialization:
+  // For logged-in users, instantly restore from localCache so their saved report displays with 0 delay.
+  // For guests, start fresh on "intro" unless refreshing an active generated report.
   const [step, setStep] = useState(() => {
-    const c = getLocalCache();
-    if (c && c.answers && Object.keys(c.answers).length > 0) return "results";
+    const localC = getLocalCache();
+    if (localC && localC.answers && Object.keys(localC.answers).length > 0) return "results";
+    const guestCache = getGuestSessionCache();
+    if (guestCache && guestCache.answers && Object.keys(guestCache.answers).length > 0) return "results";
     return "intro";
   });
 
   const [profile, setProfile] = useState(() => {
-    const c = getLocalCache();
-    if (c?.profile) return { ...initialProfile, ...c.profile };
+    const localC = getLocalCache();
+    if (localC?.profile) return { ...initialProfile, ...localC.profile };
+    const guestCache = getGuestSessionCache();
+    if (guestCache?.profile) return { ...initialProfile, ...guestCache.profile };
     return initialProfile;
   });
 
   const [answers, setAnswers] = useState(() => {
-    const c = getLocalCache();
-    return c?.answers || {};
+    const localC = getLocalCache();
+    if (localC?.answers) return localC.answers;
+    const guestCache = getGuestSessionCache();
+    return guestCache?.answers || {};
   });
 
   const [archetypeAnswers, setArchetypeAnswers] = useState(() => {
-    const c = getLocalCache();
-    return c?.archetypeAnswers || {};
+    const localC = getLocalCache();
+    if (localC?.archetypeAnswers) return localC.archetypeAnswers;
+    const guestCache = getGuestSessionCache();
+    return guestCache?.archetypeAnswers || {};
   });
 
   const [archetype, setArchetype] = useState(() => {
-    const c = getLocalCache();
-    if (c?.archetype) return careerArchetypes[c.archetype] || resolveArchetype(c.archetypeAnswers || {});
+    const localC = getLocalCache();
+    if (localC?.archetype) return careerArchetypes[localC.archetype] || resolveArchetype(localC.archetypeAnswers || {});
+    const guestCache = getGuestSessionCache();
+    if (guestCache?.archetype) return careerArchetypes[guestCache.archetype] || resolveArchetype(guestCache.archetypeAnswers || {});
     return null;
   });
 
   const [aiDiagnosis, setAiDiagnosis] = useState(() => {
-    const c = getLocalCache();
-    return c?.aiDiagnosis || null;
+    const localC = getLocalCache();
+    if (localC?.aiDiagnosis) return localC.aiDiagnosis;
+    const guestCache = getGuestSessionCache();
+    return guestCache?.aiDiagnosis || null;
   });
 
   const [questionIndex, setQuestionIndex] = useState(0);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(() => {
-    const c = getLocalCache();
-    return !(c && c.answers && Object.keys(c.answers).length > 0);
+    const localC = getLocalCache();
+    return !(localC && localC.answers && Object.keys(localC.answers).length > 0);
   });
 
   const currentQuestion = gpsQuestions[questionIndex];
@@ -221,6 +244,7 @@ export default function CareerGpsPage() {
             setStep("results");
 
             let currentAi = data.aiDiagnosis;
+            const reportTakenAt = data.takenAt || data.createdAt;
             if (currentAi && currentAi.sprintPlan) {
               setAiDiagnosis(currentAi);
               setLocalCache({
@@ -230,8 +254,11 @@ export default function CareerGpsPage() {
                 archetype: data.archetype || resolved?.id,
                 aiDiagnosis: currentAi
               });
+              if (reportTakenAt) {
+                syncLiveActivity(reportTakenAt);
+              }
             } else {
-              fetchAiDiagnosis(computed).then((aiData) => {
+              fetchAiDiagnosis(computed, reportTakenAt).then((aiData) => {
                 if (aiData) {
                   setLocalCache({
                     profile: restoredProfile,
@@ -271,6 +298,15 @@ export default function CareerGpsPage() {
     if (isLoaded && user) {
       loadLatestSavedReport();
     } else if (isLoaded && !user) {
+      const guestC = getGuestSessionCache();
+      if (!guestC) {
+        setStep("intro");
+        setProfile(initialProfile);
+        setAnswers({});
+        setArchetypeAnswers({});
+        setArchetype(null);
+        setAiDiagnosis(null);
+      }
       setIsRestoring(false);
     }
   }, [isLoaded, user, getToken]);
@@ -326,22 +362,25 @@ export default function CareerGpsPage() {
     setAnswers((a) => ({ ...a, [currentQuestion.id]: score }));
   }
 
-  async function fetchAiDiagnosis(computedResults) {
+  async function fetchAiDiagnosis(computedResults, reportTakenAt = null) {
     setIsAiLoading(true);
     try {
-      const token = await getToken();
       const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
-      const response = await fetch(`${apiBase}/careersense/assessment/ai-diagnose`, {
+      const endpoint = user ? `${apiBase}/careersense/assessment/ai-diagnose` : `${apiBase}/careersense/assessment/ai-diagnose-guest`;
+      const headers = { "Content-Type": "application/json" };
+      if (user) {
+        const token = await getToken();
+        headers.Authorization = `Bearer ${token}`;
+      }
+      const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
+        headers,
         body: JSON.stringify({
           profile,
           archetype,
           categoryScores: computedResults.categoryScores,
-          answers
+          answers,
+          reportTakenAt: reportTakenAt || new Date().toISOString()
         })
       });
       if (response.ok) {
@@ -364,14 +403,36 @@ export default function CareerGpsPage() {
     return null;
   }
 
+  async function syncLiveActivity(reportTakenAt) {
+    if (!user) return;
+    try {
+      const token = await getToken();
+      const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
+      const res = await fetch(`${apiBase}/careersense/assessment/sync-live-activity`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ reportTakenAt })
+      });
+      if (res.ok) {
+        const { completedPhases } = await res.json();
+        if (completedPhases) {
+          setAiDiagnosis(prev => prev ? { ...prev, completedPhases } : prev);
+        }
+      }
+    } catch (err) {
+      console.error("Error syncing live activity:", err);
+    }
+  }
+
   function goNext() {
     if (answers[currentQuestion.id] === undefined) return;
     if (questionIndex === gpsQuestions.length - 1) {
       const computed = calculateGpsResults(answers);
+      const reportTakenAt = new Date().toISOString();
       setStep("results");
       window.scrollTo({ top: 0, behavior: "smooth" });
-      fetchAiDiagnosis(computed).then((aiData) => {
-        saveResults(aiData);
+      fetchAiDiagnosis(computed, reportTakenAt).then((aiData) => {
+        saveResults(aiData, reportTakenAt);
       });
       return;
     }
@@ -382,15 +443,41 @@ export default function CareerGpsPage() {
     setQuestionIndex((i) => Math.max(0, i - 1));
   }
 
-  async function saveResults(aiData = null) {
+  async function saveResults(aiData = null, reportTakenAt = null) {
     const finalDiagnosis = aiData || aiDiagnosis;
-    setLocalCache({
-      profile,
-      answers,
-      archetypeAnswers,
-      archetype: archetype?.id,
-      aiDiagnosis: finalDiagnosis,
-    });
+    const takenAt = reportTakenAt || new Date().toISOString();
+
+    if (user) {
+      setLocalCache({
+        profile,
+        answers,
+        archetypeAnswers,
+        archetype: archetype?.id,
+        aiDiagnosis: finalDiagnosis,
+        takenAt,
+      });
+    } else {
+      try {
+        sessionStorage.setItem("cs_guest_active_session_report", JSON.stringify({
+          profile,
+          answers,
+          archetypeAnswers,
+          archetype: archetype?.id,
+          aiDiagnosis: finalDiagnosis,
+          takenAt
+        }));
+        localStorage.setItem("cs_guest_gps_report", JSON.stringify({
+          profile,
+          answers,
+          archetypeAnswers,
+          archetype: archetype?.id,
+          aiDiagnosis: finalDiagnosis,
+          takenAt
+        }));
+      } catch (e) {}
+      return;
+    }
+
     try {
       const token = await getToken();
       const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
@@ -409,6 +496,7 @@ export default function CareerGpsPage() {
             categoryScores: computed.categoryScores,
             readinessLevel: { label: computed.readinessLevel.label, summary: computed.readinessLevel.summary },
           },
+          takenAt,
           source: "career-gps",
         }),
       });
@@ -417,11 +505,52 @@ export default function CareerGpsPage() {
     }
   }
 
+  // Auto-sync guest report to account when user logs in / signs up
+  useEffect(() => {
+    const claimGuestReportIfAny = async () => {
+      if (!user) return;
+      try {
+        const guestDataRaw = localStorage.getItem("cs_guest_gps_report");
+        if (guestDataRaw) {
+          const guestData = JSON.parse(guestDataRaw);
+          const token = await getToken();
+          const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
+          const computed = calculateGpsResults(guestData.answers || {});
+          await fetch(`${apiBase}/careersense/assessment/save`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({
+              profile: guestData.profile || profile,
+              answers: guestData.answers || {},
+              archetypeAnswers: guestData.archetypeAnswers || {},
+              archetype: guestData.archetype,
+              aiDiagnosis: guestData.aiDiagnosis,
+              results: {
+                overallScore: computed.overallScore,
+                categoryScores: computed.categoryScores,
+                readinessLevel: { label: computed.readinessLevel.label, summary: computed.readinessLevel.summary },
+              },
+              takenAt: guestData.takenAt || new Date().toISOString(),
+              source: "guest-claim",
+            })
+          });
+          localStorage.removeItem("cs_guest_gps_report");
+        }
+      } catch (err) {
+        console.error("Guest report auto-claim error:", err);
+      }
+    };
+
+    claimGuestReportIfAny();
+  }, [isLoaded, user, getToken]);
+
   function restart() {
     try {
-      localStorage.removeItem(CACHE_KEY);
+      if (user) localStorage.removeItem(CACHE_KEY);
+      sessionStorage.removeItem("cs_guest_active_session_report");
     } catch (e) {}
     setStep("intro");
+    setProfile(initialProfile);
     setAnswers({});
     setArchetypeAnswers({});
     setArchetype(null);
@@ -482,7 +611,11 @@ export default function CareerGpsPage() {
                 readinessLevel={getReadinessLevel(effectiveOverallScore)}
                 archetype={archetype}
                 aiDiagnosis={aiDiagnosis}
-                onSyncProgress={() => fetchAiDiagnosis({ categoryScores: results.categoryScores })}
+                onSyncProgress={() => {
+                  const c = getLocalCache();
+                  const reportTakenAt = c?.takenAt || new Date().toISOString();
+                  return syncLiveActivity(reportTakenAt);
+                }}
                 onRestart={restart}
               />
             )}

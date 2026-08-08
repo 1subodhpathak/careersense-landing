@@ -5,6 +5,7 @@ import DashboardPage from "./pages/DashboardPage";
 import ServicePlaceholderPage from "./pages/ServicePlaceholderPage";
 import CareerAssessment from "./pages/CareerAssessment";
 import CareerGpsPage from "./pages/CareerGpsPage";
+import PublicProfilePage from "./pages/PublicProfilePage";
 
 function ProtectedRoute({ children }) {
   return (
@@ -22,6 +23,8 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/u/:publicId" element={<PublicProfilePage />} />
+        <Route path="/public-profile/:publicId" element={<PublicProfilePage />} />
         <Route
           path="/career-assessment"
           element={
@@ -30,14 +33,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/career-gps"
-          element={
-            <ProtectedRoute>
-              <CareerGpsPage />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/career-gps" element={<CareerGpsPage />} />
         <Route
           path="/dashboard"
           element={
