@@ -228,7 +228,7 @@ export const footerColumns = [
       { label: "LinkedIn Optimizer", href: "/linkedin-optimizer" },
       { label: "AI Resume Builder", href: "/resume-builder" },
       { label: "ATS Score Checker", href: "https://ats.careersenseai.com/", external: true },
-      { label: "Cover Letter Builder", href: "/cover-letter-builder" },
+      { label: "Cover Letter Builder", href: "https://coverletter.careersenseai.com/", external: true },
     ],
   },
   {
@@ -237,7 +237,7 @@ export const footerColumns = [
       { label: "Partner Program", href: "/partner-program" },
       { label: "E-Learning & eBooks", href: "/dashboard" },
       { label: "Interview Simulator", href: "/interview-simulator" },
-      { label: "Skill Certification", href: "/skill-certification" },
+      { label: "Skill Certification", href: "https://certifi.careersenseai.com/", external: true },
       { label: "CareerSense for Colleges", href: "/#colleges" },
     ],
   },

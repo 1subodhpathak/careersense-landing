@@ -17,9 +17,9 @@ const routeItems = [
 const careerTools = [
   { href: "/resume-builder", label: "AI Resume Builder", description: "Create an ATS-ready resume", icon: FilePenLine, tone: "text-blue-700 bg-blue-100" },
   { href: "https://ats.careersenseai.com/", label: "ATS Score Checker", description: "Review keywords and job fit", icon: FileCheck2, tone: "text-emerald-700 bg-emerald-100", external: true },
-  { href: "/cover-letter-builder", label: "Cover Letter Builder", description: "Write a tailored introduction", icon: ScrollText, tone: "text-violet-700 bg-violet-100" },
+  { href: "https://coverletter.careersenseai.com/", label: "Cover Letter Builder", description: "Write a tailored introduction", icon: ScrollText, tone: "text-violet-700 bg-violet-100", external: true },
   { href: "/interview-simulator", label: "Interview Simulator", description: "Practise role-specific interviews", icon: MessagesSquare, tone: "text-amber-700 bg-amber-100" },
-  { href: "/skill-certification", label: "Skill Certification", description: "Prove job-ready capabilities", icon: Award, tone: "text-cyan-700 bg-cyan-100" },
+  { href: "https://certifi.careersenseai.com/", label: "Skill Certification", description: "Prove job-ready capabilities", icon: Award, tone: "text-cyan-700 bg-cyan-100", external: true },
 ];
 
 export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
