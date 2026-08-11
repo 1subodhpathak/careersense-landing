@@ -47,6 +47,9 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/clerk-react";
 import CSLogo from "../Assets/CSlogo.png";
 import { pipelinePhases } from "../data/careerGpsData";
+import IdCardStudio from "../components/dashboard/IdCardStudio";
+import OfferLetterStudio from "../components/dashboard/OfferLetterStudio";
+import ELearningLibrary from "../components/dashboard/ELearningLibrary";
 // ── Timeline Section Component for Profile (Education, Certifications, Awards) ─────
 function TimelineSection({
   title,
@@ -172,7 +175,9 @@ function TimelineSection({
 export default function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
-  const activeTab = tabFromUrl || "Dashboard";
+  const activeTab = ["e Learning", "eLearning", "E-Learning"].includes(tabFromUrl)
+    ? "E-Learning"
+    : tabFromUrl || "Dashboard";
 
   const handleTabChange = (label) => {
     setSearchParams({ tab: label });
@@ -196,6 +201,7 @@ export default function DashboardPage() {
     email: "",
     phone: "",
     location: "",
+    batch: "",
     bio: "",
     avatar: "",
     showPhoto: false,
@@ -258,6 +264,7 @@ export default function DashboardPage() {
         email: p.email || user?.primaryEmailAddress?.emailAddress || "",
         phone: p.phone || "",
         location: p.location || "",
+        batch: p.batch || (user?.createdAt ? new Date(user.createdAt).getFullYear().toString() : new Date().getFullYear().toString()),
         bio: p.bio || "",
         avatar: p.avatar || user?.imageUrl || "",
         showPhoto: p.showPhoto || false,
@@ -488,6 +495,9 @@ export default function DashboardPage() {
     { icon: ShieldCheck, label: "Certificates" },
     { icon: Users, label: "Community" },
     { icon: UserRound, label: "My Profile" },
+    { icon: CreditCard, label: "ID Card Studio" },
+    { icon: Briefcase, label: "Offer Letter Workspace" },
+    { icon: GraduationCap, label: "E-Learning" },
     { icon: CreditCard, label: "Usage & Billing" },
   ];
 
@@ -800,40 +810,6 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <>
-                  {/* AI Executive Summary Card */}
-                  {aiDiag && (
-                    <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950 border border-cyan-500/30 rounded-2xl p-6 text-white shadow-md">
-                      <div className="flex items-center justify-between gap-3 mb-3">
-                        <div className="flex items-center gap-2">
-                          <Sparkles size={18} className="text-cyan-400" />
-                          <h3 className="text-base font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">AI Executive Career Diagnosis</h3>
-                        </div>
-                        <Link to="/career-gps" className="text-xs font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 border border-cyan-500/40 px-3 py-1 rounded-lg">
-                          Open Interactive Map ↗
-                        </Link>
-                      </div>
-                      <p className="text-sm text-slate-200 leading-relaxed">{aiDiag.executiveSummary}</p>
-
-                      {aiDiag.targetRoleBenchmark && (
-                        <div className="mt-4 rounded-xl border border-slate-700/60 bg-slate-800/50 p-4">
-                          <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-1">Target Role Benchmark · {gpsTargetRole}</p>
-                          <p className="text-xs leading-relaxed text-slate-300">{aiDiag.targetRoleBenchmark}</p>
-                        </div>
-                      )}
-
-                      {aiDiag.roleGaps && Array.isArray(aiDiag.roleGaps) && aiDiag.roleGaps.length > 0 && (
-                        <div className="mt-4 flex flex-wrap items-center gap-2">
-                          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mr-1">AI Detected Key Gaps:</span>
-                          {aiDiag.roleGaps.map((gap, i) => (
-                            <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-red-950/40 border border-red-800/40 px-3 py-1 text-xs text-red-300 font-medium">
-                              <AlertTriangle size={12} /> {gap}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
                   {/* Interactive Creation Pipeline Stepper Map */}
                   {(() => {
                     const phaseList = pipelinePhases.map((phase) => {
@@ -981,6 +957,37 @@ export default function DashboardPage() {
                       </div>
                     );
                   })()}
+
+                  {/* AI Executive Summary Card */}
+                  {aiDiag && (
+                    <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-950 border border-cyan-500/30 rounded-2xl p-6 text-white shadow-md">
+                      <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="flex items-center gap-2">
+                          <Sparkles size={18} className="text-cyan-400" />
+                          <h3 className="text-base font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">AI Executive Career Diagnosis</h3>
+                        </div>
+                      </div>
+                      <p className="text-sm text-slate-200 leading-relaxed">{aiDiag.executiveSummary}</p>
+
+                      {aiDiag.targetRoleBenchmark && (
+                        <div className="mt-4 rounded-xl border border-slate-700/60 bg-slate-800/50 p-4">
+                          <p className="text-xs font-bold uppercase tracking-widest text-cyan-400 mb-1">Target Role Benchmark · {gpsTargetRole}</p>
+                          <p className="text-xs leading-relaxed text-slate-300">{aiDiag.targetRoleBenchmark}</p>
+                        </div>
+                      )}
+
+                      {aiDiag.roleGaps && Array.isArray(aiDiag.roleGaps) && aiDiag.roleGaps.length > 0 && (
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 mr-1">AI Detected Key Gaps:</span>
+                          {aiDiag.roleGaps.map((gap, i) => (
+                            <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-red-950/40 border border-red-800/40 px-3 py-1 text-xs text-red-300 font-medium">
+                              <AlertTriangle size={12} /> {gap}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -1472,6 +1479,30 @@ export default function DashboardPage() {
         };
       }
 
+      case "ID Card Studio":
+        return {
+          title: "Partner ID Card Studio",
+          subtitle: "Generate and download your official CareerSense Partner ID from your master profile.",
+          stats: [],
+          renderExtra: () => <IdCardStudio profile={profileForm} user={user} />
+        };
+
+      case "Offer Letter Workspace":
+        return {
+          title: "Offer Letter Workspace",
+          subtitle: "Review, personalize, download and share your CareerSense Offer letter.",
+          stats: [],
+          renderExtra: () => <OfferLetterStudio profile={profileForm} user={user} />
+        };
+
+      case "E-Learning":
+        return {
+          title: "CareerSense eLearning",
+          subtitle: "Structured learning platforms and eBooks for continuous career development.",
+          stats: [],
+          renderExtra: () => <ELearningLibrary />
+        };
+
       case "My Profile":
         const completeness = calculateProfileCompleteness();
         const PROFILE_STATUS_OPTIONS = [
@@ -1487,13 +1518,42 @@ export default function DashboardPage() {
           'Career Switch'
         ];
 
-        const initialMaster = dashboardData?.masterProfile || {};
+        const initialMaster = {
+          fullName: dashboardData?.masterProfile?.fullName || user?.fullName || "",
+          email: dashboardData?.masterProfile?.email || user?.primaryEmailAddress?.emailAddress || "",
+          phone: dashboardData?.masterProfile?.phone || "",
+          location: dashboardData?.masterProfile?.location || "",
+          batch: dashboardData?.masterProfile?.batch || (user?.createdAt ? new Date(user.createdAt).getFullYear().toString() : new Date().getFullYear().toString()),
+          bio: dashboardData?.masterProfile?.bio || "",
+          avatar: dashboardData?.masterProfile?.avatar || user?.imageUrl || "",
+          showPhoto: dashboardData?.masterProfile?.showPhoto || false,
+          bannerImage: dashboardData?.masterProfile?.bannerImage || "",
+          currentJobTitle: dashboardData?.masterProfile?.currentJobTitle || "",
+          currentCompany: dashboardData?.masterProfile?.currentCompany || "",
+          targetJobTitle: dashboardData?.masterProfile?.targetJobTitle || "",
+          profileStatus: dashboardData?.masterProfile?.profileStatus || "Open to Work",
+          experienceYears: dashboardData?.masterProfile?.experienceYears || "0",
+          experienceMonths: dashboardData?.masterProfile?.experienceMonths || "0",
+          geographicalAlignment: dashboardData?.masterProfile?.geographicalAlignment || "",
+          linkedinPortfolio: dashboardData?.masterProfile?.linkedinPortfolio || "",
+          githubUrl: dashboardData?.masterProfile?.githubUrl || "",
+          websiteUrl: dashboardData?.masterProfile?.websiteUrl || "",
+          skills: dashboardData?.masterProfile?.skills || ["Project Management", "Data Analysis", "Strategic Planning"],
+          education: dashboardData?.masterProfile?.education || [],
+          certifications: dashboardData?.masterProfile?.certifications || [],
+          awards: dashboardData?.masterProfile?.awards || []
+        };
+
         const isDirty = (
           (profileForm.fullName || "") !== (initialMaster.fullName || "") ||
           (profileForm.email || "") !== (initialMaster.email || "") ||
           (profileForm.phone || "") !== (initialMaster.phone || "") ||
           (profileForm.location || "") !== (initialMaster.location || "") ||
+          (profileForm.batch || "") !== (initialMaster.batch || "") ||
           (profileForm.bio || "") !== (initialMaster.bio || "") ||
+          (profileForm.avatar || "") !== (initialMaster.avatar || "") ||
+          (profileForm.showPhoto || false) !== (initialMaster.showPhoto || false) ||
+          (profileForm.bannerImage || "") !== (initialMaster.bannerImage || "") ||
           (profileForm.currentJobTitle || "") !== (initialMaster.currentJobTitle || "") ||
           (profileForm.currentCompany || "") !== (initialMaster.currentCompany || "") ||
           (profileForm.targetJobTitle || "") !== (initialMaster.targetJobTitle || "") ||
@@ -1670,15 +1730,48 @@ export default function DashboardPage() {
                     </div>
 
                     {/* View Public Profile Button */}
-                    <a
-                      href={`/u/${user?.id || 'candidate'}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 cursor-pointer"
-                    >
-                      <ExternalLink className="h-4 w-4 text-slate-500" />
-                      <span>View Public Profile</span>
-                    </a>
+                    {(() => {
+                      const hasSavedProfile = Boolean(dashboardData?.masterProfile && (dashboardData.masterProfile._id || dashboardData.masterProfile.createdAt));
+                      const hasProfileDetails = Boolean(
+                        (profileForm.location && profileForm.location.trim()) ||
+                        (profileForm.phone && profileForm.phone.trim()) ||
+                        (profileForm.bio && profileForm.bio.trim()) ||
+                        (profileForm.currentJobTitle && profileForm.currentJobTitle.trim()) ||
+                        (profileForm.currentCompany && profileForm.currentCompany.trim()) ||
+                        (profileForm.geographicalAlignment && profileForm.geographicalAlignment.trim()) ||
+                        (profileForm.linkedinPortfolio && profileForm.linkedinPortfolio.trim()) ||
+                        (profileForm.githubUrl && profileForm.githubUrl.trim()) ||
+                        (profileForm.websiteUrl && profileForm.websiteUrl.trim()) ||
+                        (profileForm.education && profileForm.education.length > 0) ||
+                        (profileForm.certifications && profileForm.certifications.length > 0) ||
+                        (profileForm.awards && profileForm.awards.length > 0) ||
+                        (initialMaster.location || initialMaster.phone || initialMaster.bio || initialMaster.currentJobTitle || initialMaster.currentCompany)
+                      );
+                      const isPublicProfileReady = hasSavedProfile && hasProfileDetails;
+
+                      return isPublicProfileReady ? (
+                        <a
+                          href={`/u/${user?.id || 'candidate'}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95 cursor-pointer"
+                        >
+                          <ExternalLink className="h-4 w-4 text-slate-500" />
+                          <span>View Public Profile</span>
+                        </a>
+                      ) : (
+                        <div title="Add at least one field to view your public profile" className="inline-block">
+                          <button
+                            type="button"
+                            disabled
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-slate-100 px-5 py-3 text-sm font-bold text-slate-400 shadow-2xs opacity-60 cursor-not-allowed"
+                          >
+                            <ExternalLink className="h-4 w-4 text-slate-400" />
+                            <span>View Public Profile</span>
+                          </button>
+                        </div>
+                      );
+                    })()}
 
                     {/* Save Profile Button */}
                     <button
@@ -2281,35 +2374,43 @@ export default function DashboardPage() {
                     {activeTab === "Career GPS" && (() => {
                       const completeness = calculateProfileCompleteness();
                       return (
-                        <button
-                          type="button"
-                          onClick={() => handleTabChange("My Profile")}
-                          className="group relative flex items-center gap-3 rounded-xl border border-teal-200/80 bg-gradient-to-r from-teal-50/90 via-cyan-50/90 to-blue-50/90 px-3.5 py-1.5 shadow-2xs transition-all hover:scale-[1.02] hover:border-teal-300 hover:shadow-md active:scale-95 cursor-pointer shrink-0"
-                        >
-                          <span className="relative flex h-2.5 w-2.5 shrink-0">
-                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75"></span>
-                            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-500"></span>
-                          </span>
+                        <div className="flex items-center gap-2.5 shrink-0">
+                          <Link
+                            to="/career-gps"
+                            className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95"
+                          >
+                            <Sparkles size={13} /> Open Interactive Map ↗
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => handleTabChange("My Profile")}
+                            className="group relative flex items-center gap-3 rounded-xl border border-teal-200/80 bg-gradient-to-r from-teal-50/90 via-cyan-50/90 to-blue-50/90 px-3.5 py-1.5 shadow-2xs transition-all hover:scale-[1.02] hover:border-teal-300 hover:shadow-md active:scale-95 cursor-pointer shrink-0"
+                          >
+                            <span className="relative flex h-2.5 w-2.5 shrink-0">
+                              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75"></span>
+                              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-teal-500"></span>
+                            </span>
 
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex flex-col text-left">
-                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
-                                <span>Profile Completeness</span>
-                                <span className="font-extrabold text-teal-600 font-mono">{completeness}%</span>
+                            <div className="flex items-center gap-2.5">
+                              <div className="flex flex-col text-left">
+                                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
+                                  <span>Profile Completeness</span>
+                                  <span className="font-extrabold text-teal-600 font-mono">{completeness}%</span>
+                                </div>
+                                <p className="text-[10px] font-semibold text-slate-500 group-hover:text-teal-700 transition-colors">
+                                  {completeness < 100 ? "Please complete your profile →" : "Profile Complete ✓"}
+                                </p>
                               </div>
-                              <p className="text-[10px] font-semibold text-slate-500 group-hover:text-teal-700 transition-colors">
-                                {completeness < 100 ? "Please complete your profile →" : "Profile Complete ✓"}
-                              </p>
-                            </div>
 
-                            <div className="h-2 w-16 overflow-hidden rounded-full bg-slate-200/80 p-0.5 shrink-0">
-                              <div
-                                className="h-full rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all duration-500"
-                                style={{ width: `${completeness}%` }}
-                              />
+                              <div className="h-2 w-16 overflow-hidden rounded-full bg-slate-200/80 p-0.5 shrink-0">
+                                <div
+                                  className="h-full rounded-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all duration-500"
+                                  style={{ width: `${completeness}%` }}
+                                />
+                              </div>
                             </div>
-                          </div>
-                        </button>
+                          </button>
+                        </div>
                       );
                     })()}
                     {activeTab === "Certificates" && (

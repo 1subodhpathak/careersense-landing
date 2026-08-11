@@ -159,27 +159,43 @@ export const audiences = [
 export const faqs = [
   {
     question: "What is CareerSense?",
-    answer: "CareerSense is an AI-powered career readiness platform that helps users build resumes, generate cover letters, check ATS scores, practice interviews, and earn skill certifications.",
+    answer: "CareerSense is an AI-powered career-readiness platform that brings together career diagnostics, resume and ATS tools, LinkedIn optimization, interview preparation, structured learning, eBooks, certifications, and professional-development programs.",
   },
   {
     question: "Who can use CareerSense?",
-    answer: "Students, freshers, job seekers, working professionals, career switchers, colleges, and training institutes can use CareerSense.",
+    answer: "CareerSense is designed for students, freshers, active job seekers, career switchers, working professionals, colleges, and training institutes.",
   },
   {
-    question: "Can CareerSense compare my resume with a job description?",
-    answer: "Yes. You can upload your resume and compare it with a job description to get an ATS score, keyword match, and improvement suggestions.",
+    question: "What is the Career Score Check?",
+    answer: "The free Career Score Check reviews your readiness across essential hiring stages and gives you a personalized scorecard, career archetype, and prioritized action plan.",
   },
   {
-    question: "Does it help with interview preparation?",
-    answer: "Yes. The interview simulator can ask questions based on your resume, target role, or job description.",
+    question: "How does the LinkedIn Profile Optimizer work?",
+    answer: "You can analyze individual profile sections such as your headline, About section, experience, skills, services, projects, and posts. CareerSense scores the content and provides professional, ready-to-use improvements based on the details you supply.",
   },
   {
-    question: "Are certificates included?",
-    answer: "Yes. CareerSense can provide skill certifications after completing assessments.",
+    question: "Which career tools are available?",
+    answer: "CareerSense provides access to an AI Resume Builder, ATS Score Checker, Cover Letter Builder, Interview Simulator, Skill Certification tools, Career Score Check, and LinkedIn Profile Optimizer.",
   },
   {
-    question: "Is CareerSense useful for colleges?",
-    answer: "Yes. Colleges can use CareerSense to improve student placement readiness through resume checks, mock interviews, certifications, and progress tracking.",
+    question: "Does CareerSense include learning resources?",
+    answer: "Yes. The E-Learning library includes structured, chapter-based learning platforms and a growing collection of career and technical eBooks that can be viewed from your dashboard.",
+  },
+  {
+    question: "What is the CareerSense Partner Program?",
+    answer: "It is a selective six-month program where participants contribute to real CareerSense initiatives, collaborate with the core team and leadership, and build documented professional experience.",
+  },
+  {
+    question: "What do selected CareerSense Partners receive?",
+    answer: "Selected Partners receive an official offer letter and a verified CareerSense Partner ID after onboarding. Eligible Partners receive a relieving letter after successfully completing the program and its requirements.",
+  },
+  {
+    question: "How can I apply for the Partner Program?",
+    answer: "Open the Partner Program page and select Apply Now. Share your profile, interests, availability, preferred contribution area, and LinkedIn profile. Selection depends on profile fit and current program requirements.",
+  },
+  {
+    question: "How can CareerSense support colleges?",
+    answer: "CareerSense helps colleges strengthen placement readiness through resume and ATS support, interview preparation, skill development, certifications, and student progress tracking.",
   },
 ];
 
@@ -205,9 +221,36 @@ export const collegeFeatureBullets = [
 ];
 
 export const footerColumns = [
-  { title: "Product", links: ["Resume Builder", "Cover Letter Builder", "ATS Checker", "Interview Simulator", "Skill Certification"] },
-  { title: "Company", links: ["About Us", "For Colleges", "Pricing", "Contact Support"] },
-  { title: "Legal", links: ["Privacy Policy", "Terms of Use"] },
+  {
+    title: "Career Tools",
+    links: [
+      { label: "Career Score Check", href: "/career-gps" },
+      { label: "LinkedIn Optimizer", href: "/linkedin-optimizer" },
+      { label: "AI Resume Builder", href: "/resume-builder" },
+      { label: "ATS Score Checker", href: "https://ats.careersenseai.com/", external: true },
+      { label: "Cover Letter Builder", href: "/cover-letter-builder" },
+    ],
+  },
+  {
+    title: "Learn & Grow",
+    links: [
+      { label: "Partner Program", href: "/partner-program" },
+      { label: "E-Learning & eBooks", href: "/dashboard" },
+      { label: "Interview Simulator", href: "/interview-simulator" },
+      { label: "Skill Certification", href: "/skill-certification" },
+      { label: "CareerSense for Colleges", href: "/#colleges" },
+    ],
+  },
+  {
+    title: "CareerSense",
+    links: [
+      { label: "How It Works", href: "/#how-it-works" },
+      { label: "Explore All Tools", href: "/#career-tools" },
+      { label: "Frequently Asked Questions", href: "/#faq" },
+      { label: "Dashboard", href: "/dashboard" },
+      { label: "Contact Support", href: "mailto:support.careersense@gmail.com" },
+    ],
+  },
 ];
 
 export const importedIcons = {

@@ -561,7 +561,7 @@ export default function CareerGpsPage() {
 
   return (
     <main className={`relative min-h-screen transition-colors duration-300 ${isLight ? "bg-slate-50 text-slate-900" : "bg-slate-950 text-white"}`}>
-      <Navbar heroTheme={heroTheme} toggleHeroTheme={toggleHeroTheme} />
+      <Navbar heroTheme={heroTheme} onToggleHeroTheme={toggleHeroTheme} />
 
       <div className="relative z-10">
         {(isRestoring && step !== "results") ? (

@@ -12,11 +12,11 @@ export default function FAQSection() {
               Questions
             </span>
           </h2>
-        <div className="mt-8 grid gap-3 md:grid-cols-2">
+        <div className="mt-8 grid items-start gap-3 md:grid-cols-2">
           {faqs.map((faq) => (
             <details
               key={faq.question}
-              className="group rounded-[16px] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)]"
+              className="group self-start rounded-[16px] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)]"
             >
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[14px] font-extrabold text-slate-950">
                 {faq.question}

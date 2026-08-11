@@ -6,6 +6,10 @@ import ServicePlaceholderPage from "./pages/ServicePlaceholderPage";
 import CareerAssessment from "./pages/CareerAssessment";
 import CareerGpsPage from "./pages/CareerGpsPage";
 import PublicProfilePage from "./pages/PublicProfilePage";
+import LinkedInOptimizerPage from "./pages/LinkedInOptimizerPage";
+import ELearningPage from "./pages/ELearningPage";
+import EbookReaderPage from "./pages/EbookReaderPage";
+import PartnerProgramPage from "./pages/PartnerProgramPage";
 
 function ProtectedRoute({ children }) {
   return (
@@ -34,6 +38,10 @@ export default function App() {
           }
         />
         <Route path="/career-gps" element={<CareerGpsPage />} />
+        <Route path="/linkedin-optimizer" element={<LinkedInOptimizerPage />} />
+        <Route path="/partner-program" element={<PartnerProgramPage />} />
+        <Route path="/learning/:slug" element={<ProtectedRoute><ELearningPage /></ProtectedRoute>} />
+        <Route path="/ebooks/:slug" element={<ProtectedRoute><EbookReaderPage /></ProtectedRoute>} />
         <Route
           path="/dashboard"
           element={

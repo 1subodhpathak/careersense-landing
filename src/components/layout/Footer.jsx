@@ -87,8 +87,9 @@ export default function Footer({ heroTheme = "dark" }) {
               isLightTheme ? "text-slate-600" : "text-slate-300"
             }`}
           >
-            Your intelligent career copilot for resume building, ATS checks, cover
-            letters, interview preparation, and skill certification.
+            Your AI career copilot for readiness diagnostics, resumes, ATS checks,
+            LinkedIn optimization, interview preparation, structured learning,
+            certifications, and real professional-development opportunities.
           </p>
           <div className="mt-5 flex gap-2">
             {socialLinks.map(({ label, icon: Icon }) => (
@@ -119,16 +120,18 @@ export default function Footer({ heroTheme = "dark" }) {
               </h4>
               <ul className="mt-3 space-y-2.5">
                 {column.links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <a
-                      href="#"
+                      href={link.href}
+                      target={link.external ? "_blank" : undefined}
+                      rel={link.external ? "noreferrer" : undefined}
                       className={`text-[13px] ${
                         isLightTheme
                           ? "text-slate-600 hover:text-slate-950"
                           : "text-slate-300 hover:text-white"
                       }`}
                     >
-                      {link}
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -150,7 +153,7 @@ export default function Footer({ heroTheme = "dark" }) {
             }`}
           >
             <p className="flex items-center gap-3">
-              <Mail size={14} /> support@careersenseai.com
+              <Mail size={14} /> support.careersense@gmail.com
             </p>
             <p className="flex items-center gap-3">
               <Phone size={14} /> 🇺🇸 +1 (201) 893-6385

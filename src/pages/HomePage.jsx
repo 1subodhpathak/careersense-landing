@@ -18,6 +18,8 @@ import FeedbackLaptopShowcase from "../components/home/FeedbackLaptopShowcase";
 import CertificateAnatomy from "../components/home/CertificateAnatomySection";
 import YouTubePannel from "../components/home/YouTubePannel";
 import DemoVideoSection from "../components/home/DemoVideoSection";
+import GovernmentRecognitionSection from "../components/home/GovernmentRecognitionSection";
+import PartnerProgramSection from "../components/home/PartnerProgramSection";
 import useHeroTheme from "../hooks/useHeroTheme";
 
 function GradientSeparator({ direction = "right" }) {
@@ -57,13 +59,18 @@ export default function HomePage() {
         <div className="absolute left-[30%] top-[88rem] h-[24rem] w-[24rem] rounded-full bg-teal-200/18 blur-3xl" />
         <div className="absolute right-[12%] top-[112rem] h-[18rem] w-[18rem] rounded-full bg-sky-200/14 blur-3xl" />
       </div>
-      <section className="relative overflow-hidden bg-[#06152f]">
+      <section
+        className={`relative overflow-hidden transition-colors duration-300 ${
+          heroTheme === "light" ? "bg-[#eef6ff]" : "bg-[#06152f]"
+        }`}
+      >
         <Navbar heroTheme={heroTheme} onToggleHeroTheme={toggleHeroTheme} />
         <HeroSection heroTheme={heroTheme} />
       </section>
       <div className="relative z-10">
         
         <StatsStrip />
+        <GovernmentRecognitionSection />
         <DemoVideoSection />
         <ProblemSection />
 
@@ -92,6 +99,7 @@ export default function HomePage() {
         <GradientSeparator direction="center" />
         
         <CollegesSection />
+        <PartnerProgramSection />
         <FAQSection />
         <YouTubePannel />
         
