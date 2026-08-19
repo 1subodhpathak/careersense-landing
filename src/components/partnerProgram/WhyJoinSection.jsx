@@ -1,11 +1,11 @@
 import React from "react";
-import partnerIdImg from "../../assets/partnerProgram/Partner ID.png";
-import offerLetterImg from "../../assets/partnerProgram/Offer Letter.png";
-import weeklyAssignmentsImg from "../../assets/partnerProgram/Weekly Assignments.png";
-import mentorshipImg from "../../assets/partnerProgram/Mentorship.png";
-import startupExpImg from "../../assets/partnerProgram/Startup_Experience.png";
-import rewardsImg from "../../assets/partnerProgram/Rewards.png";
-import certificateImg from "../../assets/partnerProgram/Certificate.png";
+import partnerIdImg from "../../Assets/partnerProgram/Partner ID.png";
+import offerLetterImg from "../../Assets/partnerProgram/Offer Letter.png";
+import weeklyAssignmentsImg from "../../Assets/partnerProgram/Weekly Assignments.png";
+import mentorshipImg from "../../Assets/partnerProgram/Mentorship.png";
+import startupExpImg from "../../Assets/partnerProgram/Startup_Experience.png";
+import rewardsImg from "../../Assets/partnerProgram/Rewards.png";
+import certificateImg from "../../Assets/partnerProgram/Certificate.png";
 
 export default function WhyJoinSection({ isDark = false }) {
   const cards = [

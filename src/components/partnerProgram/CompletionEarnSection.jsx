@@ -1,5 +1,5 @@
 import React from "react";
-import teamImg from "../../assets/partnerProgram/team.png";
+import teamImg from "../../Assets/partnerProgram/team.png";
 import { CheckCircle2, Monitor, FileText, Award, Star } from "lucide-react";
 
 export default function CompletionEarnSection({ isDark = false }) {

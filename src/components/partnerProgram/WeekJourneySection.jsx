@@ -1,6 +1,6 @@
 import React from "react";
-import journeyLine from "../../assets/partnerProgram/journey-line.svg";
-import ctaDarkBg from "../../assets/partnerProgram/cta-dark-background.svg";
+import journeyLine from "../../Assets/partnerProgram/journey-line.svg";
+import ctaDarkBg from "../../Assets/partnerProgram/cta-dark-background.svg";
 import { Search, Code2, BarChart3, Megaphone, Rocket } from "lucide-react";
 
 export default function WeekJourneySection() {

@@ -1,10 +1,10 @@
 import React from "react";
-import coinsSvg from "../../assets/partnerProgram/icons2/coins.svg";
-import workspaceSvg from "../../assets/partnerProgram/icons2/workspace.svg";
-import partnerIdSvg from "../../assets/partnerProgram/icons2/partner-id.svg";
-import offerLetterSvg from "../../assets/partnerProgram/icons2/offer-letter.svg";
-import bookSvg from "../../assets/partnerProgram/icons2/book.svg";
-import recognitionSvg from "../../assets/partnerProgram/icons2/recognition.svg";
+import coinsSvg from "../../Assets/partnerProgram/icons2/coins.svg";
+import workspaceSvg from "../../Assets/partnerProgram/icons2/workspace.svg";
+import partnerIdSvg from "../../Assets/partnerProgram/icons2/partner-id.svg";
+import offerLetterSvg from "../../Assets/partnerProgram/icons2/offer-letter.svg";
+import bookSvg from "../../Assets/partnerProgram/icons2/book.svg";
+import recognitionSvg from "../../Assets/partnerProgram/icons2/recognition.svg";
 
 export default function WhatsIncludedSection({ isDark = false }) {
   const items = [
