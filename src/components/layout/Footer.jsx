@@ -41,7 +41,7 @@ function InstagramIcon(props) {
   );
 }
 
-export default function Footer({ heroTheme = "dark" }) {
+export default function Footer({ heroTheme = "light" }) {
   const isLightTheme = heroTheme === "light";
 
   return (

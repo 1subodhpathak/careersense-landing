@@ -53,19 +53,17 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
     ? "bg-white text-blue-700 shadow-sm ring-1 ring-blue-100"
     : "bg-white/10 text-cyan-300 ring-1 ring-white/10";
 
-  const navLinkClass = `whitespace-nowrap rounded-xl px-2.5 py-2.5 text-[13px] font-semibold transition-all duration-200 xl:px-3 xl:text-sm ${
-    isLightTheme
+  const navLinkClass = `whitespace-nowrap rounded-xl px-2.5 py-2.5 text-[13px] font-semibold transition-all duration-200 xl:px-3 xl:text-sm ${isLightTheme
       ? "text-slate-700 hover:bg-slate-900/6 hover:text-slate-950"
       : "text-slate-300 hover:bg-white/6 hover:text-white"
-  }`;
+    }`;
 
   return (
     <header
-      className={`relative z-50 border-b shadow-[0_10px_30px_rgba(2,11,31,0.24)] transition-colors duration-300 ${
-        isLightTheme
+      className={`relative z-50 border-b shadow-[0_10px_30px_rgba(2,11,31,0.24)] transition-colors duration-300 ${isLightTheme
           ? "border-slate-900/8 bg-[#eef6ff] text-slate-950"
           : "border-white/10 bg-[#081634] text-white"
-      }`}
+        }`}
     >
       <div className="mx-auto max-w-[1600px] px-5 lg:px-6 xl:px-8">
         <div className="flex min-h-[82px] items-center justify-between gap-3 xl:gap-5">
@@ -77,9 +75,8 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
             />
             <div className="leading-none">
               <div
-                className={`text-[16px] font-black tracking-tight sm:text-[20px] ${
-                  isLightTheme ? "text-slate-950" : "text-white"
-                }`}
+                className={`text-[16px] font-black tracking-tight sm:text-[20px] ${isLightTheme ? "text-slate-950" : "text-white"
+                  }`}
               >
                 <span className={isLightTheme ? "text-slate-950" : "text-white"}>
                   Career
@@ -89,9 +86,8 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                 </span>
               </div>
               <div
-                className={`mt-1 hidden text-[9px] font-bold uppercase tracking-[0.34em] sm:block ${
-                  isLightTheme ? "text-cyan-700/90" : "text-cyan-300/80"
-                }`}
+                className={`mt-1 hidden text-[9px] font-bold uppercase tracking-[0.34em] sm:block ${isLightTheme ? "text-cyan-700/90" : "text-cyan-300/80"
+                  }`}
               >
                 AI Career Copilot
               </div>
@@ -131,11 +127,10 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
             <button
               type="button"
               onClick={onToggleHeroTheme}
-              className={`hidden h-11 w-11 items-center justify-center rounded-xl border transition xl:inline-flex ${
-                isLightTheme
+              className={`hidden h-11 w-11 items-center justify-center rounded-xl border transition xl:inline-flex ${isLightTheme
                   ? "border-slate-900/10 bg-white/70 text-slate-800 hover:bg-white"
                   : "border-white/12 bg-white/5 text-white hover:bg-white/10"
-              }`}
+                }`}
               aria-label={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
               title={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
             >
@@ -178,11 +173,10 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
 
             <button
               type="button"
-              className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border transition xl:hidden ${
-                isLightTheme
+              className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border transition xl:hidden ${isLightTheme
                   ? "border-slate-900/10 bg-white/70 text-slate-800 hover:bg-white"
                   : "border-white/12 bg-white/5 text-white hover:bg-white/10"
-              }`}
+                }`}
               onClick={() => setOpen((value) => !value)}
               aria-label="Toggle navigation"
               aria-expanded={open}
@@ -195,19 +189,17 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
 
       {open && (
         <div
-          className={`max-h-[calc(100vh-106px)] overflow-y-auto border-t xl:hidden ${
-            isLightTheme
+          className={`max-h-[calc(100vh-106px)] overflow-y-auto border-t xl:hidden ${isLightTheme
               ? "border-slate-900/8 bg-[#eef6ff]"
               : "border-white/10 bg-[#081634]"
-          }`}
+            }`}
         >
           <div className="mx-auto max-w-[1400px] px-6 pb-4 pt-3 lg:px-10">
             <div
-              className={`rounded-2xl border p-3 ${
-                isLightTheme
+              className={`rounded-2xl border p-3 ${isLightTheme
                   ? "border-slate-900/8 bg-white/80"
                   : "border-white/10 bg-white/5"
-              }`}
+                }`}
             >
               <div className="grid gap-1.5">
                 {routeItems.map((item) => item.tools ? (
@@ -225,13 +217,12 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                     to={item.href}
                     onClick={() => setOpen(false)}
                     aria-current={isRouteActive(item) ? "page" : undefined}
-                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
-                      isRouteActive(item)
+                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${isRouteActive(item)
                         ? activeNavClass
                         : isLightTheme
-                        ? "text-slate-700 hover:bg-slate-900/6 hover:text-slate-950"
-                        : "text-slate-300 hover:bg-white/8 hover:text-white"
-                    }`}
+                          ? "text-slate-700 hover:bg-slate-900/6 hover:text-slate-950"
+                          : "text-slate-300 hover:bg-white/8 hover:text-white"
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -243,11 +234,10 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                     onToggleHeroTheme?.();
                     setOpen(false);
                   }}
-                  className={`mt-2 inline-flex h-11 w-11 items-center justify-center self-center rounded-xl border transition ${
-                    isLightTheme
+                  className={`mt-2 inline-flex h-11 w-11 items-center justify-center self-center rounded-xl border transition ${isLightTheme
                       ? "border-slate-900/10 bg-white text-slate-800 hover:bg-slate-50"
                       : "border-white/10 bg-white/5 text-white hover:bg-white/10"
-                  }`}
+                    }`}
                   aria-label={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
                   title={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
                 >

@@ -19,7 +19,7 @@ const sidebarItems = [
   { icon: SearchCheck, label: "ATS Checker" },
   { icon: FileText, label: "Cover Letters" },
   { icon: BookOpen, label: "Interview Practice" },
-  { icon: Award, label: "Certificates" },
+  { icon: Award, label: "Skill Certification" },
   { icon: Users, label: "Community" },
 ];
 

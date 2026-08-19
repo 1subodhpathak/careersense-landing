@@ -41,7 +41,12 @@ import {
   ImagePlus,
   Loader2,
   Compass,
-  AlertTriangle
+  AlertTriangle,
+  BookOpenCheck,
+  ChevronDown,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Target
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/clerk-react";
@@ -50,6 +55,7 @@ import { pipelinePhases } from "../data/careerGpsData";
 import IdCardStudio from "../components/dashboard/IdCardStudio";
 import OfferLetterStudio from "../components/dashboard/OfferLetterStudio";
 import ELearningLibrary from "../components/dashboard/ELearningLibrary";
+import PartnerAssignments from "../components/dashboard/PartnerAssignments";
 // ── Timeline Section Component for Profile (Education, Certifications, Awards) ─────
 function TimelineSection({
   title,
@@ -177,7 +183,9 @@ export default function DashboardPage() {
   const tabFromUrl = searchParams.get("tab");
   const activeTab = ["e Learning", "eLearning", "E-Learning"].includes(tabFromUrl)
     ? "E-Learning"
-    : tabFromUrl || "Dashboard";
+    : ["Certificates", "Skill Certification", "skill-certification", "SkillCertification"].includes(tabFromUrl)
+      ? "Skill Certification"
+      : tabFromUrl || "Dashboard";
 
   const handleTabChange = (label) => {
     setSearchParams({ tab: label });
@@ -185,8 +193,48 @@ export default function DashboardPage() {
 
   const [currentTime, setCurrentTime] = useState(new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [careerToolsOpen, setCareerToolsOpen] = useState(true);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [ledgerFilter, setLedgerFilter] = useState("all");
   const [ledgerLimit, setLedgerLimit] = useState(20);
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    try {
+      const saved = localStorage.getItem("cs_sidebar_width");
+      return saved ? Math.min(350, Math.max(260, Number(saved))) : 260;
+    } catch (_) {
+      return 260;
+    }
+  });
+  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
+
+  const startResizingSidebar = (e) => {
+    e.preventDefault();
+    setIsResizingSidebar(true);
+  };
+
+  useEffect(() => {
+    if (!isResizingSidebar) return;
+
+    const handleMouseMove = (e) => {
+      const newWidth = Math.min(350, Math.max(260, e.clientX));
+      setSidebarWidth(newWidth);
+      try {
+        localStorage.setItem("cs_sidebar_width", String(newWidth));
+      } catch (_) {}
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingSidebar(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizingSidebar]);
 
   const { user, isLoaded } = useUser();
   const { getToken } = useAuth();
@@ -227,6 +275,7 @@ export default function DashboardPage() {
   const [isUploadingBanner, setIsUploadingBanner] = useState(false);
   const [profileSuccessMsg, setProfileSuccessMsg] = useState("");
   const [profileErrorMsg, setProfileErrorMsg] = useState("");
+  const [partnerPointsDelta, setPartnerPointsDelta] = useState(0);
 
   const addTimelineItem = (field) => {
     setProfileForm((current) => ({
@@ -438,7 +487,7 @@ export default function DashboardPage() {
         setDashboardData(JSON.parse(cached));
         setLoading(false);
       }
-    } catch (_) {}
+    } catch (_) { }
 
     const fetchDashboardSummary = async () => {
       try {
@@ -452,7 +501,7 @@ export default function DashboardPage() {
         if (response.ok) {
           const data = await response.json();
           setDashboardData(data);
-          try { sessionStorage.setItem("cs_dashboard_summary", JSON.stringify(data)); } catch (_) {}
+          try { sessionStorage.setItem("cs_dashboard_summary", JSON.stringify(data)); } catch (_) { }
         }
       } catch (err) {
         console.error("Error fetching dashboard summary:", err);
@@ -486,19 +535,28 @@ export default function DashboardPage() {
   }, [activeTab, communityStats]);
 
   const sidebarItems = [
-    { icon: LayoutDashboard, label: "Dashboard" },
-    { icon: Compass, label: "Career GPS" },
-    { icon: FileText, label: "Resume Builder" },
-    { icon: FileSearch, label: "ATS Checker" },
-    { icon: BookOpen, label: "Cover Letters" },
-    { icon: MessageSquareText, label: "Interview Practice" },
-    { icon: ShieldCheck, label: "Certificates" },
-    { icon: Users, label: "Community" },
-    { icon: UserRound, label: "My Profile" },
-    { icon: CreditCard, label: "ID Card Studio" },
-    { icon: Briefcase, label: "Offer Letter Workspace" },
-    { icon: GraduationCap, label: "E-Learning" },
-    { icon: CreditCard, label: "Usage & Billing" },
+    { icon: UserRound, label: "My Profile", section: "Workspace", tone: "text-teal-400" },
+    { icon: LayoutDashboard, label: "Dashboard", section: "Workspace", tone: "text-sky-400" },
+    { icon: CreditCard, label: "ID Card Studio", section: "Workspace", tone: "text-cyan-400" },
+    { icon: Compass, label: "Career GPS", section: "Workspace", tone: "text-emerald-400" },
+    {
+      icon: Sparkles,
+      label: "CareerTools",
+      section: "Learn & Build",
+      tone: "text-blue-400",
+      children: [
+        { icon: FileText, label: "Resume Builder", shortLabel: "Resume" },
+        { icon: FileSearch, label: "ATS Checker", shortLabel: "ATS Checker" },
+        { icon: BookOpen, label: "Cover Letters", shortLabel: "Cover Letter" },
+        { icon: MessageSquareText, label: "Interview Practice", shortLabel: "Interview" },
+        { icon: ShieldCheck, label: "Skill Certification", shortLabel: "Certificates" },
+      ],
+    },
+    { icon: GraduationCap, label: "E-Learning", section: "Learn & Build", tone: "text-violet-400" },
+    { icon: BookOpenCheck, label: "Partner Journey", section: "Learn & Build", tone: "text-amber-400" },
+    { icon: Briefcase, label: "Offer Letter Workspace", section: "Career Network", tone: "text-orange-400" },
+    { icon: Users, label: "Community", section: "Career Network", tone: "text-rose-400" },
+    { icon: CreditCard, label: "Usage & Billing", section: "Account", tone: "text-slate-400" },
   ];
 
   const username = user?.fullName || user?.username || "Guest User";
@@ -506,8 +564,25 @@ export default function DashboardPage() {
     ? `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
     : username.substring(0, 2).toUpperCase();
 
-  const atsResumes = dashboardData?.ats?.resumes || [];
+  const rawAtsResumes = dashboardData?.ats?.resumes || [];
+  const atsResumes = [...rawAtsResumes].sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0));
   const atsJds = dashboardData?.ats?.jobDescriptions || [];
+  const getResumeName = (res) => {
+    if (!res) return "";
+    return (
+      res.file_name ||
+      res.fileName ||
+      res.filename ||
+      res.resume_file_name ||
+      res.originalName ||
+      res.original_filename ||
+      res.candidate_name ||
+      res.candidateName ||
+      res.title ||
+      res.name ||
+      (res.resume_id ? `Resume_${res.resume_id.substring(0, 6)}.pdf` : "Scanned Resume.pdf")
+    );
+  };
   const atsPoints = (() => {
     let pts = atsResumes.length * 180 + atsJds.length * 95;
     atsResumes.forEach((resume) => {
@@ -545,7 +620,7 @@ export default function DashboardPage() {
   const certifiPoints = usageLedger.reduce((sum, item) => sum + (item.careerPoints || item.points || 0), 0);
   const certifiCost = usageLedger.reduce((sum, item) => sum + (item.costUsd || item.cost || 0), 0);
 
-  const totalPoints = atsPoints + coverLetterPoints + certifiPoints;
+  const totalPoints = Math.max(0, atsPoints + coverLetterPoints + certifiPoints + partnerPointsDelta);
   const totalCost = atsCost + coverLetterCost + certifiCost;
   const certsCount = dashboardData?.certifi?.certificates?.length || 0;
   const pathsCount = dashboardData?.certifi?.learningPaths?.length || 0;
@@ -580,7 +655,7 @@ export default function DashboardPage() {
 
     atsResumes.forEach((res) => {
       acts.push({
-        event: `ATS Scan - ${res.file_name}`,
+        event: `ATS Scan - ${getResumeName(res)}`,
         time: new Date(res.createdAt),
         metric: `Match: ${res.current_score}%`,
         badgeColor: "bg-blue-50 text-blue-700"
@@ -779,6 +854,15 @@ export default function DashboardPage() {
           )
         };
 
+      case "Partner Journey":
+      case "Partner Assignments":
+        return {
+          title: "Partner Assignment Roadmap",
+          subtitle: "Complete real startup missions, build your portfolio, and grow your CareerSense Partner Score.",
+          stats: [],
+          renderExtra: () => <PartnerAssignments onViewIdCard={() => handleTabChange("ID Card Studio")} totalUserPoints={totalPoints} onPointsChange={setPartnerPointsDelta} />
+        };
+
       case "Career GPS":
         const latestGps = dashboardData?.assessment;
         const gpsScore = latestGps?.results?.overallScore;
@@ -888,10 +972,10 @@ export default function DashboardPage() {
                                 >
                                   <div className="relative flex items-center justify-center">
                                     <div className={`relative flex h-14 w-14 sm:h-16 sm:w-16 items-center justify-center rounded-full border-2 transition-all duration-300 ${isFocus
-                                        ? "bg-gradient-to-tr from-slate-900 via-cyan-950 to-slate-900 border-cyan-400 text-white shadow-xl shadow-cyan-500/30 ring-4 ring-cyan-500/20 scale-115"
-                                        : isDone
-                                          ? "bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-300 text-white shadow-lg shadow-emerald-500/30 scale-105"
-                                          : "bg-white border-slate-300 text-slate-400 group-hover:border-cyan-400 group-hover:text-cyan-600 shadow-sm"
+                                      ? "bg-gradient-to-tr from-slate-900 via-cyan-950 to-slate-900 border-cyan-400 text-white shadow-xl shadow-cyan-500/30 ring-4 ring-cyan-500/20 scale-115"
+                                      : isDone
+                                        ? "bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-300 text-white shadow-lg shadow-emerald-500/30 scale-105"
+                                        : "bg-white border-slate-300 text-slate-400 group-hover:border-cyan-400 group-hover:text-cyan-600 shadow-sm"
                                       }`}>
                                       {isDone ? <Check size={24} strokeWidth={3} className="text-white" /> : isFocus ? <IconComponent size={22} strokeWidth={2.5} className="text-white" /> : <IconComponent size={20} strokeWidth={2} />}
                                     </div>
@@ -931,10 +1015,10 @@ export default function DashboardPage() {
                                 key={phase.id}
                                 onClick={() => { if (phase.href) window.open(phase.href, "_blank"); }}
                                 className={`group rounded-xl border p-4 cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${isFocus
-                                    ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-slate-900 shadow-md ring-2 ring-cyan-500/20"
-                                    : isDone
-                                      ? "border-emerald-200 bg-emerald-50/30 text-slate-900 shadow-xs"
-                                      : "border-slate-200/80 bg-white text-slate-800 hover:border-cyan-300 shadow-xs"
+                                  ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-slate-900 shadow-md ring-2 ring-cyan-500/20"
+                                  : isDone
+                                    ? "border-emerald-200 bg-emerald-50/30 text-slate-900 shadow-xs"
+                                    : "border-slate-200/80 bg-white text-slate-800 hover:border-cyan-300 shadow-xs"
                                   }`}
                               >
                                 <div className="flex items-center justify-between mb-2">
@@ -1047,8 +1131,9 @@ export default function DashboardPage() {
         };
 
       case "ATS Checker":
-        const targetMatrix = latestAtsResume?.file_name
-          ? (latestAtsResume.file_name.length > 18 ? latestAtsResume.file_name.substring(0, 18) + "..." : latestAtsResume.file_name)
+        const latestResumeName = getResumeName(latestAtsResume);
+        const targetMatrix = latestResumeName
+          ? (latestResumeName.length > 18 ? latestResumeName.substring(0, 18) + "..." : latestResumeName)
           : "No uploads";
         const deficitCount = missingKeywords.length;
 
@@ -1073,38 +1158,25 @@ export default function DashboardPage() {
               icon: <Sparkles size={16} />
             },
             {
-              label: "Missing Key Skills",
-              value: `${deficitCount}`,
-              status: deficitCount > 0 ? "Action items to add" : "No major skill gaps",
-              color: "text-red-600",
-              bg: "bg-red-50",
-              icon: <AlertCircle size={16} />
+              label: "Skill Points Earned",
+              value: `${atsPoints}`,
+              status: "Earned from resume scans",
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+              icon: <Zap size={16} />
             },
             {
-              label: "Job Scans Linked",
-              value: `${atsJds.length}`,
-              status: atsJds.length > 0 ? "Job descriptions matched" : "No job descriptions linked",
-              color: "text-indigo-600",
-              bg: "bg-indigo-50",
-              icon: <Briefcase size={16} />
+              label: "ATS Bill",
+              value: `$${atsCost.toFixed(4)}`,
+              status: "ATS Checker platform cost",
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+              icon: <CreditCard size={16} />
             }
           ],
           renderExtra: () => (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-0">
               <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs lg:col-span-2">
-                <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 mb-4">Missing Key Technical Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {missingKeywords.length === 0 ? (
-                    <p className="text-xs text-slate-400 py-3">No missing technical skills identified in your latest resume.</p>
-                  ) : (
-                    missingKeywords.map((tag, i) => (
-                      <span key={i} className="bg-red-50 text-red-600 border border-red-100 px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> {tag}
-                      </span>
-                    ))
-                  )}
-                </div>
-
                 <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 mb-4 mt-6">Scanned Resumes History</h3>
                 {atsResumes.length === 0 ? (
                   <p className="text-xs text-slate-400 py-4">No resumes scanned yet. Go to the ATS Checker subdomain to optimize your resume.</p>
@@ -1122,7 +1194,7 @@ export default function DashboardPage() {
                       <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
                         {atsResumes.map((res) => (
                           <tr key={res.resume_id}>
-                            <td className="py-3 font-semibold text-slate-900 truncate max-w-[200px]">{res.file_name}</td>
+                            <td className="py-3 font-semibold text-slate-900 truncate max-w-[200px]">{getResumeName(res)}</td>
                             <td className="py-3"><span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">{res.current_score}%</span></td>
                             <td className="py-3 text-slate-400">{new Date(res.createdAt).toLocaleDateString()}</td>
                             <td className="py-3 text-right">
@@ -1168,28 +1240,28 @@ export default function DashboardPage() {
               icon: <BookOpen size={16} />
             },
             {
-              label: "Targeted Companies",
-              value: `${targetedCompaniesCount}`,
-              status: targetedCompaniesCount > 0 ? "Unique companies targeted" : "No target companies yet",
-              color: "text-emerald-600",
-              bg: "bg-emerald-50",
-              icon: <Briefcase size={16} />
-            },
-            {
               label: "Latest Cover Letter",
               value: latestLetter ? (latestLetter.companyName || latestLetter.company || "Direct Entry") : "None",
               status: latestLetter ? `Role: ${latestLetter.recipient?.targetRole || latestLetter.title || 'Target Role'}` : "Create your first letter",
-              color: "text-amber-600",
-              bg: "bg-amber-50",
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
               icon: <FileText size={16} />
             },
             {
-              label: "Cover Letter Builder",
-              value: "Ready",
-              status: "Unlimited creation enabled",
+              label: "Skill Points Earned",
+              value: `${coverLetterPoints}`,
+              status: "Earned from cover letters",
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+              icon: <Zap size={16} />
+            },
+            {
+              label: "Cover Letter Bill",
+              value: `$${coverLetterCost.toFixed(4)}`,
+              status: "Cover Letter Builder cost",
               color: "text-purple-600",
               bg: "bg-purple-50",
-              icon: <Sparkles size={16} />
+              icon: <CreditCard size={16} />
             }
           ],
           renderExtra: () => (
@@ -1239,7 +1311,7 @@ export default function DashboardPage() {
                   <div key={idx} className="text-xs">
                     <div className="flex items-center justify-between font-bold text-slate-700 mb-1.5">
                       <div>{item.name} <span className="text-slate-400 font-medium ml-2">({item.total})</span></div>
-                      <span className="font-mono">{item.progress} Completed</span>
+                      <span className="font-semibold">{item.progress} Completed</span>
                     </div>
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div className={`h-full ${item.color}`} style={{ width: item.progress }}></div>
@@ -1251,10 +1323,12 @@ export default function DashboardPage() {
           )
         };
 
+      case "Skill Certification":
       case "Certificates":
         const certList = dashboardData?.certifi?.certificates || [];
+        const certifiBill = dashboardData?.certifi?.usageSummary?.totalCostUsd ?? certifiCost;
         return {
-          title: "Certifications Overview",
+          title: "Skill Certification Overview",
           subtitle: "View your earned certificates, verified skill badges, and active learning progress.",
           stats: [
             {
@@ -1282,12 +1356,12 @@ export default function DashboardPage() {
               icon: <Zap size={16} />
             },
             {
-              label: "Verification Status",
-              value: certList.length > 0 ? "100% Verified" : "Pending",
-              status: certList.length > 0 ? "Public validation active" : "Complete course to verify",
-              color: "text-indigo-600",
-              bg: "bg-indigo-50",
-              icon: <ShieldCheck size={16} />
+              label: "Certifi Bill",
+              value: `$${(certifiBill || 0).toFixed(4)}`,
+              status: "Certifi platform cost",
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+              icon: <CreditCard size={16} />
             }
           ],
           renderExtra: () => (
@@ -1304,7 +1378,7 @@ export default function DashboardPage() {
                         <div className="h-10 w-10 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center shrink-0"><Award size={20} /></div>
                         <div className="min-w-0">
                           <h4 className="text-sm font-bold text-slate-800 truncate tracking-tight">{cert.title}</h4>
-                          <div className="font-mono text-[10px] text-slate-400 mt-0.5 truncate">ID: {cert.certificateId || cert.id}</div>
+                          <div className="text-[10px] font-medium text-slate-400 mt-0.5 truncate">ID: {cert.certificateId || cert.id}</div>
                         </div>
                       </div>
                       <div className="text-right shrink-0 ml-4">
@@ -2085,7 +2159,8 @@ export default function DashboardPage() {
           title: "Infrastructure Tokens & Billing Ledger",
           subtitle: "Verify computational quota allocations and clear transaction operational history.",
           stats: [
-            { label: "Current Balance Incurred", value: `$${totalCost.toFixed(4)}`, status: "Settled", color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
+            { label: "Current Balance", value: `$${totalCost.toFixed(4)}`, status: "Settled", color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
+            { label: "Skills Points Earned", value: `${totalPoints}`, status: "Earned across platforms", color: "text-amber-600", bg: "bg-amber-50", icon: <Zap size={16} /> },
             { label: "Active Operational Tier", value: "Free Pool", status: "Quota Limited", color: "text-slate-500", bg: "bg-slate-100", icon: <Lock size={16} /> }
           ],
           renderExtra: () => (
@@ -2101,9 +2176,9 @@ export default function DashboardPage() {
                     <div>
                       <div className="flex justify-between items-start gap-2">
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${site.badgeColor}`}>{site.name}</span>
-                        <span className="text-[10px] font-mono text-slate-400">{site.subdomain}</span>
+                        <span className="text-[10px] font-semibold text-slate-400">{site.subdomain}</span>
                       </div>
-                      <div className="mt-4 font-mono text-sm font-semibold text-slate-500">
+                      <div className="mt-4 text-sm font-semibold text-slate-500">
                         Usage Quota: <span className="text-slate-800 font-bold">{site.usage}</span>
                       </div>
                     </div>
@@ -2165,8 +2240,8 @@ export default function DashboardPage() {
                                 <td className="py-3 font-semibold text-slate-800">{log.action}</td>
                                 <td className="py-3"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${appBadge}`}>{log.app}</span></td>
                                 <td className="py-3 text-slate-400">{log.createdAt.toLocaleDateString()}</td>
-                                <td className="py-3 text-right font-mono text-slate-800">{log.points}</td>
-                                <td className="py-3 text-right font-mono text-slate-800">${log.cost.toFixed(4)}</td>
+                                <td className="py-3 text-right font-bold text-slate-800">{log.points}</td>
+                                <td className="py-3 text-right font-bold text-slate-800">${log.cost.toFixed(4)}</td>
                               </tr>
                             );
                           })}
@@ -2196,45 +2271,154 @@ export default function DashboardPage() {
   };
 
   const detailedData = getTabDetailedData();
+  const profileCompleteness = calculateProfileCompleteness();
+
+  const readinessScore = dashboardData?.assessment?.results?.overallScore;
+  let partnerCompleted = 0;
+  try {
+    const partnerRecords = JSON.parse(localStorage.getItem("careersense-partner-assignments-v1")) || {};
+    partnerCompleted = Object.values(partnerRecords).filter((entry) => entry?.status === "submitted").length;
+  } catch (_) { }
+  const certificateCount = dashboardData?.certifi?.certificates?.length || 0;
+
+  const getSidebarBadge = (label) => ({
+    "Career GPS": readinessScore != null ? `${readinessScore}%` : null,
+    "E-Learning": pathsCount ? `${pathsCount} active` : null,
+    "Partner Journey": `${partnerCompleted}/20`,
+    "Community": communityStats?.unreadCount ? String(communityStats.unreadCount) : null,
+    "Usage & Billing": totalPoints ? `${totalPoints.toLocaleString()} pts` : null,
+  }[label]);
+
+  const getToolBadge = (label) => ({
+    "Resume Builder": atsResumes.length ? `${atsResumes.length} saved` : null,
+    "ATS Checker": avgAts ? `${avgAts}%` : null,
+    "Cover Letters": coverLetters.length ? `${coverLetters.length} made` : null,
+    "Interview Practice": "Start",
+    "Certificates": certificateCount ? `${certificateCount} earned` : null,
+  }[label]);
+
+  const nextAction = profileCompleteness < 100
+    ? { label: "Complete your profile", detail: `${profileCompleteness}% complete`, tab: "My Profile" }
+    : { label: `Complete Assignment ${Math.min(partnerCompleted + 1, 20)}`, detail: `${partnerCompleted}/20 finished`, tab: "Partner Journey" };
 
   return (
     <main className="flex h-screen w-full overflow-hidden bg-[#f8fafc] text-slate-800">
 
       {/* --- SIDEBAR PANEL --- */}
-      <aside className="hidden w-[260px] shrink-0 select-none border-r border-slate-900 bg-[#0b132b] p-5 text-slate-300 lg:flex lg:flex-col" style={{ height: '100vh' }}>
-        <div className="flex flex-col h-full">
-          <Link to="/" className="flex items-center gap-3 px-2 py-3 mb-6 shrink-0">
-            <img src={CSLogo} alt="CareerSense logo" className="h-8 w-auto object-contain" />
-            <div className="leading-none">
-              <span className="text-[18px] font-black tracking-tight text-white">Career<span className="bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 bg-clip-text text-transparent">Sense</span></span>
-            </div>
-          </Link>
-
-          <div className="mb-3 px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 shrink-0">Menu</div>
+      <aside
+        className={`relative hidden shrink-0 select-none border-r border-slate-900 bg-[#0b132b] text-slate-300 ${
+          isResizingSidebar ? "transition-none" : "transition-[width] duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+        } lg:flex lg:flex-col ${sidebarCollapsed ? "w-[88px] p-4" : "p-5"}`}
+        style={{
+          width: sidebarCollapsed ? "88px" : `${sidebarWidth}px`,
+          height: '100vh'
+        }}
+      >
+        {!sidebarCollapsed && (
+          <div
+            onMouseDown={startResizingSidebar}
+            className={`absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-teal-500/30 transition-colors z-20 ${
+              isResizingSidebar ? "bg-teal-400/50" : ""
+            }`}
+            title="Drag right edge to resize sidebar"
+          />
+        )}
+        <div className="flex flex-col h-full min-w-0">
+          <div className={`mb-6 flex items-center ${sidebarCollapsed ? "flex-col justify-center gap-3 px-0" : "justify-between gap-2 px-1"}`}>
+            <Link to="/" className="flex min-w-0 items-center gap-3 py-2 shrink-0">
+              <img src={CSLogo} alt="CareerSense logo" className="h-8 w-auto object-contain" />
+              <div className={`leading-none transition-opacity ${sidebarCollapsed ? "hidden" : "block"}`}>
+                <span className="text-[18px] font-black tracking-tight text-white">Career<span className="bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 bg-clip-text text-transparent">Sense</span></span>
+              </div>
+            </Link>
+            <button
+              type="button"
+              onClick={() => setSidebarCollapsed((value) => !value)}
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-teal-300"
+              title={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {sidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+            </button>
+          </div>
 
           <nav className="flex-1 overflow-y-auto space-y-1 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#1c2541 transparent' }}>
-            {sidebarItems.map((item) => {
+            {sidebarItems.map((item, itemIndex) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.label;
-              return (
+              const showSection = itemIndex === 0 || sidebarItems[itemIndex - 1].section !== item.section;
+              if (item.children) {
+                const hasActiveChild = item.children.some((child) => child.label === activeTab);
+                return (
+                  <div key={item.label}>
+                    {showSection && !sidebarCollapsed && <div className="mb-2 mt-5 px-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-600 first:mt-0">{item.section}</div>}
+                    <button
+                      type="button"
+                      onClick={() => setCareerToolsOpen((open) => !open)}
+                      aria-expanded={careerToolsOpen}
+                      title={sidebarCollapsed ? item.label : undefined}
+                      className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-all duration-200 active:scale-[0.98] sm:text-[13.5px] ${sidebarCollapsed ? "justify-center" : ""} ${hasActiveChild
+                        ? "bg-[#1c2541] text-teal-400 border border-slate-700/50"
+                        : "text-slate-400 hover:bg-slate-800/40 hover:text-white"
+                        }`}
+                    >
+                      <Icon size={18} className={hasActiveChild ? "text-teal-400" : `${item.tone} opacity-75 group-hover:opacity-100`} />
+                      {!sidebarCollapsed && <><span className="flex-1">{item.label}</span><ChevronDown size={15} className={`transition-transform duration-200 ${careerToolsOpen ? "rotate-180" : ""}`} /></>}
+                    </button>
+                    <div className={`grid transition-[grid-template-rows] duration-200 ${careerToolsOpen && !sidebarCollapsed ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                      <div className="overflow-hidden">
+                        <div className="ml-5 mt-1 space-y-1 border-l border-slate-700/70 pl-3">
+                          {item.children.map((child) => {
+                            const ChildIcon = child.icon;
+                            const childSelected = activeTab === child.label;
+                            return (
+                              <button key={child.label} onClick={() => handleTabChange(child.label)} className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[12.5px] font-medium transition ${childSelected ? "bg-teal-500/10 text-teal-300" : "text-slate-500 hover:bg-slate-800/40 hover:text-slate-200"}`}>
+                                <ChildIcon size={15} />
+                                <span className="flex-1">{child.shortLabel}</span>{getToolBadge(child.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-bold text-slate-400">{getToolBadge(child.label)}</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+              return (<React.Fragment key={item.label}>
+                {showSection && !sidebarCollapsed && <div className="mb-2 mt-5 px-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-600 first:mt-0">{item.section}</div>}
                 <button
-                  key={item.label}
                   onClick={() => handleTabChange(item.label)}
-                  className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-all sm:text-[13.5px] ${isSelected
-                    ? "bg-[#1c2541] text-teal-400 border border-slate-700/50"
+                  title={sidebarCollapsed ? `${item.label}${getSidebarBadge(item.label) ? ` · ${getSidebarBadge(item.label)}` : ""}` : undefined}
+                  className={`group relative flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-all duration-200 active:scale-[0.98] sm:text-[13.5px] ${sidebarCollapsed ? "justify-center" : ""} ${isSelected
+                    ? "bg-[#1c2541] text-teal-400 border border-slate-700/50 shadow-[0_8px_24px_rgba(20,184,166,0.08)]"
                     : "text-slate-400 hover:bg-slate-800/40 hover:text-white"
                     }`}
                 >
-                  <Icon size={18} className={isSelected ? "text-teal-400" : "text-slate-400 group-hover:text-slate-200"} />
-                  <span>{item.label}</span>
+                  {isSelected && <span className="absolute -left-px h-5 w-0.5 rounded-full bg-teal-400 motion-safe:animate-pulse" />}
+                  <Icon size={18} className={`transition-transform duration-200 group-hover:scale-110 ${isSelected ? "text-teal-400" : `${item.tone} opacity-75 group-hover:opacity-100`}`} />
+                  {!sidebarCollapsed && <span className="flex-1">{item.label}</span>}
+                  {!sidebarCollapsed && getSidebarBadge(item.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-black text-slate-400">{getSidebarBadge(item.label)}</span>}
+                  {item.label === "My Profile" && (
+                    <span
+                      className={`${sidebarCollapsed ? "absolute -right-1 -top-1 h-5 w-5" : "h-9 w-9"} flex shrink-0 items-center justify-center rounded-full`}
+                      style={{ background: `conic-gradient(#2dd4bf ${profileCompleteness * 3.6}deg, #334155 0)` }}
+                      title={`${profileCompleteness}% profile complete`}
+                      aria-label={`${profileCompleteness}% profile complete`}
+                    >
+                      <span className={`${sidebarCollapsed ? "h-4 w-4 text-[5px]" : "h-7 w-7 text-[8px]"} flex items-center justify-center rounded-full bg-[#0b132b] font-black text-white`}>{profileCompleteness}%</span>
+                    </span>
+                  )}
                 </button>
-              );
+              </React.Fragment>);
             })}
           </nav>
 
           <div className="mt-4 shrink-0">
+            {!sidebarCollapsed && <button onClick={() => handleTabChange(nextAction.tab)} className="group mb-3 w-full rounded-xl border border-teal-500/15 bg-teal-500/[0.06] p-3 text-left transition hover:border-teal-400/30 hover:bg-teal-500/10 active:scale-[0.98]">
+              <div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-400">Your next move</span><Target size={13} className="text-teal-400 transition-transform group-hover:translate-x-0.5" /></div>
+              <div className="mt-1.5 truncate text-xs font-bold text-white">{nextAction.label}</div><div className="mt-1 text-[10px] font-medium text-slate-500">{nextAction.detail}</div>
+            </button>}
 
-            <div className="flex items-center justify-between border-t border-slate-800/80 pt-4 px-2">
+            <div className={`relative flex items-center justify-between border-t border-slate-800/80 pt-4 ${sidebarCollapsed ? "px-1" : "px-2"}`}>
               <div className="flex items-center gap-2.5 min-w-0">
                 {user?.imageUrl ? (
                   <img src={user.imageUrl} className="h-8 w-8 rounded-full object-cover shrink-0" alt={username} />
@@ -2243,14 +2427,10 @@ export default function DashboardPage() {
                     {userInitials}
                   </div>
                 )}
-                <div className="leading-tight min-w-0">
-                  <div className="text-xs font-bold text-white truncate">{username}</div>
-                  <div className="text-[10px] text-slate-500 font-medium truncate">Free Tier Account</div>
-                </div>
+                {!sidebarCollapsed && <div className="leading-tight min-w-0"><div className="text-xs font-bold text-white truncate">{username}</div><div className="text-[10px] text-slate-500 font-medium truncate">Explorer · {totalPoints.toLocaleString()} points</div></div>}
               </div>
-              <button className="text-slate-500 hover:text-red-400 transition-colors ml-2">
-                <LogOut size={15} />
-              </button>
+              {!sidebarCollapsed && <button onClick={() => setAccountMenuOpen((open) => !open)} className="ml-2 flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white/5 hover:text-white" aria-expanded={accountMenuOpen}><ChevronDown size={15} className={`transition-transform ${accountMenuOpen ? "rotate-180" : ""}`} /></button>}
+              {accountMenuOpen && !sidebarCollapsed && <div className="absolute bottom-12 left-0 right-0 rounded-xl border border-slate-700 bg-[#111c36] p-2 shadow-2xl"><button onClick={() => handleTabChange("My Profile")} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/5"><UserRound size={14} /> Manage profile</button><button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/10"><LogOut size={14} /> Sign out</button></div>}
             </div>
           </div>
         </div>
@@ -2287,12 +2467,37 @@ export default function DashboardPage() {
 
               <div className="mb-3 px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Menu</div>
               <nav className="space-y-1">
-                {sidebarItems.map((item) => {
+                {sidebarItems.map((item, itemIndex) => {
                   const Icon = item.icon;
                   const isSelected = activeTab === item.label;
-                  return (
+                  const showSection = itemIndex === 0 || sidebarItems[itemIndex - 1].section !== item.section;
+                  if (item.children) {
+                    const hasActiveChild = item.children.some((child) => child.label === activeTab);
+                    return (
+                      <div key={item.label}>
+                        {showSection && <div className="mb-2 mt-5 px-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-600 first:mt-0">{item.section}</div>}
+                        <button type="button" onClick={() => setCareerToolsOpen((open) => !open)} aria-expanded={careerToolsOpen} className={`group flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[13.5px] font-medium transition-all ${hasActiveChild ? "bg-[#1c2541] text-teal-400 border border-slate-700/50" : "text-slate-400 hover:bg-slate-800/40 hover:text-white"}`}>
+                          <Icon size={18} className={hasActiveChild ? "text-teal-400" : "text-slate-400 group-hover:text-slate-200"} />
+                          <span className="flex-1">{item.label}</span>
+                          <ChevronDown size={15} className={`transition-transform duration-200 ${careerToolsOpen ? "rotate-180" : ""}`} />
+                        </button>
+                        <div className={`grid transition-[grid-template-rows] duration-200 ${careerToolsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                          <div className="overflow-hidden">
+                            <div className="ml-5 mt-1 space-y-1 border-l border-slate-700/70 pl-3">
+                              {item.children.map((child) => {
+                                const ChildIcon = child.icon;
+                                const childSelected = activeTab === child.label;
+                                return <button key={child.label} onClick={() => { handleTabChange(child.label); setSidebarOpen(false); }} className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[12.5px] font-medium transition ${childSelected ? "bg-teal-500/10 text-teal-300" : "text-slate-500 hover:bg-slate-800/40 hover:text-slate-200"}`}><ChildIcon size={15} /><span className="flex-1">{child.shortLabel}</span>{getToolBadge(child.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-bold text-slate-400">{getToolBadge(child.label)}</span>}</button>;
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (<React.Fragment key={item.label}>
+                    {showSection && <div className="mb-2 mt-5 px-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-600 first:mt-0">{item.section}</div>}
                     <button
-                      key={item.label}
                       onClick={() => {
                         handleTabChange(item.label);
                         setSidebarOpen(false);
@@ -2303,14 +2508,25 @@ export default function DashboardPage() {
                         }`}
                     >
                       <Icon size={18} className={isSelected ? "text-teal-400" : "text-slate-400 group-hover:text-slate-200"} />
-                      <span>{item.label}</span>
+                      <span className="flex-1">{item.label}</span>
+                      {getSidebarBadge(item.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-black text-slate-400">{getSidebarBadge(item.label)}</span>}
+                      {item.label === "My Profile" && (
+                        <span
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                          style={{ background: `conic-gradient(#2dd4bf ${profileCompleteness * 3.6}deg, #334155 0)` }}
+                          title={`${profileCompleteness}% profile complete`}
+                          aria-label={`${profileCompleteness}% profile complete`}
+                        >
+                          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b132b] text-[8px] font-black text-white">{profileCompleteness}%</span>
+                        </span>
+                      )}
                     </button>
-                  );
+                  </React.Fragment>);
                 })}
               </nav>
+              <button onClick={() => { handleTabChange(nextAction.tab); setSidebarOpen(false); }} className="mt-5 w-full rounded-xl border border-teal-500/15 bg-teal-500/[0.06] p-3 text-left"><div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-400">Your next move</span><Target size={13} className="text-teal-400" /></div><div className="mt-1.5 text-xs font-bold text-white">{nextAction.label}</div><div className="mt-1 text-[10px] text-slate-500">{nextAction.detail}</div></button>
             </div>
-
-
+            <div className="mt-4 flex items-center gap-3 border-t border-slate-800 px-2 pt-4">{user?.imageUrl ? <img src={user.imageUrl} alt={username} className="h-9 w-9 rounded-full object-cover" /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">{userInitials}</div>}<div className="min-w-0 flex-1"><div className="truncate text-xs font-bold text-white">{username}</div><div className="truncate text-[10px] text-slate-500">Explorer · {totalPoints.toLocaleString()} points</div></div><LogOut size={15} className="text-slate-500" /></div>
           </aside>
         </div>
       )}
@@ -2338,23 +2554,25 @@ export default function DashboardPage() {
             </div>
 
             {/* Top Info Header Bar */}
-            <div className="mb-6 flex flex-col gap-4 border-b border-slate-200/60 pb-5 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-xl font-bold text-slate-900 tracking-tight">{detailedData.title}</h1>
-                <p className="text-xs text-slate-400 font-medium mt-0.5">{detailedData.subtitle}</p>
-              </div>
+            {activeTab !== "Partner Journey" && activeTab !== "Partner Assignments" && (
+              <div className="mb-6 flex flex-col gap-4 border-b border-slate-200/60 pb-5 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <h1 className="text-xl font-bold text-slate-900 tracking-tight">{detailedData.title}</h1>
+                  <p className="text-xs text-slate-400 font-medium mt-0.5">{detailedData.subtitle}</p>
+                </div>
 
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                  <div className="h-7 w-7 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center"><Zap size={14} fill="currentColor" /></div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">CS Points Used</div><div className="text-sm font-black text-slate-800 mt-1">{totalPoints}</div></div>
-                </div>
-                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                  <div className="h-7 w-7 rounded-md bg-emerald-50 text-emerald-500 flex items-center justify-center font-bold text-sm">$</div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bill</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
+                    <div className="h-7 w-7 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center"><Zap size={14} fill="currentColor" /></div>
+                    <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">CS Points Used</div><div className="text-sm font-black text-slate-800 mt-1">{totalPoints}</div></div>
+                  </div>
+                  <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
+                    <div className="h-7 w-7 rounded-md bg-emerald-50 text-emerald-500 flex items-center justify-center font-bold text-sm">$</div>
+                    <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bill</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* System Active Callout Welcome Card & Metric Cards Grid (Hidden on My Profile tab) */}
             {activeTab !== "My Profile" && (
@@ -2368,7 +2586,7 @@ export default function DashboardPage() {
                       <span className="text-slate-300">•</span>
                       <span className="inline-flex items-center gap-1.5"><Calendar size={13} /> {currentTime.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
                       <span className="text-slate-300">•</span>
-                      <span className="inline-flex items-center gap-1.5 font-mono"><Clock size={13} /> {currentTime.toLocaleTimeString()}</span>
+                      <span className="inline-flex items-center gap-1.5"><Clock size={13} /> {currentTime.toLocaleTimeString()}</span>
                     </div>
 
                     {activeTab === "Career GPS" && (() => {
@@ -2395,7 +2613,7 @@ export default function DashboardPage() {
                               <div className="flex flex-col text-left">
                                 <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-800">
                                   <span>Profile Completeness</span>
-                                  <span className="font-extrabold text-teal-600 font-mono">{completeness}%</span>
+                                  <span className="font-extrabold text-teal-600">{completeness}%</span>
                                 </div>
                                 <p className="text-[10px] font-semibold text-slate-500 group-hover:text-teal-700 transition-colors">
                                   {completeness < 100 ? "Please complete your profile →" : "Profile Complete ✓"}
@@ -2413,10 +2631,10 @@ export default function DashboardPage() {
                         </div>
                       );
                     })()}
-                    {activeTab === "Certificates" && (
+                    {(activeTab === "Skill Certification" || activeTab === "Certificates") && (
                       <div className="flex items-center gap-2.5 shrink-0">
                         <a href="https://certifi.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
-                          <Sparkles size={13} /> Create Assessment
+                          <Sparkles size={13} /> Get Certified Now
                         </a>
                         <a href="https://certifi.careersenseai.com/dashboard" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0b132b] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
                           <ExternalLink size={13} /> Detailed Dashboard ↗
@@ -2459,7 +2677,7 @@ export default function DashboardPage() {
 
                 {/* --- METRIC CARDS GRID --- */}
                 {detailedData.stats.length > 0 && (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+                  <div className={`grid gap-4 sm:grid-cols-2 ${detailedData.stats.length === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-4'} mb-6`}>
                     {detailedData.stats.map((card, i) => (
                       <div
                         key={i}
