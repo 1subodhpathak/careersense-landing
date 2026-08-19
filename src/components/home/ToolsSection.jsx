@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ExternalLink, PenLine, ShieldCheck, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toolCards } from "../../data/homePageData";
+import { ebooks } from "../../data/ebooks";
 
 import InterviewImg from "../../Assets/Interview.png";
 import ResumeImg from "../../Assets/Resume.png";
@@ -70,7 +71,7 @@ const secondaryTools = [
     iconStyle: "bg-blue-400/15 text-blue-100 ring-blue-300/20",
     buttonStyle: "bg-indigo-500 text-white hover:bg-indigo-400",
     glow: "group-hover:shadow-blue-500/20",
-    chips: ["Assessments", "Proof of Skill", "Certificates"],
+    chips: ["Assessments", "Proof of Skill", "Skill Certification"],
     status: "live",
   },
 ];
@@ -513,6 +514,61 @@ export default function ToolsSection() {
               isVisible={isVisible}
             />
           ))}
+        </div>
+
+        {/* E-Learning Materials Section */}
+        <div className="mt-12 pt-8 border-t border-slate-200/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                E-Learning <span className="bg-gradient-to-r from-cyan-600 via-teal-600 to-blue-600 bg-clip-text text-transparent">Materials</span>
+              </h3>
+              <p className="text-xs sm:text-sm font-medium text-slate-500 mt-1">
+                Access structured guides, cheatsheets, and comprehensive career eBooks.
+              </p>
+            </div>
+            <Link
+              to="/dashboard?tab=E-Learning"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-teal-200 bg-teal-50/80 hover:bg-teal-100 text-teal-800 text-xs font-bold transition-all shadow-2xs hover:shadow-xs shrink-0 self-start sm:self-auto"
+            >
+              Explore Learning <ArrowRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            {ebooks.slice(0, 6).map((material) => (
+              <Link
+                key={material.slug}
+                to={`/ebooks/${material.slug}`}
+                className="group flex flex-col rounded-2xl border border-slate-200/80 bg-white overflow-hidden shadow-xs hover:shadow-md hover:border-teal-300 transition-all duration-300 hover:-translate-y-1"
+              >
+                <div className="relative aspect-[16/9] overflow-hidden bg-slate-900">
+                  <img
+                    src={material.thumbnail}
+                    alt={material.title}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <span className="absolute right-2.5 top-2.5 rounded-full border border-white/20 bg-slate-900/80 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-white">
+                    {material.format || "PDF"}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col p-3.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="text-xs font-bold text-slate-900 leading-snug line-clamp-2 group-hover:text-teal-700 transition-colors">
+                      {material.title}
+                    </h4>
+                    <ExternalLink size={13} className="text-teal-600 opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5" />
+                  </div>
+                  <div className="mt-auto pt-3 flex items-center justify-between text-[10px] font-semibold text-slate-500">
+                    <span className="px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-100 font-bold truncate max-w-[110px]">
+                      {material.category}
+                    </span>
+                    <span className="text-slate-400 font-medium">Read Now →</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
         </div>
       </section>

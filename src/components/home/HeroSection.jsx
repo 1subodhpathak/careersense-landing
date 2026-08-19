@@ -45,32 +45,32 @@ export default function HeroSection({ heroTheme = "dark" }) {
           fetchPriority="high"
           loading="eager"
           decoding="async"
-          className="absolute inset-0 hidden h-full w-full object-cover object-center sm:block"
+          className="absolute inset-0 hidden h-full w-full object-cover object-center xl:block"
         />
         <div
           className={`absolute inset-0 ${
             isLightTheme
-              ? "bg-[linear-gradient(145deg,rgba(242,248,255,0.92)_0%,rgba(227,240,255,0.84)_44%,rgba(214,234,255,0.74)_100%)] sm:bg-none"
-              : "bg-[linear-gradient(135deg,rgba(5,13,32,0.96)_0%,rgba(8,24,56,0.92)_48%,rgba(9,37,76,0.88)_100%)] sm:bg-[linear-gradient(90deg,rgba(8,17,33,0.48)_0%,rgba(8,17,33,0.38)_35%,rgba(8,17,33,0.24)_58%,rgba(8,17,33,0.14)_100%)]"
+              ? "bg-[linear-gradient(145deg,rgba(242,248,255,0.92)_0%,rgba(227,240,255,0.84)_44%,rgba(214,234,255,0.74)_100%)] xl:bg-none"
+              : "bg-[linear-gradient(135deg,rgba(5,13,32,0.96)_0%,rgba(8,24,56,0.92)_48%,rgba(9,37,76,0.88)_100%)] xl:bg-[linear-gradient(90deg,rgba(8,17,33,0.48)_0%,rgba(8,17,33,0.38)_35%,rgba(8,17,33,0.24)_58%,rgba(8,17,33,0.14)_100%)]"
           }`}
         />
         <div
           className={`absolute inset-0 ${
             isLightTheme
-              ? "bg-[radial-gradient(circle_at_18%_16%,rgba(59,130,246,0.14),transparent_28%),radial-gradient(circle_at_82%_14%,rgba(20,184,166,0.12),transparent_24%)] sm:bg-none"
-              : "bg-[radial-gradient(circle_at_20%_18%,rgba(96,165,250,0.14),transparent_28%),radial-gradient(circle_at_82%_16%,rgba(45,212,191,0.12),transparent_24%)] sm:bg-[linear-gradient(180deg,rgba(11,17,33,0.08)_0%,rgba(11,17,33,0.22)_100%)]"
+              ? "bg-[radial-gradient(circle_at_18%_16%,rgba(59,130,246,0.14),transparent_28%),radial-gradient(circle_at_82%_14%,rgba(20,184,166,0.12),transparent_24%)] xl:bg-none"
+              : "bg-[radial-gradient(circle_at_20%_18%,rgba(96,165,250,0.14),transparent_28%),radial-gradient(circle_at_82%_16%,rgba(45,212,191,0.12),transparent_24%)] xl:bg-[linear-gradient(180deg,rgba(11,17,33,0.08)_0%,rgba(11,17,33,0.22)_100%)]"
           }`}
         />
         <div
           className={`absolute inset-0 ${
             isLightTheme
-              ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(204,226,251,0.34)_100%)] sm:bg-none"
-              : "bg-[linear-gradient(180deg,rgba(8,17,33,0.08)_0%,rgba(6,14,32,0.48)_100%)] sm:bg-[radial-gradient(circle_at_72%_24%,rgba(32,201,151,0.08),transparent_0%),radial-gradient(circle_at_18%_18%,rgba(37,99,235,0.1),transparent_0%)]"
+              ? "bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(204,226,251,0.34)_100%)] xl:bg-none"
+              : "bg-[linear-gradient(180deg,rgba(8,17,33,0.08)_0%,rgba(6,14,32,0.48)_100%)] xl:bg-[radial-gradient(circle_at_72%_24%,rgba(32,201,151,0.08),transparent_0%),radial-gradient(circle_at_18%_18%,rgba(37,99,235,0.1),transparent_0%)]"
           }`}
         />
         <div className="mx-auto max-w-[1400px] px-5 sm:px-6 lg:px-10">
-          <div className="relative z-10 grid items-center gap-5 lg:grid-cols-[1fr_1.1fr]">
-            <div className="max-w-1xl">
+          <div className="relative z-10 grid items-center gap-5 xl:grid-cols-[1fr_1.1fr]">
+            <div className="max-w-2xl">
               <div
                 className={`inline-flex items-center gap-2 rounded-full px-3.5 py-2 text-[11px] font-medium sm:px-4 sm:text-[13px] ${
                   isLightTheme
@@ -105,7 +105,7 @@ export default function HeroSection({ heroTheme = "dark" }) {
               </h1>
 
               <p
-                className={`mt-5 max-w-full text-[15px] leading-7 sm:mt-6 sm:max-w-[80%] sm:text-[17px] sm:leading-relaxed ${
+                className={`mt-5 max-w-full text-[15px] leading-7 sm:mt-6 xl:max-w-[80%] sm:text-[17px] sm:leading-relaxed ${
                   isLightTheme ? "text-slate-700" : "text-slate-300"
                 }`}
               >
