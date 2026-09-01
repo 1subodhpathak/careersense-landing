@@ -3,13 +3,13 @@ import {
   ArrowLeft,
   Award,
   BarChart3,
+  CalendarDays,
   Check,
   CheckCircle2,
   ChevronRight,
   Clock3,
   Code2,
   Coins,
-  ExternalLink,
   Eye,
   File,
   Flag,
@@ -28,10 +28,12 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
-import { useAuth } from "@clerk/clerk-react";
 import { partnerAssignments, partnerPhases } from "../../data/partnerAssignments";
+import {
+  FellowshipAssignmentDetails,
+  FellowshipAssignmentWorkspace,
+} from "./FellowshipProgram";
 
-const API_BASE = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
 const STORAGE_KEY = "careersense-partner-assignments-v1";
 
 const emptyRecord = {
@@ -41,6 +43,7 @@ const emptyRecord = {
   files: [],
   score: null,
   submittedAt: null,
+  activityCompletions: {},
 };
 
 const phaseThemes = [
@@ -106,7 +109,7 @@ function StatusPill({ status }) {
   );
 }
 
-export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 87459, onPointsChange }) {
+export default function PartnerAssignments({ onViewIdCard }) {
   const [records, setRecords] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
@@ -118,9 +121,7 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
   const [view, setView] = useState("roadmap");
   const [selectedId, setSelectedId] = useState(1);
   const [step, setStep] = useState(1);
-  const [linkDraft, setLinkDraft] = useState("");
   const [saved, setSaved] = useState(false);
-  const [showSkipModal, setShowSkipModal] = useState(false);
 
   const selected = partnerAssignments.find((item) => item.id === selectedId);
   const record = { ...emptyRecord, ...(records[selectedId] || {}) };
@@ -143,15 +144,7 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
   const skipped = Object.values(records).filter(
     (r) => r.status === "skipped"
   ).length;
-  const netPartnerDelta = completed * 5000 - skipped * 1000;
-  const points = Math.max(0, (totalUserPoints || 87459));
-
-  useEffect(() => {
-    if (onPointsChange) {
-      onPointsChange(netPartnerDelta);
-    }
-  }, [completed, skipped, onPointsChange]);
-
+  const points = completed * 5000 - skipped * 1000;
   const progress = Math.round(
     (completed / partnerAssignments.length) * 100
   );
@@ -190,6 +183,28 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
       },
     }));
 
+  const toggleActivity = (index) => {
+    const activityCompletions = { ...(record.activityCompletions || {}) };
+
+    if (activityCompletions[index]) {
+      delete activityCompletions[index];
+    } else {
+      activityCompletions[index] = new Date().toISOString();
+    }
+
+    patchRecord({
+      activityCompletions,
+      status: record.status === "open" ? "in_progress" : record.status,
+    });
+  };
+
+  const formatCompletionDate = (date) =>
+    new Intl.DateTimeFormat("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(date));
+
   const showDetails = (id) => {
     setSelectedId(id);
     setView("details");
@@ -215,125 +230,35 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
     setView("workspace");
   };
 
-  const { getToken, isSignedIn } = useAuth();
-  const [isUploading, setIsUploading] = useState(false);
+  const updateEvidenceLink = (index, value) => {
+    const links = Array.from({ length: 4 }, (_, slot) => record.links[slot] || "");
+    links[index] = value;
 
-  useEffect(() => {
-    async function fetchRemoteAssignments() {
-      if (!isSignedIn) return;
-      try {
-        const token = await getToken();
-        const res = await fetch(`${API_BASE}/careersense/partner/assignments`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        if (data.success && data.records) {
-          // Replace records with backend single source of truth
-          setRecords(data.records);
-        }
-      } catch (err) {
-        console.warn("[PartnerAssignments] Offline or fetch error", err);
-      }
-    }
-    fetchRemoteAssignments();
-  }, [isSignedIn, getToken]);
-
-  const addLink = () => {
-    if (!linkDraft.trim()) return;
-
-    const newLinks = [...record.links, linkDraft.trim()];
-    patchRecord({
-      links: newLinks,
-      status: "in_progress",
-    });
-
-    setLinkDraft("");
-
-    if (isSignedIn) {
-      getToken().then((token) => {
-        fetch(`${API_BASE}/careersense/partner/assignments/${selectedId}/save`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            notes: record.notes,
-            links: newLinks
-          })
-        }).catch((err) => console.warn("[addLink sync error]", err));
-      });
-    }
+    patchRecord({ links, status: "in_progress" });
   };
 
-  const addFiles = async (event) => {
-    const filesList = [...event.target.files];
-    if (!filesList.length) return;
-
-    const incomingLocal = filesList.map((file) => ({
+  const addFiles = (event) => {
+    const incoming = [...event.target.files].map((file) => ({
       name: file.name,
       size: file.size,
       type: file.type,
     }));
 
     patchRecord({
-      files: [...record.files, ...incomingLocal],
+      files: [...record.files, ...incoming],
       status: "in_progress",
     });
 
     event.target.value = "";
-
-    if (isSignedIn) {
-      try {
-        setIsUploading(true);
-        const token = await getToken();
-        const formData = new FormData();
-        filesList.forEach((file) => formData.append("files", file));
-
-        const res = await fetch(`${API_BASE}/careersense/partner/assignments/${selectedId}/upload`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body: formData
-        });
-
-        const data = await res.json();
-        if (data.success && data.record) {
-          patchRecord(data.record);
-        }
-      } catch (err) {
-        console.error("[upload files error]", err);
-      } finally {
-        setIsUploading(false);
-      }
-    }
   };
 
-  const saveWork = async () => {
+  const saveWork = () => {
     patchRecord({ status: "in_progress" });
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
-
-    if (isSignedIn) {
-      try {
-        const token = await getToken();
-        await fetch(`${API_BASE}/careersense/partner/assignments/${selectedId}/save`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            notes: record.notes,
-            links: record.links
-          })
-        });
-      } catch (err) {
-        console.warn("[saveWork sync error]", err);
-      }
-    }
   };
 
-  const submit = async () => {
+  const submit = () => {
     if (
       record.notes.trim() ||
       record.links.length ||
@@ -343,42 +268,6 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
         status: "submitted",
         submittedAt: new Date().toISOString(),
       });
-
-      if (isSignedIn) {
-        try {
-          const token = await getToken();
-          await fetch(`${API_BASE}/careersense/partner/assignments/${selectedId}/submit`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify({
-              notes: record.notes,
-              links: record.links
-            })
-          });
-        } catch (err) {
-          console.error("[submit sync error]", err);
-        }
-      }
-    }
-  };
-
-  const handleConfirmSkip = async () => {
-    patchRecord({ status: "skipped" });
-    setShowSkipModal(false);
-
-    if (isSignedIn) {
-      try {
-        const token = await getToken();
-        await fetch(`${API_BASE}/careersense/partner/assignments/${selectedId}/skip`, {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      } catch (err) {
-        console.error("[skip assignment sync error]", err);
-      }
     }
   };
 
@@ -817,6 +706,37 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
   }
 
   if (view === "details") {
+    const partnerProgram = {
+      id: "partner",
+      name: "CareerSense Partner Program",
+      accent: "#1590ad",
+      soft: "#eaf9fc",
+    };
+    const sharedRecord = {
+      ...record,
+      status:
+        record.status === "open"
+          ? "available"
+          : record.status === "submitted"
+          ? "under_review"
+          : record.status,
+    };
+
+    return (
+      <FellowshipAssignmentDetails
+        project={selected}
+        program={partnerProgram}
+        record={sharedRecord}
+        itemLabel="Assignment"
+        programDescriptor="CareerSense Partner Program"
+        passScore={75}
+        onBack={() => setView("roadmap")}
+        onBegin={() => begin()}
+      />
+    );
+
+    /* Legacy Partner details layout retained temporarily for safe rollback. */
+    /* eslint-disable no-unreachable */
     const phaseIndex = partnerPhases.findIndex((phase) =>
       phase.assignmentIds.includes(selected.id)
     );
@@ -984,6 +904,44 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
     );
   }
 
+  if (view === "workspace") {
+    const partnerProgram = {
+      id: "partner",
+      name: "CareerSense Partner Program",
+      accent: "#1590ad",
+      soft: "#eaf9fc",
+    };
+    const sharedRecord = {
+      ...record,
+      status:
+        record.status === "open"
+          ? "available"
+          : record.status === "submitted"
+          ? "under_review"
+          : record.status,
+    };
+    const patchSharedRecord = (patch) => {
+      const next = { ...patch };
+      if (next.status === "available") next.status = "open";
+      if (next.status === "under_review") next.status = "submitted";
+      patchRecord(next);
+    };
+
+    return (
+      <FellowshipAssignmentWorkspace
+        project={selected}
+        program={partnerProgram}
+        record={sharedRecord}
+        itemLabel="Assignment"
+        programDescriptor="CareerSense Partner Program"
+        codePrefix="PARTNER"
+        passScore={75}
+        onPatch={patchSharedRecord}
+        onExit={() => setView("roadmap")}
+      />
+    );
+  }
+
   const steps = [
     { id: 1, label: "Understand", icon: Target },
     { id: 2, label: "Plan & notes", icon: ListChecks },
@@ -995,42 +953,6 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
 
   return (
     <div className="space-y-5">
-      {/* Skip Confirmation Modal */}
-      {showSkipModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-amber-200 bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
-              <Coins size={24} />
-            </div>
-
-            <h3 className="mt-4 text-lg font-black text-slate-900">
-              Skip Assignment {selected.id}?
-            </h3>
-
-            <p className="mt-2 text-xs font-medium leading-relaxed text-slate-600">
-              Skipping an assignment deducts <span className="font-bold text-amber-700">1,000 Career Points</span> from your total points balance. Are you sure you want to skip?
-            </p>
-
-            <div className="mt-6 flex items-center justify-end gap-3 border-t border-slate-100 pt-4">
-              <button
-                type="button"
-                onClick={() => setShowSkipModal(false)}
-                className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleConfirmSkip}
-                className="rounded-xl bg-amber-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-amber-600/20 hover:bg-amber-700 transition"
-              >
-                Confirm & Skip (-1,000 Points)
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           onClick={() => setView("roadmap")}
@@ -1124,24 +1046,76 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
               </div>
 
               <div>
-                <h3 className="text-sm font-black text-[#07182f]">
-                  Complete these activities
-                </h3>
+                <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h3 className="text-sm font-black text-[#07182f]">
+                      Complete these activities
+                    </h3>
+                    <p className="mt-1 text-[11px] text-slate-500">
+                      Select an activity when it is finished. Its completion date is saved automatically.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-bold text-[#0d8dab]">
+                    {Object.keys(record.activityCompletions || {}).length} of {selected.tasks.length} complete
+                  </span>
+                </div>
 
                 <div className="mt-3 grid gap-3">
-                  {selected.tasks.map((task, index) => (
-                    <div
-                      key={task}
-                      className="flex gap-3 rounded-[18px] border border-[#e0eaf0] bg-[#fbfdff] p-4"
-                    >
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#071b31] text-[10px] font-black text-cyan-300">
-                        {index + 1}
-                      </span>
-                      <p className="pt-1 text-xs font-medium leading-5 text-slate-600">
-                        {task}
-                      </p>
-                    </div>
-                  ))}
+                  {selected.tasks.map((task, index) => {
+                    const completedAt = record.activityCompletions?.[index];
+
+                    return (
+                      <button
+                        type="button"
+                        key={task}
+                        onClick={() => toggleActivity(index)}
+                        aria-pressed={Boolean(completedAt)}
+                        className={`group flex w-full gap-3 rounded-[18px] border p-4 text-left transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#dff6fa] ${
+                          completedAt
+                            ? "border-[#a9e2d5] bg-[#f1fbf8]"
+                            : "border-[#e0eaf0] bg-[#fbfdff] hover:border-[#b8dce7] hover:bg-white"
+                        }`}
+                      >
+                        <span
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[10px] font-black transition ${
+                            completedAt
+                              ? "bg-[#087f68] text-white"
+                              : "bg-[#071b31] text-cyan-300"
+                          }`}
+                        >
+                          {completedAt ? <Check size={15} strokeWidth={3} /> : index + 1}
+                        </span>
+
+                        <span className="min-w-0 flex-1">
+                          <span
+                            className={`block pt-1 text-xs font-medium leading-5 ${
+                              completedAt ? "text-[#315d55]" : "text-slate-600"
+                            }`}
+                          >
+                            {task}
+                          </span>
+
+                          {completedAt && (
+                            <span className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-bold text-[#087f68]">
+                              <CalendarDays size={12} />
+                              Completed {formatCompletionDate(completedAt)}
+                            </span>
+                          )}
+                        </span>
+
+                        <span
+                          className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition ${
+                            completedAt
+                              ? "border-[#087f68] bg-[#087f68] text-white"
+                              : "border-slate-300 bg-white text-transparent group-hover:border-[#1590ad]"
+                          }`}
+                          aria-hidden="true"
+                        >
+                          <Check size={12} strokeWidth={3} />
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1186,75 +1160,40 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
               </div>
 
               <div className="rounded-[18px] border border-[#e0eaf0] bg-[#fbfdff] p-5">
-                <label className="mb-2 block text-[10px] font-black text-[#253b51]">
-                  Supporting links
-                </label>
-
-                <div className="flex flex-col gap-2 sm:flex-row">
-                  <div className="relative flex-1">
-                    <Link2
-                      size={14}
-                      className="absolute left-3.5 top-3.5 text-slate-400"
-                    />
-                    <input
-                      value={linkDraft}
-                      onChange={(e) => setLinkDraft(e.target.value)}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && addLink()
-                      }
-                      disabled={readOnly}
-                      placeholder="Paste a Figma, GitHub, Drive, or live URL"
-                      className="h-11 w-full rounded-xl border border-[#dce7ee] bg-white pl-10 pr-3 text-xs outline-none transition focus:border-[#4ec6da] focus:ring-4 focus:ring-[#eaf9fc]"
-                    />
-                  </div>
-
-                  <button
-                    onClick={addLink}
-                    disabled={!linkDraft.trim() || readOnly}
-                    className="min-h-11 rounded-xl bg-[#071b31] px-5 text-[10px] font-black text-white transition hover:bg-[#0d2947] disabled:opacity-40"
-                  >
-                    Add link
-                  </button>
+                <div className="flex items-center justify-between gap-3">
+                  <label className="block text-[10px] font-black text-[#253b51]">
+                    Supporting links
+                  </label>
+                  <span className="text-[9px] font-bold text-[#1590ad]">
+                    {record.links.filter((link) => link?.trim()).length}/4 added
+                  </span>
                 </div>
 
-                <div className="mt-3 space-y-2">
-                  {record.links.map((link, index) => (
-                    <div
-                      key={`${link}-${index}`}
-                      className="flex items-center gap-2 rounded-xl border border-[#e2ebf1] bg-white px-3 py-2.5"
-                    >
-                      <ExternalLink
-                        size={13}
-                        className="text-[#12a2bc]"
-                      />
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                  Add up to four separate Figma, GitHub, Drive, document, or live project links.
+                </p>
 
-                      <a
-                        href={
-                          link.startsWith("http")
-                            ? link
-                            : `https://${link}`
-                        }
-                        target="_blank"
-                        rel="noreferrer"
-                        className="min-w-0 flex-1 truncate text-[10px] font-bold text-[#1684bd]"
-                      >
-                        {link}
-                      </a>
-
-                      {!readOnly && (
-                        <button
-                          onClick={() =>
-                            patchRecord({
-                              links: record.links.filter(
-                                (_, i) => i !== index
-                              ),
-                            })
-                          }
-                        >
-                          <X size={13} className="text-slate-400" />
-                        </button>
-                      )}
-                    </div>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {Array.from({ length: 4 }, (_, index) => (
+                    <label key={index} className="block">
+                      <span className="mb-1.5 block text-[9px] font-black uppercase tracking-wider text-slate-500">
+                        Link {index + 1}
+                      </span>
+                      <span className="relative block">
+                        <Link2
+                          size={14}
+                          className="absolute left-3.5 top-3.5 text-slate-400"
+                        />
+                        <input
+                          type="url"
+                          value={record.links[index] || ""}
+                          onChange={(event) => updateEvidenceLink(index, event.target.value)}
+                          disabled={readOnly}
+                          placeholder={`Paste supporting URL ${index + 1}`}
+                          className="h-11 w-full rounded-xl border border-[#dce7ee] bg-white pl-10 pr-3 text-xs text-[#253b51] outline-none transition placeholder:text-slate-400 focus:border-[#4ec6da] focus:ring-4 focus:ring-[#eaf9fc] disabled:bg-slate-50 disabled:opacity-60"
+                        />
+                      </span>
+                    </label>
                   ))}
                 </div>
               </div>
@@ -1380,7 +1319,7 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
                     Links
                   </div>
                   <div className="mt-2 text-xl font-black text-[#07182f]">
-                    {record.links.length}
+                    {record.links.filter((link) => link?.trim()).length}
                   </div>
                 </div>
 
@@ -1415,9 +1354,11 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
               </div>
             </div>
           )}
+        </div>
+
         <div className="flex flex-col-reverse gap-3 border-t border-[#edf2f6] bg-[#fbfdff] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
           <button
-            onClick={() => setShowSkipModal(true)}
+            onClick={() => patchRecord({ status: "skipped" })}
             disabled={readOnly}
             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-[10px] font-bold text-amber-700 hover:bg-amber-50 disabled:opacity-40"
           >
@@ -1454,7 +1395,7 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
                 disabled={
                   readOnly ||
                   (!record.notes.trim() &&
-                    !record.links.length &&
+                    !record.links.some((link) => link?.trim()) &&
                     !record.files.length)
                 }
                 className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl px-5 text-[10px] font-black text-white transition hover:brightness-105 disabled:opacity-40 sm:flex-none"
@@ -1466,8 +1407,7 @@ export default function PartnerAssignments({ onViewIdCard, totalUserPoints = 874
             )}
           </div>
         </div>
-      </div>
-    </section>
-  </div>
+      </section>
+    </div>
   );
 }

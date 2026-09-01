@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1269F3"/><stop offset="1" stop-color="#39A7FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00B894"/><stop offset="1" stop-color="#22D3B6"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#5E5CE6"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+<linearGradient id="orange" x1="0" x2="1"><stop stop-color="#FF5E78"/><stop offset="1" stop-color="#FF9A2F"/></linearGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0D2B5B" flood-opacity=".12"/></filter>
+</defs>
+<g transform="translate(68,55)">
+<rect x="40" y="245" width="48" height="112" rx="8" fill="#FF4C83"/>
+<rect x="118" y="190" width="48" height="167" rx="8" fill="#FF7164"/>
+<rect x="196" y="132" width="48" height="225" rx="8" fill="#FF8D3D"/>
+<rect x="274" y="82" width="48" height="275" rx="8" fill="#FF9F2E"/>
+<path d="M50 190 L138 145 L220 168 L298 86" fill="none" stroke="#FF7357" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+<g fill="#FF7357"><circle cx="50" cy="190" r="14"/><circle cx="138" cy="145" r="14"/><circle cx="220" cy="168" r="14"/><circle cx="298" cy="86" r="14"/></g>
+</g></svg>

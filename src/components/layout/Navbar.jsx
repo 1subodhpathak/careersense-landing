@@ -1,4 +1,4 @@
-import { Award, CalendarDays, ChevronDown, FileCheck2, FilePenLine, MenuSquare, MessagesSquare, MoonStar, ScrollText, SunMedium, X } from "lucide-react";
+import { Award, BarChart3, Bot, CalendarDays, ChevronDown, Code2, Database, FileCheck2, FilePenLine, MenuSquare, MessagesSquare, MoonStar, Palette, ScrollText, Smartphone, SunMedium, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/clerk-react";
@@ -7,8 +7,9 @@ import CSLogo from "../../Assets/CSlogo.png";
 const routeItems = [
   { href: "/#home", label: "Home" },
   { href: "/#career-tools", label: "Career Tools", tools: true },
+  { href: "/dashboard?tab=Fellowship%20Program", label: "Fellowship Programs", fellowships: true },
   { href: "/linkedin-optimizer", label: "LinkedIn Optimizer", internal: true },
-  { href: "/#how-it-works", label: "How It Works" },
+  
   { href: "/career-gps", label: "Career Score Check", internal: true },
   { href: "/partner-program", label: "Partner Program", internal: true },
   { href: "/#faq", label: "FAQ" },
@@ -17,15 +18,25 @@ const routeItems = [
 const careerTools = [
   { href: "/resume-builder", label: "AI Resume Builder", description: "Create an ATS-ready resume", icon: FilePenLine, tone: "text-blue-700 bg-blue-100" },
   { href: "https://ats.careersenseai.com/", label: "ATS Score Checker", description: "Review keywords and job fit", icon: FileCheck2, tone: "text-emerald-700 bg-emerald-100", external: true },
-  { href: "https://coverletter.careersenseai.com/", label: "Cover Letter Builder", description: "Write a tailored introduction", icon: ScrollText, tone: "text-violet-700 bg-violet-100", external: true },
+  { href: "/cover-letter-builder", label: "Cover Letter Builder", description: "Write a tailored introduction", icon: ScrollText, tone: "text-violet-700 bg-violet-100" },
   { href: "/interview-simulator", label: "Interview Simulator", description: "Practise role-specific interviews", icon: MessagesSquare, tone: "text-amber-700 bg-amber-100" },
-  { href: "https://certifi.careersenseai.com/", label: "Skill Certification", description: "Prove job-ready capabilities", icon: Award, tone: "text-cyan-700 bg-cyan-100", external: true },
+  { href: "/skill-certification", label: "Skill Certification", description: "Prove job-ready capabilities", icon: Award, tone: "text-cyan-700 bg-cyan-100" },
+];
+
+const fellowshipPrograms = [
+  { id: "data-analyst", href: "/fellowships/data-analyst", label: "Data Analyst", description: "SQL, Power BI and Tableau", icon: BarChart3, tone: "text-blue-700 bg-blue-50" },
+  { id: "data-science", href: "/fellowships/data-science", label: "Data Science", description: "Python, statistics and machine learning", icon: Database, tone: "text-emerald-700 bg-emerald-50" },
+  { id: "artificial-intelligence", href: "/fellowships/artificial-intelligence", label: "Artificial Intelligence", description: "TensorFlow, OpenAI and NLP", icon: Bot, tone: "text-violet-700 bg-violet-50" },
+  { id: "ui-ux-design", href: "/fellowships/ui-ux-design", label: "UI/UX Design", description: "Figma, research and prototyping", icon: Palette, tone: "text-fuchsia-700 bg-fuchsia-50" },
+  { id: "app-development", href: "/fellowships/app-development", label: "App Development", description: "Flutter and React Native", icon: Smartphone, tone: "text-rose-700 bg-rose-50" },
+  { id: "full-stack-development", href: "/fellowships/full-stack-development", label: "Full Stack Development", description: "React, Node.js and MongoDB", icon: Code2, tone: "text-amber-700 bg-amber-50" },
 ];
 
 export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [fellowshipsOpen, setFellowshipsOpen] = useState(false);
   const isLightTheme = heroTheme === "light";
 
   useEffect(() => {
@@ -39,6 +50,9 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
   }, [location.pathname, location.hash]);
 
   const isRouteActive = (item) => {
+    if (item.fellowships) {
+      return location.pathname === "/dashboard" && new URLSearchParams(location.search).get("tab") === "Fellowship Program";
+    }
     if (item.tools) {
       return (location.pathname === "/" && location.hash === "#career-tools") || careerTools.some((tool) => !tool.external && location.pathname === tool.href);
     }
@@ -53,17 +67,19 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
     ? "bg-white text-blue-700 shadow-sm ring-1 ring-blue-100"
     : "bg-white/10 text-cyan-300 ring-1 ring-white/10";
 
-  const navLinkClass = `whitespace-nowrap rounded-xl px-2.5 py-2.5 text-[13px] font-semibold transition-all duration-200 xl:px-3 xl:text-sm ${isLightTheme
+  const navLinkClass = `whitespace-nowrap rounded-xl px-2.5 py-2.5 text-[13px] font-semibold transition-all duration-200 xl:px-3 xl:text-sm ${
+    isLightTheme
       ? "text-slate-700 hover:bg-slate-900/6 hover:text-slate-950"
       : "text-slate-300 hover:bg-white/6 hover:text-white"
-    }`;
+  }`;
 
   return (
     <header
-      className={`relative z-50 border-b shadow-[0_10px_30px_rgba(2,11,31,0.24)] transition-colors duration-300 ${isLightTheme
+      className={`relative z-50 border-b shadow-[0_10px_30px_rgba(2,11,31,0.24)] transition-colors duration-300 ${
+        isLightTheme
           ? "border-slate-900/8 bg-[#eef6ff] text-slate-950"
           : "border-white/10 bg-[#081634] text-white"
-        }`}
+      }`}
     >
       <div className="mx-auto max-w-[1600px] px-5 lg:px-6 xl:px-8">
         <div className="flex min-h-[82px] items-center justify-between gap-3 xl:gap-5">
@@ -75,8 +91,9 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
             />
             <div className="leading-none">
               <div
-                className={`text-[16px] font-black tracking-tight sm:text-[20px] ${isLightTheme ? "text-slate-950" : "text-white"
-                  }`}
+                className={`text-[16px] font-black tracking-tight sm:text-[20px] ${
+                  isLightTheme ? "text-slate-950" : "text-white"
+                }`}
               >
                 <span className={isLightTheme ? "text-slate-950" : "text-white"}>
                   Career
@@ -86,8 +103,9 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                 </span>
               </div>
               <div
-                className={`mt-1 hidden text-[9px] font-bold uppercase tracking-[0.34em] sm:block ${isLightTheme ? "text-cyan-700/90" : "text-cyan-300/80"
-                  }`}
+                className={`mt-1 hidden text-[9px] font-bold uppercase tracking-[0.34em] sm:block ${
+                  isLightTheme ? "text-cyan-700/90" : "text-cyan-300/80"
+                }`}
               >
                 AI Career Copilot
               </div>
@@ -95,9 +113,16 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
           </Link>
 
           <nav className="hidden min-w-0 shrink items-center justify-center gap-1 xl:flex">
-            {routeItems.map((item) => item.tools ? (
+            {routeItems.map((item) => item.fellowships ? (
+              <div key={item.label} className="relative shrink-0" onMouseEnter={() => { setFellowshipsOpen(true); setToolsOpen(false); }} onMouseLeave={() => setFellowshipsOpen(false)}>
+                <button type="button" onClick={() => { setFellowshipsOpen((value) => !value); setToolsOpen(false); }} className={`${navLinkClass} inline-flex items-center gap-1.5 ${isRouteActive(item) ? activeNavClass : ""}`} aria-expanded={fellowshipsOpen} aria-haspopup="menu" aria-current={isRouteActive(item) ? "page" : undefined}>
+                  {item.label}<ChevronDown className={`h-3.5 w-3.5 transition-transform ${fellowshipsOpen ? "rotate-180" : ""}`} />
+                </button>
+                {fellowshipsOpen && <div role="menu" className="absolute left-1/2 top-full w-[560px] -translate-x-1/2 pt-3"><div className={`overflow-hidden rounded-2xl border shadow-[0_24px_60px_rgba(2,11,31,0.24)] ${isLightTheme ? "border-slate-200 bg-white" : "border-white/10 bg-[#0d2042]"}`}><div className={`border-b px-5 py-3 ${isLightTheme ? "border-slate-100" : "border-white/10"}`}><p className="text-[10px] font-black uppercase tracking-[0.16em] text-cyan-600">Three-month fellowship</p><p className={`mt-0.5 text-xs font-semibold ${isLightTheme ? "text-slate-500" : "text-slate-400"}`}>Choose one professional track to begin.</p></div><div className="grid grid-cols-2 gap-1 p-2.5">{fellowshipPrograms.map((program) => { const Icon = program.icon; return <Link key={program.id} to={program.href || `/dashboard?tab=Fellowship%20Program&fellowship=${program.id}`} role="menuitem" onClick={() => setFellowshipsOpen(false)} className={`flex items-center gap-3 rounded-xl px-3 py-3 transition ${isLightTheme ? "hover:bg-blue-50" : "hover:bg-white/7"}`}><span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${program.tone}`}><Icon size={18} /></span><span className="min-w-0"><span className={`block text-sm font-extrabold ${isLightTheme ? "text-slate-900" : "text-white"}`}>{program.label}</span><span className={`mt-0.5 block truncate text-[11px] ${isLightTheme ? "text-slate-500" : "text-slate-400"}`}>{program.description}</span></span></Link>; })}</div><div className={`flex items-center justify-between border-t px-5 py-3 text-[10px] font-semibold ${isLightTheme ? "border-slate-100 bg-slate-50 text-slate-500" : "border-white/10 bg-black/10 text-slate-400"}`}><span>Open year-round · No live sessions</span><span>One active fellowship at a time</span></div></div></div>}
+              </div>
+            ) : item.tools ? (
               <div key={item.label} className="relative shrink-0" onMouseEnter={() => setToolsOpen(true)} onMouseLeave={() => setToolsOpen(false)}>
-                <button type="button" onClick={() => setToolsOpen((value) => !value)} className={`${navLinkClass} inline-flex items-center gap-1.5 ${isRouteActive(item) ? activeNavClass : ""}`} aria-expanded={toolsOpen} aria-haspopup="menu" aria-current={isRouteActive(item) ? "page" : undefined}>
+                <button type="button" onClick={() => { setToolsOpen((value) => !value); setFellowshipsOpen(false); }} className={`${navLinkClass} inline-flex items-center gap-1.5 ${isRouteActive(item) ? activeNavClass : ""}`} aria-expanded={toolsOpen} aria-haspopup="menu" aria-current={isRouteActive(item) ? "page" : undefined}>
                   {item.label}<ChevronDown className={`h-3.5 w-3.5 transition-transform ${toolsOpen ? "rotate-180" : ""}`} />
                 </button>
                 {toolsOpen && (
@@ -127,10 +152,11 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
             <button
               type="button"
               onClick={onToggleHeroTheme}
-              className={`hidden h-11 w-11 items-center justify-center rounded-xl border transition xl:inline-flex ${isLightTheme
+              className={`hidden h-11 w-11 items-center justify-center rounded-xl border transition xl:inline-flex ${
+                isLightTheme
                   ? "border-slate-900/10 bg-white/70 text-slate-800 hover:bg-white"
                   : "border-white/12 bg-white/5 text-white hover:bg-white/10"
-                }`}
+              }`}
               aria-label={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
               title={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
             >
@@ -173,10 +199,11 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
 
             <button
               type="button"
-              className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border transition xl:hidden ${isLightTheme
+              className={`inline-flex h-11 w-11 items-center justify-center rounded-xl border transition xl:hidden ${
+                isLightTheme
                   ? "border-slate-900/10 bg-white/70 text-slate-800 hover:bg-white"
                   : "border-white/12 bg-white/5 text-white hover:bg-white/10"
-                }`}
+              }`}
               onClick={() => setOpen((value) => !value)}
               aria-label="Toggle navigation"
               aria-expanded={open}
@@ -189,22 +216,31 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
 
       {open && (
         <div
-          className={`max-h-[calc(100vh-106px)] overflow-y-auto border-t xl:hidden ${isLightTheme
+          className={`max-h-[calc(100vh-106px)] overflow-y-auto border-t xl:hidden ${
+            isLightTheme
               ? "border-slate-900/8 bg-[#eef6ff]"
               : "border-white/10 bg-[#081634]"
-            }`}
+          }`}
         >
           <div className="mx-auto max-w-[1400px] px-6 pb-4 pt-3 lg:px-10">
             <div
-              className={`rounded-2xl border p-3 ${isLightTheme
+              className={`rounded-2xl border p-3 ${
+                isLightTheme
                   ? "border-slate-900/8 bg-white/80"
                   : "border-white/10 bg-white/5"
-                }`}
+              }`}
             >
               <div className="grid gap-1.5">
-                {routeItems.map((item) => item.tools ? (
+                {routeItems.map((item) => item.fellowships ? (
                   <div key={item.label}>
-                    <button type="button" onClick={() => setToolsOpen((value) => !value)} className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition ${isRouteActive(item) ? activeNavClass : isLightTheme ? "text-slate-700 hover:bg-slate-900/6" : "text-slate-300 hover:bg-white/8"}`} aria-expanded={toolsOpen} aria-current={isRouteActive(item) ? "page" : undefined}>
+                    <button type="button" onClick={() => { setFellowshipsOpen((value) => !value); setToolsOpen(false); }} className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition ${isRouteActive(item) ? activeNavClass : isLightTheme ? "text-slate-700 hover:bg-slate-900/6" : "text-slate-300 hover:bg-white/8"}`} aria-expanded={fellowshipsOpen}>
+                      {item.label}<ChevronDown className={`h-4 w-4 transition-transform ${fellowshipsOpen ? "rotate-180" : ""}`} />
+                    </button>
+                    {fellowshipsOpen && <div className={`mx-2 mb-2 grid gap-1 rounded-xl p-2 sm:grid-cols-2 ${isLightTheme ? "bg-slate-100/80" : "bg-black/15"}`}>{fellowshipPrograms.map((program) => { const Icon = program.icon; return <Link key={program.id} to={program.href || `/dashboard?tab=Fellowship%20Program&fellowship=${program.id}`} onClick={() => { setOpen(false); setFellowshipsOpen(false); }} className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${isLightTheme ? "hover:bg-white" : "hover:bg-white/8"}`}><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${program.tone}`}><Icon size={16} /></span><span className="min-w-0"><span className={`block text-xs font-extrabold ${isLightTheme ? "text-slate-900" : "text-white"}`}>{program.label}</span><span className={`block truncate text-[10px] ${isLightTheme ? "text-slate-500" : "text-slate-400"}`}>{program.description}</span></span></Link>; })}<div className={`px-3 py-2 text-center text-[10px] font-bold sm:col-span-2 ${isLightTheme ? "text-blue-700" : "text-cyan-300"}`}>3 months · Open year-round</div></div>}
+                  </div>
+                ) : item.tools ? (
+                  <div key={item.label}>
+                    <button type="button" onClick={() => { setToolsOpen((value) => !value); setFellowshipsOpen(false); }} className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition ${isRouteActive(item) ? activeNavClass : isLightTheme ? "text-slate-700 hover:bg-slate-900/6" : "text-slate-300 hover:bg-white/8"}`} aria-expanded={toolsOpen} aria-current={isRouteActive(item) ? "page" : undefined}>
                       {item.label}<ChevronDown className={`h-4 w-4 transition-transform ${toolsOpen ? "rotate-180" : ""}`} />
                     </button>
                     {toolsOpen && <div className={`mx-2 mb-2 grid gap-1 rounded-xl p-2 ${isLightTheme ? "bg-slate-100/80" : "bg-black/15"}`}>{careerTools.map((tool) => { const Icon = tool.icon; const itemClass = `flex items-center gap-3 rounded-xl px-3 py-2.5 text-left transition ${isLightTheme ? "hover:bg-white" : "hover:bg-white/8"}`; const content = <><span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${tool.tone}`}><Icon size={16} /></span><span><span className={`block text-xs font-extrabold ${isLightTheme ? "text-slate-900" : "text-white"}`}>{tool.label}</span><span className={`block text-[11px] ${isLightTheme ? "text-slate-500" : "text-slate-400"}`}>{tool.description}</span></span></>; return tool.external ? <a key={tool.label} href={tool.href} target="_blank" rel="noreferrer" onClick={() => setOpen(false)} className={itemClass}>{content}</a> : <Link key={tool.label} to={tool.href} onClick={() => setOpen(false)} className={itemClass}>{content}</Link>; })}<Link to="/#career-tools" onClick={() => setOpen(false)} className={`rounded-lg px-3 py-2 text-center text-xs font-black ${isLightTheme ? "text-blue-700" : "text-cyan-300"}`}>Explore all career tools →</Link></div>}
@@ -217,12 +253,13 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                     to={item.href}
                     onClick={() => setOpen(false)}
                     aria-current={isRouteActive(item) ? "page" : undefined}
-                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${isRouteActive(item)
+                    className={`rounded-xl px-4 py-3 text-sm font-semibold transition ${
+                      isRouteActive(item)
                         ? activeNavClass
                         : isLightTheme
-                          ? "text-slate-700 hover:bg-slate-900/6 hover:text-slate-950"
-                          : "text-slate-300 hover:bg-white/8 hover:text-white"
-                      }`}
+                        ? "text-slate-700 hover:bg-slate-900/6 hover:text-slate-950"
+                        : "text-slate-300 hover:bg-white/8 hover:text-white"
+                    }`}
                   >
                     {item.label}
                   </Link>
@@ -234,10 +271,11 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                     onToggleHeroTheme?.();
                     setOpen(false);
                   }}
-                  className={`mt-2 inline-flex h-11 w-11 items-center justify-center self-center rounded-xl border transition ${isLightTheme
+                  className={`mt-2 inline-flex h-11 w-11 items-center justify-center self-center rounded-xl border transition ${
+                    isLightTheme
                       ? "border-slate-900/10 bg-white text-slate-800 hover:bg-slate-50"
                       : "border-white/10 bg-white/5 text-white hover:bg-white/10"
-                    }`}
+                  }`}
                   aria-label={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
                   title={`Switch to ${isLightTheme ? "dark" : "light"} hero theme`}
                 >

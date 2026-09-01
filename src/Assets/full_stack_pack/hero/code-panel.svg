@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="650" viewBox="0 0 900 650">
+<defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#173CFF"/><stop offset="1" stop-color="#6B4CFF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A98F"/><stop offset="1" stop-color="#23D0B2"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#5747F2"/><stop offset="1" stop-color="#7A5BFF"/></linearGradient>
+<linearGradient id="coral" x1="0" x2="1"><stop stop-color="#FF4E80"/><stop offset="1" stop-color="#FF9136"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0C3472"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#4374FF" stop-opacity=".42"/><stop offset="1" stop-color="#4374FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+</defs>
+<g transform="translate(60,40) rotate(-6 390 260)" filter="url(#deepShadow)">
+<rect x="0" y="0" width="760" height="510" rx="32" fill="#5665A7" opacity=".94"/>
+<rect x="0" y="0" width="760" height="510" rx="32" fill="url(#navy)" opacity=".50"/>
+<text x="44" y="86" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">const express = require('express');</text>
+<text x="44" y="142" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">const app = express();</text>
+<text x="44" y="215" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">app.get('/', (req, res) =&gt; {</text>
+<text x="72" y="270" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">res.send('Hello Full Stack!');</text>
+<text x="44" y="325" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">});</text>
+<text x="44" y="397" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">app.listen(3000, () =&gt; {</text>
+<text x="72" y="452" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="31" fill="#FFFFFF">console.log('Server running');</text>
+</g>
+</svg>

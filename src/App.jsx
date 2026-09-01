@@ -10,6 +10,7 @@ import LinkedInOptimizerPage from "./pages/LinkedInOptimizerPage";
 import ELearningPage from "./pages/ELearningPage";
 import EbookReaderPage from "./pages/EbookReaderPage";
 import PartnerProgramPage from "./pages/PartnerProgramPage";
+import DataAnalystFellowshipPage from "./pages/DataAnalystFellowshipPage";
 
 function ProtectedRoute({ children }) {
   return (
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/career-gps" element={<CareerGpsPage />} />
         <Route path="/linkedin-optimizer" element={<LinkedInOptimizerPage />} />
         <Route path="/partner-program" element={<PartnerProgramPage />} />
+        <Route path="/fellowships/:programId" element={<DataAnalystFellowshipPage />} />
         <Route path="/learning/:slug" element={<ProtectedRoute><ELearningPage /></ProtectedRoute>} />
         <Route path="/ebooks/:slug" element={<ProtectedRoute><EbookReaderPage /></ProtectedRoute>} />
         <Route

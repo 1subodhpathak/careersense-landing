@@ -36,28 +36,6 @@ export default function IdCardStudio({ profile, user }) {
   const partnerId = `CS-${nameCode}${locationCode}`;
   const avatar = profile.avatar || user?.imageUrl;
 
-  const [verifying, setVerifying] = useState(false);
-  const [verifyStatus, setVerifyStatus] = useState(null);
-
-  async function checkVerification() {
-    setVerifying(true);
-    setVerifyStatus(null);
-    const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
-    try {
-      const res = await fetch(`${apiBase}/careersense/profile/verify-partner/${partnerId}`);
-      if (res.ok) {
-        const data = await res.json();
-        setVerifyStatus(data);
-      } else {
-        setVerifyStatus({ verified: true, partnerId, status: "Active Partner" });
-      }
-    } catch {
-      setVerifyStatus({ verified: true, partnerId, status: "Active Partner" });
-    } finally {
-      setVerifying(false);
-    }
-  }
-
   async function exportCard() {
     if (!cardRef.current) return;
     setExporting(true);
@@ -76,17 +54,6 @@ export default function IdCardStudio({ profile, user }) {
         <div className="flex items-start gap-3 border-b border-slate-100 pb-5"><div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-600"><UserRound size={19} /></div><div><h3 className="text-base font-bold text-slate-900">Profile data</h3><p className="mt-1 text-xs leading-5 text-slate-500">Your Partner ID is generated from the master profile. Update missing information in My Profile.</p></div></div>
         <div className="mt-5 grid gap-3">
           {[['Full name', name], ['Email', email], ['Phone', phone], ['Status', status], ['Batch', batch], ['Partner ID', partnerId], ['Location', location]].map(([label, value]) => <div key={label} className="flex items-center justify-between gap-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"><span className="text-xs font-bold uppercase tracking-wider text-slate-400">{label}</span><span className="max-w-[58%] truncate text-right text-sm font-bold text-slate-800">{value}</span></div>)}
-        </div>
-        <div className="mt-4 flex flex-col gap-3">
-          <button type="button" onClick={checkVerification} disabled={verifying} className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-teal-300 bg-teal-50 px-4 py-2.5 text-xs font-bold text-teal-800 transition hover:bg-teal-100 disabled:opacity-50">
-            <ShieldCheck size={16} />
-            {verifying ? "Verifying Partner ID..." : "Verify Partner ID Status"}
-          </button>
-          {verifyStatus && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs font-semibold text-emerald-800">
-              ✓ <strong>Verified Partner ID ({verifyStatus.partnerId || partnerId}):</strong> Active &amp; Validated on CareerSense Network
-            </div>
-          )}
         </div>
         <div className="mt-5 rounded-xl border border-teal-200 bg-teal-50 p-4 text-xs leading-5 text-teal-800"><strong>CareerSense Official ID.</strong> The CareerSense Partner ID design is locked to keep every issued card visually consistent.</div>
       </section>

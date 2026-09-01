@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="520" viewBox="0 0 940 520">
+<defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1474E8"/><stop offset="1" stop-color="#287CF4"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#08A88D"/><stop offset="1" stop-color="#21D0B0"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#654CF0"/><stop offset="1" stop-color="#9B76FF"/></linearGradient>
+<linearGradient id="pink" x1="0" x2="1"><stop stop-color="#FF5C86"/><stop offset="1" stop-color="#FF9AB2"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0D3974"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#28D4FF" stop-opacity=".52"/><stop offset="1" stop-color="#28D4FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+</defs>
+<g transform="translate(20,28)" filter="url(#deepShadow)">
+<rect x="20" y="40" width="540" height="360" rx="28" fill="url(#navy)" stroke="#3155B5" stroke-width="4"/>
+<text x="55" y="84" font-family="Inter,Arial" font-size="18" fill="#D6E5FF">UX Overview</text>
+<path d="M60 238 C110 203 146 246 192 212 C238 176 272 239 318 197 C370 151 420 208 484 134" fill="none" stroke="#31D3FF" stroke-width="7"/>
+<g fill="#28D1FF"><circle cx="60" cy="238" r="6"/><circle cx="192" cy="212" r="6"/><circle cx="318" cy="197" r="6"/><circle cx="484" cy="134" r="6"/></g>
+<path d="M60 300 H500" stroke="#24508B" stroke-width="2"/>
+<rect x="60" y="318" width="90" height="42" rx="10" fill="#173C72"/><rect x="170" y="318" width="90" height="42" rx="10" fill="#173C72"/><rect x="280" y="318" width="90" height="42" rx="10" fill="#173C72"/><rect x="390" y="318" width="90" height="42" rx="10" fill="#173C72"/>
+<circle cx="435" cy="92" r="62" fill="#0C376E"/>
+<circle cx="435" cy="92" r="45" fill="none" stroke="#A55EF7" stroke-width="20" stroke-dasharray="90 190"/>
+<circle cx="435" cy="92" r="45" fill="none" stroke="#18C6AA" stroke-width="20" stroke-dasharray="65 190" stroke-dashoffset="-92"/>
+<text x="435" y="102" text-anchor="middle" font-family="Inter,Arial" font-size="26" font-weight="700" fill="#fff">92%</text>
+
+<rect x="590" y="70" width="300" height="320" rx="26" fill="url(#navy)" stroke="#3155B5" stroke-width="4"/>
+<text x="620" y="110" font-family="Inter,Arial" font-size="18" fill="#D6E5FF">Components</text>
+<rect x="622" y="144" width="102" height="70" rx="14" fill="#172F68"/><rect x="748" y="144" width="102" height="70" rx="14" fill="#172F68"/>
+<rect x="622" y="234" width="102" height="70" rx="14" fill="#172F68"/><rect x="748" y="234" width="102" height="70" rx="14" fill="#172F68"/>
+<g fill="#7C5AED"><circle cx="673" cy="179" r="12"/><rect x="646" y="252" width="54" height="24" rx="12"/></g>
+<g fill="#1DC8A8"><rect x="772" y="166" width="54" height="24" rx="12"/><circle cx="799" cy="270" r="13"/></g>
+<g fill="#EF5A8B"><rect x="646" y="326" width="54" height="24" rx="12"/><circle cx="799" cy="338" r="14"/></g>
+</g></svg>

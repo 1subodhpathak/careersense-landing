@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+<g fill="none" stroke="#5D8FB8" stroke-opacity=".45">
+<circle cx="300" cy="300" r="220" stroke-width="5"/>
+<circle cx="300" cy="300" r="150" stroke-width="2"/>
+<circle cx="300" cy="300" r="24" stroke-width="4"/>
+<path d="M300 55 L340 270 L300 300 L260 270 Z" fill="#5D8FB8" fill-opacity=".13" stroke-width="3"/>
+<path d="M545 300 L330 340 L300 300 L330 260 Z" fill="#5D8FB8" fill-opacity=".08" stroke-width="3"/>
+<path d="M300 545 L260 330 L300 300 L340 330 Z" fill="#5D8FB8" fill-opacity=".06" stroke-width="3"/>
+<path d="M55 300 L270 260 L300 300 L270 340 Z" fill="#5D8FB8" fill-opacity=".08" stroke-width="3"/>
+<path d="M300 95V505M95 300H505M155 155L445 445M445 155L155 445" stroke-width="1.5"/>
+</g>
+<g fill="#5D8FB8" fill-opacity=".55" font-family="Arial" font-size="26" font-weight="700">
+<text x="289" y="38">N</text><text x="558" y="309">E</text><text x="289" y="585">S</text><text x="18" y="309">W</text>
+</g>
+</svg>

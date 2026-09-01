@@ -1,0 +1,55 @@
+{
+  "branding": [
+    "careersense-logo.svg/png",
+    "careersense-mark.svg/png"
+  ],
+  "hero": [
+    "hero-data-science-student.png/webp",
+    "model-performance-card.svg/png",
+    "confusion-matrix-card.svg/png",
+    "top-features-card.svg/png",
+    "customer-segments-card.svg/png"
+  ],
+  "learning": [
+    "data-collection.svg/png",
+    "data-cleaning.svg/png",
+    "capstone-project.svg/png",
+    "data-visualization.svg/png",
+    "python-sql.svg/png",
+    "machine-learning.svg/png"
+  ],
+  "tools": [
+    "sql.svg/png",
+    "excel.svg/png",
+    "python.svg/png",
+    "pandas.svg/png",
+    "numpy.svg/png",
+    "scikit-learn.svg/png",
+    "matplotlib.svg/png",
+    "seaborn.svg/png",
+    "jupyter.svg/png",
+    "power-bi.svg/png"
+  ],
+  "credentials": [
+    "data-science-certificate.svg/png",
+    "data-science-id-card.svg/png",
+    "credential-stack.svg/png"
+  ],
+  "illustrations": [
+    "why-join-data-science.svg/png",
+    "data-science-cta-dashboard.svg/png"
+  ],
+  "utility": [
+    "calendar.svg/png",
+    "clipboard-check.svg/png",
+    "chart-tools.svg/png",
+    "award.svg/png",
+    "check-circle.svg/png",
+    "user.svg/png",
+    "book-open.svg/png",
+    "briefcase.svg/png",
+    "users.svg/png",
+    "shield-check.svg/png",
+    "target.svg/png"
+  ]
+}

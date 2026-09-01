@@ -1,0 +1,54 @@
+{
+  "branding": [
+    "careersense-logo.svg/png",
+    "careersense-mark.svg/png"
+  ],
+  "hero": [
+    "hero-data-analyst-student.png/webp",
+    "sales-overview-card.svg/png",
+    "top-insights-card.svg/png",
+    "category-share-card.svg/png"
+  ],
+  "learning": [
+    "data-collection.svg/png",
+    "data-cleaning.svg/png",
+    "analysis-sql.svg/png",
+    "visualization.svg/png",
+    "business-insights.svg/png",
+    "capstone.svg/png"
+  ],
+  "tools": [
+    "sql.svg/png",
+    "excel.svg/png",
+    "power-bi.svg/png",
+    "python.svg/png",
+    "tableau.svg/png",
+    "pandas.svg/png",
+    "numpy.svg/png",
+    "matplotlib.svg/png",
+    "seaborn.svg/png",
+    "google-sheets.svg/png"
+  ],
+  "credentials": [
+    "fellowship-certificate.svg/png",
+    "fellow-id-card.svg/png",
+    "credential-stack.svg/png"
+  ],
+  "illustrations": [
+    "why-join-data-analysis.svg/png",
+    "dashboard-cta.svg/png"
+  ],
+  "utility": [
+    "calendar.svg/png",
+    "clipboard-check.svg/png",
+    "chart-tools.svg/png",
+    "award.svg/png",
+    "check-circle.svg/png",
+    "user.svg/png",
+    "book-open.svg/png",
+    "briefcase.svg/png",
+    "users.svg/png",
+    "shield-check.svg/png",
+    "target.svg/png"
+  ]
+}

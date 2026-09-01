@@ -1,0 +1,60 @@
+{
+  "branding": [
+    "careersense-logo.svg/png",
+    "careersense-mark.svg/png"
+  ],
+  "hero": [
+    "hero-uiux-designer.png/webp",
+    "user-flow-card.svg/png",
+    "usability-score-card.svg/png",
+    "prototype-card.svg/png",
+    "design-system-card.svg/png",
+    "wireframe-review-card.svg/png"
+  ],
+  "learning": [
+    "user-research.svg/png",
+    "wireframing.svg/png",
+    "ui-design.svg/png",
+    "prototyping.svg/png",
+    "design-systems.svg/png",
+    "ux-case-study.svg/png"
+  ],
+  "tools": [
+    "figma.svg/png",
+    "figjam.svg/png",
+    "adobe-xd.svg/png",
+    "photoshop.svg/png",
+    "illustrator.svg/png",
+    "miro.svg/png",
+    "notion.svg/png",
+    "maze.svg/png",
+    "webflow.svg/png",
+    "google-forms.svg/png"
+  ],
+  "credentials": [
+    "uiux-certificate.svg/png",
+    "uiux-id-card.svg/png",
+    "credential-stack.svg/png"
+  ],
+  "illustrations": [
+    "why-join-uiux.svg/png",
+    "uiux-cta-dashboard.svg/png"
+  ],
+  "utility": [
+    "calendar.svg/png",
+    "clipboard-check.svg/png",
+    "chart-tools.svg/png",
+    "award.svg/png",
+    "check-circle.svg/png",
+    "user.svg/png",
+    "book-open.svg/png",
+    "briefcase.svg/png",
+    "users.svg/png",
+    "shield-check.svg/png",
+    "target.svg/png"
+  ],
+  "backgrounds": [
+    "hero-background.svg/png",
+    "cta-dot-pattern.svg/png"
+  ]
+}
