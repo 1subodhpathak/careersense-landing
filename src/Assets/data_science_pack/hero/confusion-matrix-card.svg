@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1269F3"/><stop offset="1" stop-color="#39A7FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00B894"/><stop offset="1" stop-color="#22D3B6"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#7B61FF"/><stop offset="1" stop-color="#A875FF"/></linearGradient>
+<linearGradient id="orange" x1="0" x2="1"><stop stop-color="#FF5E78"/><stop offset="1" stop-color="#FF9A2F"/></linearGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+</defs>
+<g filter="url(#shadow)">
+<rect x="18" y="18" width="476" height="476" rx="34" fill="#fff"/>
+<text x="50" y="70" font-family="Inter,Arial" font-size="28" font-weight="700" fill="#091A43">Confusion Matrix</text>
+<g transform="translate(126,128)" font-family="Inter,Arial">
+<text x="-45" y="95" font-size="18" fill="#5B677C" transform="rotate(-90 -45 95)">Actual</text>
+<text x="114" y="242" font-size="18" fill="#5B677C">Predicted</text>
+<text x="-8" y="68" font-size="18" fill="#263653">0</text><text x="-8" y="150" font-size="18" fill="#263653">1</text>
+<text x="66" y="216" font-size="18" fill="#263653">0</text><text x="150" y="216" font-size="18" fill="#263653">1</text>
+<rect x="25" y="24" width="86" height="72" fill="#BDD7FF"/><rect x="111" y="24" width="86" height="72" fill="#E4F0FF"/>
+<rect x="25" y="96" width="86" height="72" fill="#EAF2FF"/><rect x="111" y="96" width="86" height="72" fill="#1577EE"/>
+<text x="68" y="68" text-anchor="middle" font-size="22" fill="#091A43">428</text>
+<text x="154" y="68" text-anchor="middle" font-size="22" fill="#091A43">32</text>
+<text x="68" y="140" text-anchor="middle" font-size="22" fill="#091A43">28</text>
+<text x="154" y="140" text-anchor="middle" font-size="22" fill="#fff">512</text>
+</g>
+</g></svg>

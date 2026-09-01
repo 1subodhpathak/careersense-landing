@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+    <defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1269F3"/><stop offset="1" stop-color="#39A7FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00B894"/><stop offset="1" stop-color="#22D3B6"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#5E5CE6"/><stop offset="1" stop-color="#8B5CF6"/></linearGradient>
+<linearGradient id="orange" x1="0" x2="1"><stop stop-color="#FF5E78"/><stop offset="1" stop-color="#FF9A2F"/></linearGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#0D2B5B" flood-opacity=".12"/></filter>
+</defs>
+<g filter="url(#shadow)">
+<rect x="18" y="18" width="476" height="476" rx="34" fill="#FFF"/>
+<text x="50" y="76" font-family="Inter" font-size="30" font-weight="650" fill="#091A43">Category Share</text>
+<g transform="translate(176,270) rotate(-90)">
+  <circle r="88" fill="none" stroke="#EEF3F9" stroke-width="46"/>
+  <circle r="88" fill="none" stroke="#1577EE" stroke-width="46" stroke-dasharray="249 553" stroke-dashoffset="0"/>
+  <circle r="88" fill="none" stroke="#0ABF9A" stroke-width="46" stroke-dasharray="111 553" stroke-dashoffset="-249"/>
+  <circle r="88" fill="none" stroke="#F6A23A" stroke-width="46" stroke-dasharray="111 553" stroke-dashoffset="-360"/>
+  <circle r="88" fill="none" stroke="#FF637D" stroke-width="46" stroke-dasharray="55 553" stroke-dashoffset="-471"/>
+</g>
+<circle cx="176" cy="270" r="52" fill="white"/>
+<g font-family="Inter" font-size="17" fill="#263653">
+<circle cx="330" cy="190" r="7" fill="#1577EE"/><text x="350" y="196">Product A</text>
+<circle cx="330" cy="236" r="7" fill="#8A78E6"/><text x="350" y="242">Product B</text>
+<circle cx="330" cy="282" r="7" fill="#FF637D"/><text x="350" y="288">Product C</text>
+<circle cx="330" cy="328" r="7" fill="#C8D4E6"/><text x="350" y="334">Others</text>
+</g>
+</g></svg>

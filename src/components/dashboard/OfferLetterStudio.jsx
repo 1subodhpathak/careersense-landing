@@ -28,33 +28,12 @@ export default function OfferLetterStudio({ profile, user }) {
   const [exporting, setExporting] = useState(false);
   const [viewMode, setViewMode] = useState("split");
   const [shareMessage, setShareMessage] = useState("");
-
-  const platformJoinDate = user?.createdAt
-    ? new Date(user.createdAt).toISOString().slice(0, 10)
-    : profile?.createdAt
-    ? new Date(profile.createdAt).toISOString().slice(0, 10)
-    : today();
-
-  const calcJoiningDate = (baseOfferDate) => {
-    try {
-      const date = new Date(`${baseOfferDate}T00:00:00`);
-      if (isNaN(date.getTime())) return joiningDefault();
-      date.setDate(date.getDate() + 7);
-      return date.toISOString().slice(0, 10);
-    } catch {
-      return joiningDefault();
-    }
-  };
-
-  const initialOfferDate = platformJoinDate;
-  const initialJoiningDate = calcJoiningDate(initialOfferDate);
-
   const [details, setDetails] = useState({
     fullName: profile.fullName || user?.fullName || "CareerSense Partner",
     email: profile.email || user?.primaryEmailAddress?.emailAddress || "",
     address: profile.location || profile.geographicalAlignment || "",
-    offerDate: initialOfferDate,
-    joiningDate: initialJoiningDate,
+    offerDate: today(),
+    joiningDate: profile.dateOfJoining || joiningDefault(),
     position: profile.currentJobTitle || "CareerSense Partner",
     workingMode: "Remote",
     location: profile.location || profile.geographicalAlignment || "Delhi",
@@ -65,21 +44,12 @@ export default function OfferLetterStudio({ profile, user }) {
   });
 
   useEffect(() => {
-    const oDate = user?.createdAt
-      ? new Date(user.createdAt).toISOString().slice(0, 10)
-      : profile?.createdAt
-      ? new Date(profile.createdAt).toISOString().slice(0, 10)
-      : today();
-    const jDate = calcJoiningDate(oDate);
-
     setDetails((current) => ({ ...current,
       fullName: profile.fullName || user?.fullName || current.fullName,
       email: profile.email || user?.primaryEmailAddress?.emailAddress || current.email,
       address: profile.location || profile.geographicalAlignment || current.address,
       location: profile.location || profile.geographicalAlignment || current.location,
       position: profile.currentJobTitle || current.position,
-      offerDate: oDate,
-      joiningDate: jDate,
     }));
   }, [profile, user]);
 

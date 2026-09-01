@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1269F3"/><stop offset="1" stop-color="#39A7FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00B894"/><stop offset="1" stop-color="#22D3B6"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#7B61FF"/><stop offset="1" stop-color="#A875FF"/></linearGradient>
+<linearGradient id="orange" x1="0" x2="1"><stop stop-color="#FF5E78"/><stop offset="1" stop-color="#FF9A2F"/></linearGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+</defs>
+<g filter="url(#shadow)">
+<rect x="18" y="18" width="476" height="476" rx="34" fill="#fff"/>
+<text x="48" y="70" font-family="Inter,Arial" font-size="28" font-weight="700" fill="#091A43">Top Features</text>
+<g font-family="Inter,Arial" font-size="18" fill="#33415E">
+<text x="48" y="134">Age</text><text x="48" y="198">Income</text><text x="48" y="262">Credit Score</text><text x="48" y="326">Tenure</text><text x="48" y="390">Balance</text>
+</g>
+<g transform="translate(168,112)">
+<rect width="205" height="18" rx="9" fill="#EAF1FA"/><rect width="145" height="18" rx="9" fill="#1577EE"/><text x="220" y="16" font-family="Inter" font-size="18" fill="#33415E">0.28</text>
+<rect y="64" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="64" width="114" height="18" rx="9" fill="#2D8EF4"/><text x="220" y="80" font-family="Inter" font-size="18" fill="#33415E">0.22</text>
+<rect y="128" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="128" width="94" height="18" rx="9" fill="#5BA7F8"/><text x="220" y="144" font-family="Inter" font-size="18" fill="#33415E">0.18</text>
+<rect y="192" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="192" width="62" height="18" rx="9" fill="#278BC4"/><text x="220" y="208" font-family="Inter" font-size="18" fill="#33415E">0.12</text>
+<rect y="256" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="256" width="42" height="18" rx="9" fill="#0ABF9A"/><text x="220" y="272" font-family="Inter" font-size="18" fill="#33415E">0.08</text>
+</g>
+</g></svg>

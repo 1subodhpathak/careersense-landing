@@ -46,7 +46,13 @@ import {
   ChevronDown,
   PanelLeftClose,
   PanelLeftOpen,
-  Target
+  Target,
+  Rocket,
+  BarChart3,
+  Bot,
+  Code2,
+  Smartphone,
+  Palette
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/clerk-react";
@@ -56,6 +62,8 @@ import IdCardStudio from "../components/dashboard/IdCardStudio";
 import OfferLetterStudio from "../components/dashboard/OfferLetterStudio";
 import ELearningLibrary from "../components/dashboard/ELearningLibrary";
 import PartnerAssignments from "../components/dashboard/PartnerAssignments";
+import FellowshipProgram from "../components/dashboard/FellowshipProgram";
+import SkillPassport from "../components/dashboard/skill-passport/SkillPassport";
 // ── Timeline Section Component for Profile (Education, Certifications, Awards) ─────
 function TimelineSection({
   title,
@@ -181,6 +189,7 @@ function TimelineSection({
 export default function DashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabFromUrl = searchParams.get("tab");
+  const fellowshipFromUrl = searchParams.get("fellowship");
   const activeTab = ["e Learning", "eLearning", "E-Learning"].includes(tabFromUrl)
     ? "E-Learning"
     : ["Certificates", "Skill Certification", "skill-certification", "SkillCertification"].includes(tabFromUrl)
@@ -191,10 +200,16 @@ export default function DashboardPage() {
     setSearchParams({ tab: label });
   };
 
+  const handleFellowshipChange = (programId) => {
+    setSearchParams({ tab: "Fellowship Program", fellowship: programId });
+  };
+
   const [currentTime, setCurrentTime] = useState(new Date());
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [careerToolsOpen, setCareerToolsOpen] = useState(true);
+  const careerToolLabels = ["Resume Builder", "ATS Checker", "Cover Letters", "Interview Practice", "Skill Certification"];
+  const [careerToolsOpen, setCareerToolsOpen] = useState(() => careerToolLabels.includes(activeTab));
+  const [fellowshipOpen, setFellowshipOpen] = useState(() => activeTab === "Fellowship Program");
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [ledgerFilter, setLedgerFilter] = useState("all");
   const [ledgerLimit, setLedgerLimit] = useState(20);
@@ -401,22 +416,27 @@ export default function DashboardPage() {
     }
   };
 
-  const calculateProfileCompleteness = () => {
-    let score = 0;
-    if (profileForm.fullName?.trim()) score += 10;
-    if (profileForm.email?.trim()) score += 10;
-    if (profileForm.phone?.trim()) score += 10;
-    if (profileForm.location?.trim()) score += 10;
-    if (profileForm.bio?.trim()) score += 10;
-    if (profileForm.currentJobTitle?.trim()) score += 10;
-    if (profileForm.targetJobTitle?.trim()) score += 10;
-    if (profileForm.profileStatus?.trim()) score += 5;
-    if (profileForm.avatar?.trim()) score += 5;
-    if (profileForm.bannerImage?.trim()) score += 5;
-    if (profileForm.linkedinPortfolio?.trim() || profileForm.githubUrl?.trim() || profileForm.websiteUrl?.trim()) score += 5;
-    if (profileForm.skills?.length > 0) score += 10;
-    return score;
-  };
+  const getProfileCompletionItems = () => [
+    { label: "Full name", points: 10, complete: Boolean(profileForm.fullName?.trim()) },
+    { label: "Email address", points: 10, complete: Boolean(profileForm.email?.trim()) },
+    { label: "Phone number", points: 10, complete: Boolean(profileForm.phone?.trim()) },
+    { label: "Location", points: 10, complete: Boolean(profileForm.location?.trim()) },
+    { label: "Professional bio", points: 10, complete: Boolean(profileForm.bio?.trim()) },
+    { label: "Current job title", points: 10, complete: Boolean(profileForm.currentJobTitle?.trim()) },
+    { label: "Target job title", points: 10, complete: Boolean(profileForm.targetJobTitle?.trim()) },
+    { label: "Profile status", points: 5, complete: Boolean(profileForm.profileStatus?.trim()) },
+    { label: "Profile photo", points: 5, complete: Boolean(profileForm.avatar?.trim()) },
+    { label: "Custom cover image", points: 5, complete: Boolean(profileForm.bannerImage?.trim()) },
+    {
+      label: "Professional link",
+      points: 5,
+      complete: Boolean(profileForm.linkedinPortfolio?.trim() || profileForm.githubUrl?.trim() || profileForm.websiteUrl?.trim())
+    },
+    { label: "At least one skill", points: 10, complete: profileForm.skills?.length > 0 }
+  ];
+
+  const calculateProfileCompleteness = () =>
+    getProfileCompletionItems().reduce((score, item) => score + (item.complete ? item.points : 0), 0);
 
   const handleImageUpload = async (file, type) => {
     if (!file) return;
@@ -537,6 +557,7 @@ export default function DashboardPage() {
   const sidebarItems = [
     { icon: UserRound, label: "My Profile", section: "Workspace", tone: "text-teal-400" },
     { icon: LayoutDashboard, label: "Dashboard", section: "Workspace", tone: "text-sky-400" },
+    { icon: BookOpenCheck, label: "Skill Passport", section: "Workspace", tone: "text-amber-300" },
     { icon: CreditCard, label: "ID Card Studio", section: "Workspace", tone: "text-cyan-400" },
     { icon: Compass, label: "Career GPS", section: "Workspace", tone: "text-emerald-400" },
     {
@@ -553,6 +574,20 @@ export default function DashboardPage() {
       ],
     },
     { icon: GraduationCap, label: "E-Learning", section: "Learn & Build", tone: "text-violet-400" },
+    {
+      icon: Rocket,
+      label: "Fellowship Program",
+      section: "Learn & Build",
+      tone: "text-cyan-300",
+      children: [
+        { icon: TrendingUp, label: "Data Analyst", shortLabel: "Data Analyst", programId: "data-analyst" },
+        { icon: BarChart3, label: "Data Science", shortLabel: "Data Science", programId: "data-science" },
+        { icon: Bot, label: "Artificial Intelligence", shortLabel: "Artificial Intelligence", programId: "artificial-intelligence" },
+        { icon: Palette, label: "UI/UX Design", shortLabel: "UI/UX Design", programId: "ui-ux-design" },
+        { icon: Smartphone, label: "App Development", shortLabel: "App Development", programId: "app-development" },
+        { icon: Code2, label: "Full Stack Development", shortLabel: "Full Stack", programId: "full-stack-development" },
+      ],
+    },
     { icon: BookOpenCheck, label: "Partner Journey", section: "Learn & Build", tone: "text-amber-400" },
     { icon: Briefcase, label: "Offer Letter Workspace", section: "Career Network", tone: "text-orange-400" },
     { icon: Users, label: "Community", section: "Career Network", tone: "text-rose-400" },
@@ -781,6 +816,29 @@ export default function DashboardPage() {
   // --- DATA RESOLVER FOR DYNAMIC CONTENT SYSTEM ---
   const getTabDetailedData = () => {
     switch (activeTab) {
+      case "Skill Passport":
+        return {
+          title: "Skill Passport",
+          subtitle: "Your living CareerSense journey, stamped with every milestone.",
+          stats: [],
+          renderExtra: () => (
+            <SkillPassport
+              dashboardData={dashboardData}
+              profile={profileForm}
+              user={user}
+              atsResumes={atsResumes}
+              coverLetters={coverLetters}
+            />
+          )
+        };
+
+      case "Fellowship Program":
+        return {
+          title: "Fellowship Program",
+          subtitle: "Choose one professional track and complete a three-month, mentor-reviewed project journey.",
+          stats: [],
+          renderExtra: () => <FellowshipProgram profile={profileForm} user={user} initialProgramId={fellowshipFromUrl} />
+        };
       case "Dashboard":
         const careerScore = dashboardData?.assessment?.results?.overallScore;
         const targetAtsVal = atsResumes.length > 0 ? `${avgAts}%` : "0%";
@@ -1579,6 +1637,7 @@ export default function DashboardPage() {
 
       case "My Profile":
         const completeness = calculateProfileCompleteness();
+        const pendingProfileItems = getProfileCompletionItems().filter((item) => !item.complete);
         const PROFILE_STATUS_OPTIONS = [
           'Open to Work',
           'Hiring',
@@ -1871,6 +1930,53 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </section>
+
+              {/* Profile Completion Alert Banner ("still to complete") */}
+              <div
+                className={`rounded-2xl border p-4 sm:p-5 ${pendingProfileItems.length > 0
+                  ? "border-amber-200 bg-amber-50/70"
+                  : "border-emerald-200 bg-emerald-50/70"
+                  }`}
+                aria-live="polite"
+              >
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="flex items-start gap-3">
+                    <div className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${pendingProfileItems.length > 0
+                      ? "bg-amber-100 text-amber-700"
+                      : "bg-emerald-100 text-emerald-700"
+                      }`}>
+                      {pendingProfileItems.length > 0 ? <AlertCircle size={18} /> : <CheckCircle2 size={18} />}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900">
+                        {pendingProfileItems.length > 0
+                          ? `${pendingProfileItems.length} ${pendingProfileItems.length === 1 ? "item" : "items"} still to complete`
+                          : "Your profile is fully complete"}
+                      </h3>
+                      <p className="mt-1 text-xs font-medium leading-5 text-slate-600">
+                        {pendingProfileItems.length > 0
+                          ? "Add the highlighted details below to improve your profile score."
+                          : "All profile requirements are filled in. Keep them updated as your career grows."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {pendingProfileItems.length > 0 && (
+                    <div className="flex max-w-2xl flex-wrap gap-2 sm:justify-end">
+                      {pendingProfileItems.map((item) => (
+                        <span
+                          key={item.label}
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-bold text-amber-900 shadow-2xs"
+                        >
+                          <AlertCircle className="h-3.5 w-3.5 text-amber-600" />
+                          {item.label}
+                          <span className="font-semibold text-amber-600">+{item.points}%</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
               {/* Personal & Contact Section */}
               <div className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs">
@@ -2347,14 +2453,18 @@ export default function DashboardPage() {
               const isSelected = activeTab === item.label;
               const showSection = itemIndex === 0 || sidebarItems[itemIndex - 1].section !== item.section;
               if (item.children) {
-                const hasActiveChild = item.children.some((child) => child.label === activeTab);
+                const isFellowshipGroup = item.label === "Fellowship Program";
+                const menuOpen = isFellowshipGroup ? fellowshipOpen : careerToolsOpen;
+                const hasActiveChild = isFellowshipGroup
+                  ? activeTab === "Fellowship Program"
+                  : item.children.some((child) => child.label === activeTab);
                 return (
                   <div key={item.label}>
                     {showSection && !sidebarCollapsed && <div className="mb-2 mt-5 px-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-600 first:mt-0">{item.section}</div>}
                     <button
                       type="button"
-                      onClick={() => setCareerToolsOpen((open) => !open)}
-                      aria-expanded={careerToolsOpen}
+                      onClick={() => isFellowshipGroup ? setFellowshipOpen((open) => !open) : setCareerToolsOpen((open) => !open)}
+                      aria-expanded={menuOpen}
                       title={sidebarCollapsed ? item.label : undefined}
                       className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-all duration-200 active:scale-[0.98] sm:text-[13.5px] ${sidebarCollapsed ? "justify-center" : ""} ${hasActiveChild
                         ? "bg-[#1c2541] text-teal-400 border border-slate-700/50"
@@ -2362,18 +2472,20 @@ export default function DashboardPage() {
                         }`}
                     >
                       <Icon size={18} className={hasActiveChild ? "text-teal-400" : `${item.tone} opacity-75 group-hover:opacity-100`} />
-                      {!sidebarCollapsed && <><span className="flex-1">{item.label}</span><ChevronDown size={15} className={`transition-transform duration-200 ${careerToolsOpen ? "rotate-180" : ""}`} /></>}
+                      {!sidebarCollapsed && <><span className="flex-1">{item.label}</span><ChevronDown size={15} className={`transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`} /></>}
                     </button>
-                    <div className={`grid transition-[grid-template-rows] duration-200 ${careerToolsOpen && !sidebarCollapsed ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                    <div className={`grid transition-[grid-template-rows] duration-200 ${menuOpen && !sidebarCollapsed ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                       <div className="overflow-hidden">
                         <div className="ml-5 mt-1 space-y-1 border-l border-slate-700/70 pl-3">
                           {item.children.map((child) => {
                             const ChildIcon = child.icon;
-                            const childSelected = activeTab === child.label;
+                            const childSelected = child.programId
+                              ? activeTab === "Fellowship Program" && fellowshipFromUrl === child.programId
+                              : activeTab === child.label;
                             return (
-                              <button key={child.label} onClick={() => handleTabChange(child.label)} className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[12.5px] font-medium transition ${childSelected ? "bg-teal-500/10 text-teal-300" : "text-slate-500 hover:bg-slate-800/40 hover:text-slate-200"}`}>
+                              <button key={child.label} onClick={() => child.programId ? handleFellowshipChange(child.programId) : handleTabChange(child.label)} className={`group flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[12.5px] font-medium transition ${childSelected ? "bg-teal-500/10 text-teal-300" : "text-slate-500 hover:bg-slate-800/40 hover:text-slate-200"}`}>
                                 <ChildIcon size={15} />
-                                <span className="flex-1">{child.shortLabel}</span>{getToolBadge(child.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-bold text-slate-400">{getToolBadge(child.label)}</span>}
+                                <span className="flex-1">{child.shortLabel}</span>{!child.programId && getToolBadge(child.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-bold text-slate-400">{getToolBadge(child.label)}</span>}
                               </button>
                             );
                           })}
@@ -2472,22 +2584,28 @@ export default function DashboardPage() {
                   const isSelected = activeTab === item.label;
                   const showSection = itemIndex === 0 || sidebarItems[itemIndex - 1].section !== item.section;
                   if (item.children) {
-                    const hasActiveChild = item.children.some((child) => child.label === activeTab);
+                    const isFellowshipGroup = item.label === "Fellowship Program";
+                    const menuOpen = isFellowshipGroup ? fellowshipOpen : careerToolsOpen;
+                    const hasActiveChild = isFellowshipGroup
+                      ? activeTab === "Fellowship Program"
+                      : item.children.some((child) => child.label === activeTab);
                     return (
                       <div key={item.label}>
                         {showSection && <div className="mb-2 mt-5 px-2 text-[9px] font-black uppercase tracking-[0.18em] text-slate-600 first:mt-0">{item.section}</div>}
-                        <button type="button" onClick={() => setCareerToolsOpen((open) => !open)} aria-expanded={careerToolsOpen} className={`group flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[13.5px] font-medium transition-all ${hasActiveChild ? "bg-[#1c2541] text-teal-400 border border-slate-700/50" : "text-slate-400 hover:bg-slate-800/40 hover:text-white"}`}>
+                        <button type="button" onClick={() => isFellowshipGroup ? setFellowshipOpen((open) => !open) : setCareerToolsOpen((open) => !open)} aria-expanded={menuOpen} className={`group flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[13.5px] font-medium transition-all ${hasActiveChild ? "bg-[#1c2541] text-teal-400 border border-slate-700/50" : "text-slate-400 hover:bg-slate-800/40 hover:text-white"}`}>
                           <Icon size={18} className={hasActiveChild ? "text-teal-400" : "text-slate-400 group-hover:text-slate-200"} />
                           <span className="flex-1">{item.label}</span>
-                          <ChevronDown size={15} className={`transition-transform duration-200 ${careerToolsOpen ? "rotate-180" : ""}`} />
+                          <ChevronDown size={15} className={`transition-transform duration-200 ${menuOpen ? "rotate-180" : ""}`} />
                         </button>
-                        <div className={`grid transition-[grid-template-rows] duration-200 ${careerToolsOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+                        <div className={`grid transition-[grid-template-rows] duration-200 ${menuOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                           <div className="overflow-hidden">
                             <div className="ml-5 mt-1 space-y-1 border-l border-slate-700/70 pl-3">
                               {item.children.map((child) => {
                                 const ChildIcon = child.icon;
-                                const childSelected = activeTab === child.label;
-                                return <button key={child.label} onClick={() => { handleTabChange(child.label); setSidebarOpen(false); }} className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[12.5px] font-medium transition ${childSelected ? "bg-teal-500/10 text-teal-300" : "text-slate-500 hover:bg-slate-800/40 hover:text-slate-200"}`}><ChildIcon size={15} /><span className="flex-1">{child.shortLabel}</span>{getToolBadge(child.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-bold text-slate-400">{getToolBadge(child.label)}</span>}</button>;
+                                const childSelected = child.programId
+                                  ? activeTab === "Fellowship Program" && fellowshipFromUrl === child.programId
+                                  : activeTab === child.label;
+                                return <button key={child.label} onClick={() => { child.programId ? handleFellowshipChange(child.programId) : handleTabChange(child.label); setSidebarOpen(false); }} className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[12.5px] font-medium transition ${childSelected ? "bg-teal-500/10 text-teal-300" : "text-slate-500 hover:bg-slate-800/40 hover:text-slate-200"}`}><ChildIcon size={15} /><span className="flex-1">{child.shortLabel}</span>{!child.programId && getToolBadge(child.label) && <span className="rounded-full bg-white/5 px-2 py-0.5 text-[9px] font-bold text-slate-400">{getToolBadge(child.label)}</span>}</button>;
                               })}
                             </div>
                           </div>
@@ -2554,28 +2672,26 @@ export default function DashboardPage() {
             </div>
 
             {/* Top Info Header Bar */}
-            {activeTab !== "Partner Journey" && activeTab !== "Partner Assignments" && (
-              <div className="mb-6 flex flex-col gap-4 border-b border-slate-200/60 pb-5 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h1 className="text-xl font-bold text-slate-900 tracking-tight">{detailedData.title}</h1>
-                  <p className="text-xs text-slate-400 font-medium mt-0.5">{detailedData.subtitle}</p>
-                </div>
+            {activeTab !== "Partner Journey" && activeTab !== "Skill Passport" && activeTab !== "Fellowship Program" && <div className="mb-6 flex flex-col gap-4 border-b border-slate-200/60 pb-5 md:flex-row md:items-center md:justify-between">
+              <div>
+                <h1 className="text-xl font-bold text-slate-900 tracking-tight">{detailedData.title}</h1>
+                <p className="text-xs text-slate-400 font-medium mt-0.5">{detailedData.subtitle}</p>
+              </div>
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                    <div className="h-7 w-7 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center"><Zap size={14} fill="currentColor" /></div>
-                    <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">CS Points Used</div><div className="text-sm font-black text-slate-800 mt-1">{totalPoints}</div></div>
-                  </div>
-                  <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                    <div className="h-7 w-7 rounded-md bg-emerald-50 text-emerald-500 flex items-center justify-center font-bold text-sm">$</div>
-                    <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bill</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
-                  </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
+                  <div className="h-7 w-7 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center"><Zap size={14} fill="currentColor" /></div>
+                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">CS Points Used</div><div className="text-sm font-black text-slate-800 mt-1">{totalPoints}</div></div>
+                </div>
+                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
+                  <div className="h-7 w-7 rounded-md bg-emerald-50 text-emerald-500 flex items-center justify-center font-bold text-sm">$</div>
+                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bill</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
                 </div>
               </div>
-            )}
+            </div>}
 
             {/* System Active Callout Welcome Card & Metric Cards Grid (Hidden on My Profile tab) */}
-            {activeTab !== "My Profile" && (
+            {activeTab !== "My Profile" && activeTab !== "Partner Journey" && activeTab !== "Skill Passport" && activeTab !== "Fellowship Program" && (
               <>
                 <div className="bg-white border border-slate-200/60 rounded-xl p-5 mb-6 shadow-xs relative overflow-hidden">
                   <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-bold text-slate-500">

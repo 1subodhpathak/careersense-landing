@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#4931EE"/><stop offset="1" stop-color="#6A35E8"/></linearGradient>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1976F3"/><stop offset="1" stop-color="#48B5FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A991"/><stop offset="1" stop-color="#25D1B2"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06133E"/><stop offset="1" stop-color="#171053"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#6143FF" stop-opacity=".5"/><stop offset="1" stop-color="#6143FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".28"/></filter>
+</defs>
+<g transform="translate(30,35)" filter="url(#deepShadow)">
+<!-- main phone -->
+<g transform="translate(380,40) rotate(5 140 215)">
+<rect x="0" y="0" width="270" height="430" rx="40" fill="#101B55"/>
+<rect x="15" y="20" width="240" height="382" rx="29" fill="url(#purple)"/>
+<rect x="40" y="65" width="70" height="70" rx="18" fill="#7E64F4"/><rect x="132" y="65" width="70" height="70" rx="18" fill="#8D75F8"/>
+<rect x="40" y="155" width="70" height="70" rx="18" fill="#6F56F0"/><rect x="132" y="155" width="70" height="70" rx="18" fill="#9575F2"/>
+<rect x="40" y="245" width="70" height="70" rx="18" fill="#7655EC"/><rect x="132" y="245" width="70" height="70" rx="18" fill="#6C4FEA"/>
+<circle cx="58" cy="372" r="10" fill="#53D9FF"/><circle cx="94" cy="372" r="10" fill="#53D9FF"/><rect x="130" y="363" width="65" height="18" rx="9" fill="#53D9FF"/>
+</g>
+<!-- code pane -->
+<rect x="130" y="155" width="240" height="160" rx="22" fill="#132B67" stroke="#5261D5" stroke-width="4"/>
+<path d="M160 198 H285 M160 230 H325 M160 262 H278" stroke="#66B8FF" stroke-width="9" stroke-linecap="round"/>
+<!-- code tile -->
+<rect x="635" y="115" width="90" height="90" rx="18" fill="#25347F"/><text x="680" y="172" text-anchor="middle" font-family="ui-monospace,monospace" font-size="38" font-weight="700" fill="#fff">&lt;/&gt;</text>
+<!-- Apple tile -->
+<rect x="645" y="350" width="105" height="105" rx="24" fill="#1B245E"/><path d="M699 388 C680 365 651 380 651 409 C651 438 675 459 699 459 C723 459 747 438 747 409 C747 380 718 365 699 388Z" fill="#fff"/><ellipse cx="718" cy="367" rx="15" ry="23" fill="#fff" transform="rotate(35 718 367)"/>
+<!-- plant -->
+<rect x="170" y="382" width="100" height="50" rx="12" fill="#E8F3E9"/>
+<path d="M220 382 C192 354 192 324 212 305 C233 331 236 357 220 382Z" fill="#3FB270"/>
+<path d="M220 382 C248 350 272 333 296 337 C290 366 267 383 220 382Z" fill="#2C9963"/>
+<!-- upload tile -->
+<rect x="235" y="335" width="92" height="80" rx="18" fill="#765AF0"/><path d="M281 394 V354 M259 375 L281 353 L303 375" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/>
+</g></svg>

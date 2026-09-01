@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#173CFF"/><stop offset="1" stop-color="#6B4CFF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A98F"/><stop offset="1" stop-color="#23D0B2"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#5747F2"/><stop offset="1" stop-color="#7A5BFF"/></linearGradient>
+<linearGradient id="coral" x1="0" x2="1"><stop stop-color="#FF4E80"/><stop offset="1" stop-color="#FF9136"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0C3472"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#4374FF" stop-opacity=".42"/><stop offset="1" stop-color="#4374FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+</defs>
+<g transform="translate(30,38)" filter="url(#deepShadow)">
+<rect x="250" y="110" width="345" height="255" rx="22" fill="#0B2A63"/>
+<rect x="272" y="130" width="301" height="202" rx="12" fill="#0E3A77"/>
+<path d="M298 170 H438 M298 205 H510 M298 240 H462 M298 275 H525" stroke="#69B9FF" stroke-width="10" stroke-linecap="round"/>
+<g fill="#27C8A5"><rect x="462" y="164" width="74" height="14" rx="7"/><rect x="490" y="220" width="46" height="14" rx="7"/><rect x="442" y="270" width="94" height="14" rx="7"/></g>
+<path d="M236 366 H608 L662 414 H180Z" fill="#5679C8"/><path d="M270 377 H578 L606 401 H241Z" fill="#8EA7EB"/>
+
+<!-- phone -->
+<rect x="615" y="205" width="90" height="180" rx="18" fill="#0B2A63" stroke="#4E6FE9" stroke-width="5"/>
+<rect x="629" y="228" width="62" height="118" rx="9" fill="#123C7A"/>
+<path d="M645 260 H676 M645 290 H670 M645 320 H682" stroke="#56D4FF" stroke-width="7" stroke-linecap="round"/>
+
+<!-- little web/code tiles -->
+<rect x="162" y="155" width="90" height="90" rx="18" fill="#6854F2"/><text x="207" y="214" text-anchor="middle" font-family="ui-monospace,monospace" font-size="43" font-weight="700" fill="#fff">&lt;/&gt;</text>
+<rect x="598" y="82" width="104" height="74" rx="16" fill="#263684"/><path d="M623 115 H677 M623 136 H658" stroke="#77C9FF" stroke-width="8" stroke-linecap="round"/>
+
+<!-- plant -->
+<rect x="126" y="332" width="65" height="46" rx="8" fill="#E8F0FA"/>
+<path d="M158 332 C131 309 133 285 151 270 C165 291 169 311 158 332Z" fill="#42B27A"/>
+<path d="M158 332 C178 307 192 287 207 279 C211 303 193 325 158 332Z" fill="#2B9966"/>
+</g></svg>

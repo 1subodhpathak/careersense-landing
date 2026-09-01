@@ -1,0 +1,60 @@
+{
+  "branding": [
+    "careersense-logo.svg/png",
+    "careersense-mark.svg/png"
+  ],
+  "hero": [
+    "hero-ai-fellowship-student.png/webp",
+    "model-accuracy-card.svg/png",
+    "prompt-quality-card.svg/png",
+    "agent-workflow-card.svg/png",
+    "automation-tasks-card.svg/png",
+    "inference-results-card.svg/png"
+  ],
+  "learning": [
+    "ai-foundations.svg/png",
+    "prompt-engineering.svg/png",
+    "llm-applications.svg/png",
+    "ai-agents-automation.svg/png",
+    "model-evaluation.svg/png",
+    "capstone-project.svg/png"
+  ],
+  "tools": [
+    "python.svg/png",
+    "prompting.svg/png",
+    "llm-apis.svg/png",
+    "langchain.svg/png",
+    "vector-databases.svg/png",
+    "hugging-face.svg/png",
+    "pandas.svg/png",
+    "streamlit.svg/png",
+    "github.svg/png",
+    "apis.svg/png"
+  ],
+  "credentials": [
+    "ai-fellowship-certificate.svg/png",
+    "ai-fellow-id-card.svg/png",
+    "credential-stack.svg/png"
+  ],
+  "illustrations": [
+    "why-join-ai-hologram.svg/png",
+    "ai-cta-dashboard.svg/png"
+  ],
+  "utility": [
+    "calendar.svg/png",
+    "clipboard-check.svg/png",
+    "chart-tools.svg/png",
+    "award.svg/png",
+    "check-circle.svg/png",
+    "user.svg/png",
+    "book-open.svg/png",
+    "briefcase.svg/png",
+    "users.svg/png",
+    "shield-check.svg/png",
+    "target.svg/png"
+  ],
+  "backgrounds": [
+    "hero-background.svg/png",
+    "cta-dot-pattern.svg/png"
+  ]
+}

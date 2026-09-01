@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="560" viewBox="0 0 900 560">
+<defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1474E8"/><stop offset="1" stop-color="#287CF4"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#08A88D"/><stop offset="1" stop-color="#21D0B0"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#654CF0"/><stop offset="1" stop-color="#9B76FF"/></linearGradient>
+<linearGradient id="pink" x1="0" x2="1"><stop stop-color="#FF5C86"/><stop offset="1" stop-color="#FF9AB2"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0D3974"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#28D4FF" stop-opacity=".52"/><stop offset="1" stop-color="#28D4FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+</defs>
+<g transform="translate(28,36)" filter="url(#deepShadow)">
+<!-- phone -->
+<g transform="translate(250,110) rotate(-8 140 180)">
+<rect x="0" y="0" width="250" height="360" rx="34" fill="#192957"/>
+<rect x="16" y="20" width="218" height="312" rx="24" fill="#F8F7FE"/>
+<rect x="42" y="52" width="165" height="25" rx="10" fill="#E7E0FB"/>
+<rect x="42" y="100" width="165" height="58" rx="12" fill="#EEEAFB"/>
+<rect x="42" y="178" width="115" height="22" rx="10" fill="#7358EF"/>
+<rect x="42" y="216" width="165" height="72" rx="12" fill="#F3F0FD"/>
+<circle cx="187" cy="190" r="15" fill="#FF6790"/>
+</g>
+<!-- floating UI strip -->
+<g transform="translate(414,82) rotate(12 170 50)">
+<rect width="340" height="86" rx="22" fill="url(#purple)"/>
+<rect x="22" y="22" width="76" height="42" rx="14" fill="#8D75F6"/><rect x="118" y="22" width="76" height="42" rx="14" fill="#ED6BA3"/><rect x="214" y="22" width="98" height="42" rx="14" fill="#7955E9"/>
+</g>
+<!-- side cards -->
+<rect x="105" y="145" width="115" height="92" rx="20" fill="#F6F2FF" stroke="#C7B8FF" stroke-width="4"/>
+<path d="M128 194 L160 168 L194 194 L160 220Z" fill="#6F57ED"/>
+<rect x="570" y="180" width="118" height="92" rx="20" fill="#FFF4F8" stroke="#F4C3D3" stroke-width="4"/>
+<circle cx="629" cy="210" r="24" fill="#F6D6E1"/><circle cx="629" cy="202" r="10" fill="#B77791"/><path d="M610 230 Q629 213 648 230" fill="#B77791"/>
+<rect x="540" y="325" width="126" height="92" rx="20" fill="#F7F6FE" stroke="#CDC6F8" stroke-width="4"/>
+<path d="M562 385 L590 352 L618 375 L644 345" fill="none" stroke="#7658EF" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- stylus -->
+<path d="M530 405 L675 313" stroke="#8F96C8" stroke-width="20" stroke-linecap="round"/>
+<path d="M666 319 L692 296" stroke="#D0D5EE" stroke-width="20" stroke-linecap="round"/>
+<!-- connector line -->
+<path d="M500 150 C540 175 550 210 548 255" fill="none" stroke="#D6CDFB" stroke-width="4" stroke-dasharray="8 10"/>
+</g></svg>

@@ -1,0 +1,59 @@
+{
+  "branding": [
+    "careersense-logo.svg/png",
+    "careersense-mark.svg/png"
+  ],
+  "hero": [
+    "hero-app-developer.png/webp",
+    "code-panel.svg/png",
+    "project-progress-card.svg/png",
+    "apps-built-card.svg/png",
+    "top-skills-gained-card.svg/png"
+  ],
+  "learning": [
+    "mobile-app-development.svg/png",
+    "uiux-design.svg/png",
+    "backend-apis.svg/png",
+    "database-cloud.svg/png",
+    "testing-debugging.svg/png",
+    "capstone-project.svg/png"
+  ],
+  "tools": [
+    "react-native.svg/png",
+    "flutter.svg/png",
+    "javascript.svg/png",
+    "typescript.svg/png",
+    "nodejs.svg/png",
+    "firebase.svg/png",
+    "mongodb.svg/png",
+    "expressjs.svg/png",
+    "git-github.svg/png",
+    "postman.svg/png"
+  ],
+  "credentials": [
+    "app-developer-certificate.svg/png",
+    "app-developer-id-card.svg/png",
+    "credential-stack.svg/png"
+  ],
+  "illustrations": [
+    "why-join-app-developer.svg/png",
+    "app-developer-cta.svg/png"
+  ],
+  "utility": [
+    "calendar.svg/png",
+    "clipboard-check.svg/png",
+    "chart-tools.svg/png",
+    "award.svg/png",
+    "check-circle.svg/png",
+    "user.svg/png",
+    "book-open.svg/png",
+    "briefcase.svg/png",
+    "users.svg/png",
+    "shield-check.svg/png",
+    "target.svg/png"
+  ],
+  "backgrounds": [
+    "hero-background.svg/png",
+    "cta-dot-pattern.svg/png"
+  ]
+}

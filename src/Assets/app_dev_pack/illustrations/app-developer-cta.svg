@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="500" viewBox="0 0 900 500">
+<defs>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#4931EE"/><stop offset="1" stop-color="#6A35E8"/></linearGradient>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1976F3"/><stop offset="1" stop-color="#48B5FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A991"/><stop offset="1" stop-color="#25D1B2"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#06133E"/><stop offset="1" stop-color="#171053"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#6143FF" stop-opacity=".5"/><stop offset="1" stop-color="#6143FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".28"/></filter>
+</defs>
+<g transform="translate(24,26)" filter="url(#deepShadow)">
+<!-- phone -->
+<g transform="translate(290,30) rotate(16 145 205)">
+<rect x="0" y="0" width="290" height="410" rx="44" fill="#0D174D"/>
+<rect x="15" y="18" width="260" height="372" rx="32" fill="url(#purple)"/>
+<rect x="45" y="62" width="72" height="62" rx="17" fill="#8067F5"/><rect x="142" y="62" width="72" height="62" rx="17" fill="#8A72F8"/>
+<rect x="45" y="148" width="72" height="62" rx="17" fill="#7259EE"/><rect x="142" y="148" width="72" height="62" rx="17" fill="#9B78F6"/>
+<rect x="45" y="234" width="72" height="62" rx="17" fill="#7152ED"/><rect x="142" y="234" width="72" height="62" rx="17" fill="#5F46D8"/>
+<rect x="78" y="325" width="135" height="17" rx="9" fill="#69D9FF"/>
+</g>
+<!-- Apple -->
+<rect x="145" y="135" width="110" height="110" rx="28" fill="#1F2866" stroke="#535CDD" stroke-width="4"/>
+<path d="M200 173 C181 151 153 165 153 195 C153 224 177 246 200 246 C224 246 248 224 248 195 C248 165 219 151 200 173Z" fill="#fff"/><ellipse cx="218" cy="153" rx="15" ry="23" fill="#fff" transform="rotate(35 218 153)"/>
+<!-- Android -->
+<rect x="650" y="125" width="120" height="120" rx="28" fill="#1B205D" stroke="#535CDD" stroke-width="4"/>
+<path d="M682 172 H738 Q750 172 750 184 V225 H670 V184 Q670 172 682 172Z" fill="#A4D65E"/>
+<circle cx="690" cy="187" r="4" fill="#1B205D"/><circle cx="730" cy="187" r="4" fill="#1B205D"/>
+<path d="M684 163 L673 146 M736 163 L747 146" stroke="#A4D65E" stroke-width="6" stroke-linecap="round"/>
+<!-- code tile -->
+<rect x="715" y="300" width="110" height="110" rx="28" fill="#1F2866" stroke="#535CDD" stroke-width="4"/><text x="770" y="370" text-anchor="middle" font-family="ui-monospace,monospace" font-size="44" font-weight="700" fill="#8F73FF">&lt;/&gt;</text>
+</g></svg>

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+<rect width="1600" height="1000" fill="none"/>
+<g fill="none" stroke="#8EB9D4" stroke-opacity=".25" stroke-width="1">
+<ellipse cx="800" cy="500" rx="620" ry="350" transform="rotate(0 800 500)"/>
+<ellipse cx="800" cy="500" rx="602" ry="341" transform="rotate(7 800 500)"/>
+<ellipse cx="800" cy="500" rx="584" ry="332" transform="rotate(14 800 500)"/>
+<ellipse cx="800" cy="500" rx="566" ry="323" transform="rotate(21 800 500)"/>
+<ellipse cx="800" cy="500" rx="548" ry="314" transform="rotate(28 800 500)"/>
+<ellipse cx="800" cy="500" rx="530" ry="305" transform="rotate(35 800 500)"/>
+<ellipse cx="800" cy="500" rx="512" ry="296" transform="rotate(42 800 500)"/>
+<ellipse cx="800" cy="500" rx="494" ry="287" transform="rotate(49 800 500)"/>
+<ellipse cx="800" cy="500" rx="476" ry="278" transform="rotate(56 800 500)"/>
+<ellipse cx="800" cy="500" rx="458" ry="269" transform="rotate(63 800 500)"/>
+<ellipse cx="800" cy="500" rx="440" ry="260" transform="rotate(70 800 500)"/>
+<ellipse cx="800" cy="500" rx="422" ry="251" transform="rotate(77 800 500)"/>
+<ellipse cx="800" cy="500" rx="404" ry="242" transform="rotate(84 800 500)"/>
+<ellipse cx="800" cy="500" rx="386" ry="233" transform="rotate(91 800 500)"/>
+<ellipse cx="800" cy="500" rx="368" ry="224" transform="rotate(98 800 500)"/>
+<ellipse cx="800" cy="500" rx="350" ry="215" transform="rotate(105 800 500)"/>
+<ellipse cx="800" cy="500" rx="332" ry="206" transform="rotate(112 800 500)"/>
+<ellipse cx="800" cy="500" rx="314" ry="197" transform="rotate(119 800 500)"/>
+<ellipse cx="800" cy="500" rx="296" ry="188" transform="rotate(126 800 500)"/>
+<ellipse cx="800" cy="500" rx="278" ry="179" transform="rotate(133 800 500)"/>
+<ellipse cx="800" cy="500" rx="260" ry="170" transform="rotate(140 800 500)"/>
+<ellipse cx="800" cy="500" rx="242" ry="161" transform="rotate(147 800 500)"/>
+<ellipse cx="800" cy="500" rx="224" ry="152" transform="rotate(154 800 500)"/>
+<ellipse cx="800" cy="500" rx="206" ry="143" transform="rotate(161 800 500)"/>
+<path d="M0 120 C350 40, 650 210, 980 125 S1380 70,1600 145" />
+<path d="M0 202 C350 98, 650 252, 980 190 S1380 138,1600 217" />
+<path d="M0 284 C350 156, 650 294, 980 255 S1380 206,1600 289" />
+<path d="M0 366 C350 214, 650 336, 980 320 S1380 274,1600 361" />
+<path d="M0 448 C350 272, 650 378, 980 385 S1380 342,1600 433" />
+<path d="M0 530 C350 330, 650 420, 980 450 S1380 410,1600 505" />
+<path d="M0 612 C350 388, 650 462, 980 515 S1380 478,1600 577" />
+<path d="M0 694 C350 446, 650 504, 980 580 S1380 546,1600 649" />
+<path d="M0 776 C350 504, 650 546, 980 645 S1380 614,1600 721" />
+<path d="M0 858 C350 562, 650 588, 980 710 S1380 682,1600 793" />
+</g></svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
+<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1269F3"/><stop offset="1" stop-color="#39A7FF"/></linearGradient>
+<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A989"/><stop offset="1" stop-color="#25D2B2"/></linearGradient>
+<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#6E4BEE"/><stop offset="1" stop-color="#9B73FF"/></linearGradient>
+<linearGradient id="coral" x1="0" x2="1"><stop stop-color="#FF4C83"/><stop offset="1" stop-color="#FF8B31"/></linearGradient>
+<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061A45"/><stop offset="1" stop-color="#0C3D77"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#20D4FF" stop-opacity=".55"/><stop offset="1" stop-color="#20D4FF" stop-opacity="0"/></radialGradient>
+<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+</defs>
+<g transform="translate(58,42)" fill="none" stroke="#12A9C7" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+<path d="M190 62 C135 42 92 79 102 132 C52 144 42 206 84 237 C60 286 96 338 148 336 C164 377 216 392 246 357 C282 381 337 360 337 315 C385 299 394 237 354 208 C376 156 338 108 290 112 C273 67 229 48 190 62Z" fill="#ECFCFF"/>
+<path d="M196 84 V340"/>
+<path d="M196 125 C160 106 130 130 134 164 M196 206 C158 188 134 215 139 249 M196 286 C163 267 139 289 143 318"/>
+<path d="M196 130 H254 L284 105 M196 210 H284 L310 185 M196 287 H258 L294 315"/>
+<circle cx="284" cy="105" r="10" fill="#12A9C7"/><circle cx="310" cy="185" r="10" fill="#12A9C7"/><circle cx="294" cy="315" r="10" fill="#12A9C7"/>
+</g></svg>

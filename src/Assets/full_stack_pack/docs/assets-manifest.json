@@ -1,0 +1,64 @@
+{
+  "branding": [
+    "careersense-logo.svg/png",
+    "careersense-mark.svg/png"
+  ],
+  "hero": [
+    "hero-full-stack-developer.png/webp",
+    "code-panel.svg/png",
+    "project-progress-card.svg/png",
+    "skills-graph-card.svg/png",
+    "technologies-used-card.svg/png"
+  ],
+  "learning": [
+    "frontend-development.svg/png",
+    "backend-development.svg/png",
+    "database-management.svg/png",
+    "api-integration.svg/png",
+    "devops-deployment.svg/png",
+    "capstone-project.svg/png"
+  ],
+  "tools": [
+    "html5.svg/png",
+    "css3.svg/png",
+    "javascript.svg/png",
+    "react.svg/png",
+    "nextjs.svg/png",
+    "nodejs.svg/png",
+    "expressjs.svg/png",
+    "mongodb.svg/png",
+    "sql.svg/png",
+    "git.svg/png",
+    "github.svg/png",
+    "docker.svg/png",
+    "aws.svg/png",
+    "firebase.svg/png",
+    "postman.svg/png"
+  ],
+  "credentials": [
+    "full-stack-certificate.svg/png",
+    "full-stack-id-card.svg/png",
+    "credential-stack.svg/png"
+  ],
+  "illustrations": [
+    "why-join-full-stack.svg/png",
+    "full-stack-cta.svg/png"
+  ],
+  "utility": [
+    "calendar.svg/png",
+    "clipboard-check.svg/png",
+    "chart-tools.svg/png",
+    "award.svg/png",
+    "check-circle.svg/png",
+    "user.svg/png",
+    "book-open.svg/png",
+    "briefcase.svg/png",
+    "users.svg/png",
+    "shield-check.svg/png",
+    "target.svg/png"
+  ],
+  "backgrounds": [
+    "hero-background.svg/png",
+    "cta-dot-pattern.svg/png"
+  ]
+}
