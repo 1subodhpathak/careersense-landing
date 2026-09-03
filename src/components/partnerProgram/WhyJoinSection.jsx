@@ -20,8 +20,8 @@ export default function WhyJoinSection({ isDark = false }) {
       img: offerLetterImg,
     },
     {
-      title: "Weekly Assignments",
-      description: "Work on real tasks every week and build your portfolio.",
+      title: "Weekly Projects",
+      description: "Work on real projects every week and build your Business portfolio.",
       img: weeklyAssignmentsImg,
     },
     {
@@ -47,7 +47,7 @@ export default function WhyJoinSection({ isDark = false }) {
   ];
 
   return (
-    <section className={`py-14 sm:py-16 transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-white text-slate-800"}`}>
+    <section className={`py-8 sm:py-10 transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-white text-slate-800"}`}>
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>

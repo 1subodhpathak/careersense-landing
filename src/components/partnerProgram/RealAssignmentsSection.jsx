@@ -81,7 +81,7 @@ export default function RealAssignmentsSection({ isDark = false }) {
   ];
 
   return (
-    <section id="assignments" className={`py-14 sm:py-16 transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-slate-50 text-slate-800"}`}>
+    <section id="assignments" className={`py-8 sm:py-10 transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-slate-50 text-slate-800"}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Centered Main Heading with Top-Right Button */}
         <div className="relative flex flex-col items-center">

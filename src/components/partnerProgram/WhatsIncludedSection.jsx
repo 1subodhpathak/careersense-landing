@@ -9,7 +9,7 @@ import recognitionSvg from "../../Assets/partnerProgram/icons2/recognition.svg";
 export default function WhatsIncludedSection({ isDark = false }) {
   const items = [
     {
-      title: "50,000 Credits / Month",
+      title: "500,000 Credits / Month",
       description: "Use across CareerSense platform during your active partner term.",
       svg: coinsSvg,
     },
@@ -41,7 +41,7 @@ export default function WhatsIncludedSection({ isDark = false }) {
   ];
 
   return (
-    <section className={`py-14 sm:py-16 transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-white text-slate-800"}`}>
+    <section className={`py-8 sm:py-10 transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-white text-slate-800"}`}>
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <h2 className={`text-xl sm:text-2xl lg:text-3xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>

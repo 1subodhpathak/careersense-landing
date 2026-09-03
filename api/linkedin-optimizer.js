@@ -52,27 +52,65 @@ Current content:
 ${text.slice(0, 6000)}`;
 
   try {
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.VITE_LINKEDIN}` },
-      body: JSON.stringify({
-        model: process.env.GROQ_LINKEDIN_MODEL || "openai/gpt-oss-120b",
-        messages: [
-          { role: "system", content: "Return a rigorous LinkedIn profile diagnostic in the required JSON schema." },
-          { role: "user", content: prompt },
-        ],
-        reasoning_effort: "low",
+    const anthropicKey = process.env.ANTHROPIC_API_KEY;
+    let output = "";
+
+    if (anthropicKey) {
+      const claudePayload = {
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 3000,
+        system: "Return a rigorous LinkedIn profile diagnostic in valid JSON schema.",
+        messages: [{ role: 'user', content: prompt }],
         temperature: 0.25,
-        max_completion_tokens: 3000,
-        response_format: {
-          type: "json_schema",
-          json_schema: { name: "linkedin_diagnostic", strict: true, schema: responseSchema },
+      };
+
+      let claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'x-api-key': anthropicKey,
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
         },
-      }),
-    });
-    const data = await response.json();
-    if (!response.ok) return res.status(response.status).json({ error: data?.error?.message || "Groq analysis failed" });
-    const output = data.choices?.[0]?.message?.content;
+        body: JSON.stringify(claudePayload),
+      });
+
+      if (!claudeRes.ok) {
+        claudePayload.model = 'claude-3-5-haiku-20241022';
+        claudeRes = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': anthropicKey,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify(claudePayload),
+        });
+      }
+
+      if (claudeRes.ok) {
+        const cData = await claudeRes.json();
+        output = cData.content?.[0]?.text || "";
+      }
+    }
+
+    if (!output) {
+      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${process.env.VITE_LINKEDIN}` },
+        body: JSON.stringify({
+          model: process.env.GROQ_LINKEDIN_MODEL || "openai/gpt-oss-120b",
+          messages: [
+            { role: "system", content: "Return a rigorous LinkedIn profile diagnostic in the required JSON schema." },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.25,
+          max_completion_tokens: 3000,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) return res.status(response.status).json({ error: data?.error?.message || "Groq analysis failed" });
+      output = data.choices?.[0]?.message?.content;
+    }
     if (!output) throw new Error("Groq returned no diagnostic content");
     const result = JSON.parse(output);
     const unfinishedCopy = /\[[^\]]+\]|\b(?:add|insert|include|replace)\s+(?:a|an|your|the)?\s*(?:metric|outcome|detail|number|proof point|skill|specialty)\b/i;

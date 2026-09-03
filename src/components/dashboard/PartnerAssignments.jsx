@@ -15,6 +15,7 @@ import {
   Flag,
   Link2,
   ListChecks,
+  Lock,
   Map,
   Megaphone,
   Rocket,
@@ -28,6 +29,47 @@ import {
   UploadCloud,
   X,
 } from "lucide-react";
+
+function getAssignmentUnlockStatus(id, recordsMap) {
+  if (id === 1) {
+    return { isUnlocked: true, lockReason: null };
+  }
+
+  const prevId = id - 1;
+  const prevRecord = recordsMap[prevId];
+  const isPrevCompleted = prevRecord && (
+    prevRecord.status === "submitted" ||
+    prevRecord.status === "reviewed" ||
+    prevRecord.status === "passed" ||
+    prevRecord.status === "skipped" ||
+    Boolean(prevRecord.submittedAt)
+  );
+
+  if (!isPrevCompleted) {
+    return {
+      isUnlocked: false,
+      lockReason: `Complete Assignment ${prevId} first`,
+    };
+  }
+
+  const prevCompletedDate = prevRecord.submittedAt || prevRecord.updatedAt || prevRecord.createdAt;
+  const prevTime = prevCompletedDate ? new Date(prevCompletedDate).getTime() : Date.now();
+  const unlockTime = prevTime + (7 * 24 * 60 * 60 * 1000);
+  const now = Date.now();
+
+  if (now >= unlockTime) {
+    return { isUnlocked: true, lockReason: null };
+  }
+
+  const diffMs = unlockTime - now;
+  const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  const unlockDateStr = new Date(unlockTime).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
+  return {
+    isUnlocked: false,
+    lockReason: `Unlocks on ${unlockDateStr} (${daysLeft} day${daysLeft > 1 ? "s" : ""} after Assignment ${prevId})`,
+  };
+}
 import { partnerAssignments, partnerPhases } from "../../data/partnerAssignments";
 import {
   FellowshipAssignmentDetails,
@@ -512,8 +554,8 @@ export default function PartnerAssignments({ onViewIdCard }) {
               </p>
             </div>
 
-            <span className="w-fit rounded-full border border-[#ccebf4] bg-[#f2fbfe] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-[#1589aa]">
-              All assignments unlocked
+            <span className="w-fit rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-amber-600">
+              Sequential 7-Day Unlocking Active
             </span>
           </div>
 
@@ -560,13 +602,13 @@ export default function PartnerAssignments({ onViewIdCard }) {
                       const assignmentIndex = phase.assignmentIds.indexOf(id);
                       const hasNext = assignmentIndex < phase.assignmentIds.length - 1;
                       const completedNode = itemRecord.status === "submitted";
+                      const unlockStatus = getAssignmentUnlockStatus(id, records);
 
                       return (
                         <div key={id} className="relative">
-                          {/* Desktop roadmap connector: actual card to actual next card */}
+                          {/* Desktop roadmap connector */}
                           {hasNext && (
                             <>
-                              {/* horizontal connector to the next column */}
                               <div
                                 className={`pointer-events-none absolute left-[calc(100%-1px)] top-1/2 z-0 hidden h-[3px] w-5 -translate-y-1/2 rounded-full xl:block ${
                                   completedNode
@@ -574,8 +616,6 @@ export default function PartnerAssignments({ onViewIdCard }) {
                                     : "bg-slate-200"
                                 }`}
                               />
-
-                              {/* tablet connector */}
                               <div
                                 className={`pointer-events-none absolute left-1/2 top-full z-0 hidden h-5 w-[3px] -translate-x-1/2 rounded-full md:block xl:hidden ${
                                   completedNode
@@ -583,8 +623,6 @@ export default function PartnerAssignments({ onViewIdCard }) {
                                     : "bg-slate-200"
                                 }`}
                               />
-
-                              {/* mobile connector */}
                               <div
                                 className={`pointer-events-none absolute left-1/2 top-full z-0 h-5 w-[3px] -translate-x-1/2 rounded-full md:hidden ${
                                   completedNode
@@ -596,10 +634,12 @@ export default function PartnerAssignments({ onViewIdCard }) {
                           )}
 
                           <article
-                            className={`group relative z-10 flex min-h-[220px] flex-col rounded-[20px] border bg-white p-4 transition duration-300 hover:-translate-y-0.5 sm:p-5 ${
-                              itemRecord.status === "submitted"
-                                ? "shadow-[0_8px_24px_rgba(23,185,216,0.12),0_0_20px_rgba(23,185,216,0.08)]"
-                                : "shadow-[0_8px_22px_rgba(22,63,98,0.05)] hover:shadow-[0_14px_28px_rgba(22,63,98,0.09)]"
+                            className={`group relative z-10 flex min-h-[220px] flex-col rounded-[20px] border bg-white p-4 transition duration-300 sm:p-5 ${
+                              !unlockStatus.isUnlocked
+                                ? "filter blur-[1.5px] opacity-60 pointer-events-none select-none"
+                                : itemRecord.status === "submitted"
+                                ? "shadow-[0_8px_24px_rgba(23,185,216,0.12),0_0_20px_rgba(23,185,216,0.08)] hover:-translate-y-0.5"
+                                : "shadow-[0_8px_22px_rgba(22,63,98,0.05)] hover:shadow-[0_14px_28px_rgba(22,63,98,0.09)] hover:-translate-y-0.5"
                             }`}
                             style={{
                               borderColor:
@@ -658,16 +698,18 @@ export default function PartnerAssignments({ onViewIdCard }) {
 
                             <div className="mt-3 grid grid-cols-2 gap-2">
                               <button
-                                onClick={() => showDetails(id)}
-                                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#dbe7ef] bg-white text-[10px] font-black text-[#30455c] transition hover:bg-[#f6fbfe]"
+                                onClick={() => unlockStatus.isUnlocked && showDetails(id)}
+                                disabled={!unlockStatus.isUnlocked}
+                                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#dbe7ef] bg-white text-[10px] font-black text-[#30455c] transition hover:bg-[#f6fbfe] disabled:opacity-50"
                               >
                                 <Eye size={13} />
                                 Details
                               </button>
 
                               <button
-                                onClick={() => begin(id)}
-                                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl text-[10px] font-black text-white shadow-sm transition hover:brightness-105"
+                                onClick={() => unlockStatus.isUnlocked && begin(id)}
+                                disabled={!unlockStatus.isUnlocked}
+                                className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl text-[10px] font-black text-white shadow-sm transition hover:brightness-105 disabled:opacity-50"
                                 style={{
                                   backgroundColor: theme.color,
                                   boxShadow: `0 8px 18px ${theme.color}2e`,
@@ -683,6 +725,21 @@ export default function PartnerAssignments({ onViewIdCard }) {
                             </div>
                           </div>
                           </article>
+
+                          {/* Lock Overlay when Assignment is Inactive/Locked */}
+                          {!unlockStatus.isUnlocked && (
+                            <div className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-[20px] bg-slate-950/75 backdrop-blur-[3px] p-5 text-center text-white shadow-xl">
+                              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-400 shadow-md">
+                                <Lock size={22} />
+                              </div>
+                              <span className="mt-2.5 text-[10px] font-black uppercase tracking-widest text-amber-300">
+                                Assignment {id} Locked
+                              </span>
+                              <p className="mt-1 max-w-[200px] text-[11px] font-bold leading-relaxed text-slate-200">
+                                {unlockStatus.lockReason}
+                              </p>
+                            </div>
+                          )}
 
                           {/* Roadmap node attached directly to the card edge */}
                           <div

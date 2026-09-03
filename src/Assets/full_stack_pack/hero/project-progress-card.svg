@@ -1,24 +1,32 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
-<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#173CFF"/><stop offset="1" stop-color="#6B4CFF"/></linearGradient>
-<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A98F"/><stop offset="1" stop-color="#23D0B2"/></linearGradient>
-<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#5747F2"/><stop offset="1" stop-color="#7A5BFF"/></linearGradient>
-<linearGradient id="coral" x1="0" x2="1"><stop stop-color="#FF4E80"/><stop offset="1" stop-color="#FF9136"/></linearGradient>
-<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0C3472"/></linearGradient>
-<radialGradient id="glow"><stop stop-color="#4374FF" stop-opacity=".42"/><stop offset="1" stop-color="#4374FF" stop-opacity="0"/></radialGradient>
-<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
-<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+
+<defs>
+  <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#2F80ED"/>
+    <stop offset="100%" stop-color="#4EA5FF"/>
+  </linearGradient>
+  <linearGradient id="tealGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#11A98D"/>
+    <stop offset="100%" stop-color="#35D3BA"/>
+  </linearGradient>
+  <linearGradient id="purpleGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#6654E8"/>
+    <stop offset="100%" stop-color="#9A7CFF"/>
+  </linearGradient>
+  <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#102A56" flood-opacity=".12"/>
+  </filter>
 </defs>
-<g filter="url(#shadow)">
-<rect x="18" y="18" width="476" height="476" rx="34" fill="#fff"/>
-<text x="48" y="70" font-family="Inter,Arial" font-size="27" font-weight="700" fill="#071B49">Project Progress</text>
-<text x="48" y="124" font-family="Inter,Arial" font-size="18" fill="#4C5870">Overall Progress</text>
-<text x="386" y="148" font-family="Inter,Arial" font-size="47" font-weight="800" fill="#071B49">75%</text>
-<rect x="48" y="166" width="390" height="18" rx="9" fill="#ECEFFA"/>
-<rect x="48" y="166" width="293" height="18" rx="9" fill="#5948ED"/>
-<g font-family="Inter,Arial" font-size="19" fill="#25334E">
-<circle cx="65" cy="248" r="11" fill="#0ABF9A"/><path d="M59 248 l5 5 9-11" fill="none" stroke="#fff" stroke-width="4"/><text x="91" y="255">Frontend</text><text x="420" y="255" fill="#0ABF9A">✓</text>
-<circle cx="65" cy="300" r="11" fill="#0ABF9A"/><path d="M59 300 l5 5 9-11" fill="none" stroke="#fff" stroke-width="4"/><text x="91" y="307">Backend</text><text x="420" y="307" fill="#0ABF9A">✓</text>
-<circle cx="65" cy="352" r="11" fill="#0ABF9A"/><path d="M59 352 l5 5 9-11" fill="none" stroke="#fff" stroke-width="4"/><text x="91" y="359">Database</text><text x="420" y="359" fill="#0ABF9A">✓</text>
-<circle cx="65" cy="404" r="11" fill="#fff" stroke="#5948ED" stroke-width="4"/><text x="91" y="411">Deployment</text><circle cx="425" cy="405" r="10" fill="#fff" stroke="#D9DFEA" stroke-width="3"/>
+
+<g filter="url(#cardShadow)">
+  <rect x="32" y="32" width="960" height="960" rx="64" fill="#F8FAFD"/>
 </g>
-</g></svg>
+<rect x="64" y="64" width="896" height="896" rx="44" fill="#FFFFFF" opacity=".72"/>
+<text x="88" y="122" font-family="Inter,Arial,sans-serif" font-size="48" font-weight="800" fill="#0B2454">Project Progress</text>
+
+
+<text x="92" y="220" font-family="Inter,Arial,sans-serif" font-size="24" fill="#6E7D94">Overall Progress</text>
+<text x="900" y="231" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="58" font-weight="850" fill="#0B2454">75%</text>
+<rect x="92" y="270" width="816" height="26" rx="13" fill="#E9EDF6"/>
+<rect x="92" y="270" width="612" height="26" rx="13" fill="url(#purpleGrad)"/>
+<rect x="92" y="336" width="816" height="86" rx="24" fill="#F8FAFD" stroke="#E8EDF4" stroke-width="2"/><circle cx="140" cy="379" r="20" fill="#12B596"/><path d="M130 379 l8 8 14 -18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="185" y="388" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#2A3E60">Frontend</text><circle cx="856" cy="379" r="12" fill="#12B596" opacity=".95"/><rect x="92" y="456" width="816" height="86" rx="24" fill="#F8FAFD" stroke="#E8EDF4" stroke-width="2"/><circle cx="140" cy="499" r="20" fill="#12B596"/><path d="M130 499 l8 8 14 -18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="185" y="508" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#2A3E60">Backend</text><circle cx="856" cy="499" r="12" fill="#12B596" opacity=".95"/><rect x="92" y="576" width="816" height="86" rx="24" fill="#F8FAFD" stroke="#E8EDF4" stroke-width="2"/><circle cx="140" cy="619" r="20" fill="#12B596"/><path d="M130 619 l8 8 14 -18" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="185" y="628" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#2A3E60">Database</text><circle cx="856" cy="619" r="12" fill="#12B596" opacity=".95"/><rect x="92" y="696" width="816" height="86" rx="24" fill="#F8FAFD" stroke="#E8EDF4" stroke-width="2"/><circle cx="140" cy="739" r="20" fill="#fff" stroke="#7058EE" stroke-width="5"/><text x="185" y="748" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#2A3E60">Deployment</text><circle cx="856" cy="739" r="12" fill="#8A96A8" opacity=".95"/></svg>

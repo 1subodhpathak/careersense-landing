@@ -23,6 +23,66 @@ body {
   background: #ffffff;
 }
 
+/* CareerSense branding for Clerk's account menu and profile manager. */
+.cl-userProfile-root .cl-footer,
+.cl-userProfile-root .cl-userProfileFooter,
+.cl-userProfile-root [class*="footer"],
+.cl-userProfile-root [class*="Footer"],
+.cl-userButtonPopoverCard .cl-footer,
+.cl-userButtonPopoverFooter,
+.cl-internal-b3fm6y {
+  display: none !important;
+}
+
+.cl-userProfile-root *:has(> a[href*="clerk.com"]) {
+  display: none !important;
+}
+
+.cl-userProfile-root .cl-navbar::before {
+  content: "CareerSense";
+  display: flex;
+  min-height: 78px;
+  align-items: center;
+  margin: 4px 12px 12px;
+  padding-left: 60px;
+  background-image: url("./Assets/CSlogo.png");
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: 48px auto;
+  color: #071536;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+.cl-userProfile-root .cl-navbar {
+  position: relative;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+}
+
+.cl-userProfile-root .cl-navbarButtons {
+  margin-top: 0 !important;
+}
+
+.cl-userProfile-root .cl-navbarButton:first-of-type {
+  margin-top: 0 !important;
+}
+
+.cl-userProfile-root .cl-navbar::after {
+  content: "AI CAREER COPILOT";
+  position: absolute;
+  left: 88px;
+  top: 78px;
+  color: #0b8f9c;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.22em;
+}
+
 /* Standard return control inside every eLearning course header. */
 .elearning-course-shell main header a:is([href="/"], [href^="/dashboard?tab=e"]) {
   min-height: 40px;

@@ -26,8 +26,8 @@ import {
   History,
   X,
   FileDown,
-  Plus,          // Fixed: Added missing import
-  AlertCircle,   // Fixed: Added missing import
+  Plus,
+  AlertCircle,
   Save,
   Check,
   Briefcase,
@@ -236,7 +236,7 @@ export default function DashboardPage() {
       setSidebarWidth(newWidth);
       try {
         localStorage.setItem("cs_sidebar_width", String(newWidth));
-      } catch (_) {}
+      } catch (_) { }
     };
 
     const handleMouseUp = () => {
@@ -257,6 +257,24 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [communityStats, setCommunityStats] = useState(null);
   const [communityLoading, setCommunityLoading] = useState(false);
+  const [userSub, setUserSub] = useState({ plan: "free", tokensRemaining: 10000, purchasedFellowships: [] });
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchUserSub = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const res = await fetch(`${backendUrl}/careersense/subscription/status?clerkId=${user.id}`);
+        const data = await res.json();
+        if (data.success) {
+          setUserSub(data);
+        }
+      } catch (err) {
+        console.error("Error fetching CareerSense subscription:", err);
+      }
+    };
+    fetchUserSub();
+  }, [user?.id]);
 
   // Master Profile Form State
   const [profileForm, setProfileForm] = useState({
@@ -493,10 +511,14 @@ export default function DashboardPage() {
     setTimeout(() => setProfileSuccessMsg(""), 3000);
   };
 
+  const [serverLedgerLogs, setServerLedgerLogs] = useState([]);
+  const [serverLedgerLoading, setServerLedgerLoading] = useState(true);
+
   useEffect(() => {
     if (!isLoaded) return;
     if (!user) {
       setLoading(false);
+      setServerLedgerLoading(false);
       return;
     }
 
@@ -510,9 +532,10 @@ export default function DashboardPage() {
     } catch (_) { }
 
     const fetchDashboardSummary = async () => {
+      setServerLedgerLoading(true);
       try {
         const token = await getToken();
-        const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
+        const apiBase = import.meta.env.VITE_API_URL || "http://localhost:4000";
         const response = await fetch(`${apiBase}/careersense/dashboard/summary`, {
           headers: {
             "Authorization": `Bearer ${token}`
@@ -523,10 +546,19 @@ export default function DashboardPage() {
           setDashboardData(data);
           try { sessionStorage.setItem("cs_dashboard_summary", JSON.stringify(data)); } catch (_) { }
         }
+
+        const ledgerRes = await fetch(`${apiBase}/careersense/subscription/ledger?clerkId=${user.id}`);
+        if (ledgerRes.ok) {
+          const ledgerData = await ledgerRes.json();
+          if (ledgerData.ledger) {
+            setServerLedgerLogs(ledgerData.ledger);
+          }
+        }
       } catch (err) {
         console.error("Error fetching dashboard summary:", err);
       } finally {
         setLoading(false);
+        setServerLedgerLoading(false);
       }
     };
 
@@ -593,6 +625,36 @@ export default function DashboardPage() {
     { icon: Users, label: "Community", section: "Career Network", tone: "text-rose-400" },
     { icon: CreditCard, label: "Usage & Billing", section: "Account", tone: "text-slate-400" },
   ];
+
+  const userPlan = userSub?.plan || "free";
+  const purchasedFellowships = userSub?.purchasedFellowships || [];
+
+  useEffect(() => {
+    if (!userSub) return;
+    const plan = userSub.plan || "free";
+    if ((activeTab === "Partner Journey" || activeTab === "ID Card Studio" || activeTab === "Offer Letter Workspace") && plan !== "partner") {
+      setSearchParams({ tab: "Dashboard" });
+    }
+    if (activeTab === "Fellowship Program" && plan !== "intern") {
+      setSearchParams({ tab: "Dashboard" });
+    }
+  }, [userSub, activeTab]);
+
+  const filteredSidebarItems = sidebarItems.filter(item => {
+    if (item.label === "ID Card Studio" && userPlan !== "partner") return false;
+    if (item.label === "Offer Letter Workspace" && userPlan !== "partner") return false;
+    if (item.label === "Partner Journey" && userPlan !== "partner") return false;
+    if (item.label === "Fellowship Program" && userPlan !== "intern") return false;
+    return true;
+  }).map(item => {
+    if (item.label === "Fellowship Program" && item.children) {
+      const filteredChildren = item.children.filter(child =>
+        purchasedFellowships.length === 0 || purchasedFellowships.includes(child.programId)
+      );
+      return { ...item, children: filteredChildren };
+    }
+    return item;
+  });
 
   const username = user?.fullName || user?.username || "Guest User";
   const userInitials = user?.firstName && user?.lastName
@@ -727,74 +789,25 @@ export default function DashboardPage() {
   };
 
   const combinedLedger = (() => {
-    const list = [];
-
-    usageLedger.forEach(log => {
-      list.push({
-        action: log.action,
-        app: "Certifi",
-        createdAt: new Date(log.createdAt),
-        points: log.careerPoints || 0,
-        cost: log.costUsd || 0
-      });
-    });
-
-    atsResumes.forEach((resume) => {
-      list.push({
-        action: "Resume Upload",
-        app: "ATS Checker",
-        createdAt: new Date(resume.updatedAt || resume.createdAt),
-        points: 180,
-        cost: 180 / 100000
-      });
-
-      if (resume.latestAnalysis && resume.latestAnalysis.overall_score) {
-        const report = resume.latestAnalysis;
-        const base = report.jdText ? 1825 : 1350;
-        const scoreBonus = Math.round((report.overall_score || 0) * 4.75);
-        const pts = base + scoreBonus;
-        list.push({
-          action: report.jdText ? "ATS + JD Report" : "ATS Report",
-          app: "ATS Checker",
-          createdAt: new Date(report.createdAt),
-          points: pts,
-          cost: pts / 100000
+    if (serverLedgerLoading) return [];
+    if (serverLedgerLogs.length > 0) {
+      return serverLedgerLogs
+        .filter(log => log.amount < 0)
+        .map(log => {
+          const pts = Math.abs(log.amount);
+          const service = log.serviceId || "tool_usage";
+          const isAts = service.includes("ats");
+          const isCover = service.includes("Cover") || service.includes("cover");
+          return {
+            action: isAts ? "ATS Report" : isCover ? "Executive Analysis" : service === "certifi_assessment" ? "Assessment Generation" : service,
+            app: isAts ? "ATS Checker" : isCover ? "Cover Letter" : "Certifi",
+            createdAt: new Date(log.createdAt),
+            points: pts,
+            cost: pts / 100000
+          };
         });
-      }
-    });
-
-    atsJds.forEach((jd) => {
-      list.push({
-        action: "Job Description Upload",
-        app: "ATS Checker",
-        createdAt: new Date(jd.createdAt),
-        points: 95,
-        cost: 95 / 100000
-      });
-    });
-
-    coverLetters.forEach((letter) => {
-      const resumeLen = (letter.resumeText || "").length;
-      const jdLen = (letter.jobDescription || "").length;
-      const genLen = (letter.generatedLetter || "").length;
-
-      const inputPoints = (resumeLen > 0 || jdLen > 0)
-        ? Math.round((resumeLen + jdLen) / 4) + 1036
-        : 1800;
-      const outputPoints = genLen > 0 ? Math.round(genLen / 4) : 600;
-      const pts = inputPoints + outputPoints;
-
-      list.push({
-        action: letter.resumeText && letter.jobDescription ? 'Executive Resume + JD Map' : 'Executive Analysis',
-        app: "Cover Letter",
-        createdAt: new Date(letter.createdAt),
-        points: pts,
-        cost: pts / 10000
-      });
-    });
-
-    list.sort((a, b) => b.createdAt - a.createdAt);
-    return list;
+    }
+    return [];
   })();
 
   const filteredLedger = ledgerFilter === "all"
@@ -2261,13 +2274,14 @@ export default function DashboardPage() {
         const resumesCount = atsResumes.length;
         const letterCount = dashboardData?.coverLetter?.savedLetters?.length || 0;
 
+        const tokenAllowanceMap = { free: "10,000 One-Time", student: "100,000 / Mo", intern: "500,000 / Mo", partner: "1,000,000 / Mo" };
         return {
           title: "Infrastructure Tokens & Billing Ledger",
           subtitle: "Verify computational quota allocations and clear transaction operational history.",
           stats: [
-            { label: "Current Balance", value: `$${totalCost.toFixed(4)}`, status: "Settled", color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
-            { label: "Skills Points Earned", value: `${totalPoints}`, status: "Earned across platforms", color: "text-amber-600", bg: "bg-amber-50", icon: <Zap size={16} /> },
-            { label: "Active Operational Tier", value: "Free Pool", status: "Quota Limited", color: "text-slate-500", bg: "bg-slate-100", icon: <Lock size={16} /> }
+            { label: "AI Tokens Remaining", value: `${(userSub.tokensRemaining || 10000).toLocaleString()}`, status: "Reverse countdown balance", color: "text-amber-600", bg: "bg-amber-50", icon: <Zap size={16} fill="currentColor" /> },
+            { label: "Active Operational Tier", value: `${userPlan.toUpperCase()} Plan`, status: "CareerSense subscription", color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
+            { label: "Monthly Token Allowance", value: tokenAllowanceMap[userPlan] || "10,000", status: userPlan === "free" ? "One-Time Allocation" : "Monthly Auto-Renewal", color: "text-emerald-600", bg: "bg-emerald-50", icon: <ShieldCheck size={16} /> }
           ],
           renderExtra: () => (
             <div className="space-y-6 mt-6">
@@ -2317,7 +2331,12 @@ export default function DashboardPage() {
                     </select>
                   </div>
                 </div>
-                {filteredLedger.length === 0 ? (
+                {serverLedgerLoading ? (
+                  <div className="py-12 text-center flex flex-col items-center justify-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-teal-600" />
+                    <p className="text-xs font-semibold text-slate-500">Loading subscription ledger logs...</p>
+                  </div>
+                ) : filteredLedger.length === 0 ? (
                   <p className="text-xs text-slate-400 py-6 text-center">No transaction logs recorded in ledger.</p>
                 ) : (
                   <>
@@ -2412,9 +2431,8 @@ export default function DashboardPage() {
 
       {/* --- SIDEBAR PANEL --- */}
       <aside
-        className={`relative hidden shrink-0 select-none border-r border-slate-900 bg-[#0b132b] text-slate-300 ${
-          isResizingSidebar ? "transition-none" : "transition-[width] duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
-        } lg:flex lg:flex-col ${sidebarCollapsed ? "w-[88px] p-4" : "p-5"}`}
+        className={`relative hidden shrink-0 select-none border-r border-slate-900 bg-[#0b132b] text-slate-300 ${isResizingSidebar ? "transition-none" : "transition-[width] duration-300 ease-[cubic-bezier(0.25,1,0.5,1)]"
+          } lg:flex lg:flex-col ${sidebarCollapsed ? "w-[88px] p-4" : "p-5"}`}
         style={{
           width: sidebarCollapsed ? "88px" : `${sidebarWidth}px`,
           height: '100vh'
@@ -2423,9 +2441,8 @@ export default function DashboardPage() {
         {!sidebarCollapsed && (
           <div
             onMouseDown={startResizingSidebar}
-            className={`absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-teal-500/30 transition-colors z-20 ${
-              isResizingSidebar ? "bg-teal-400/50" : ""
-            }`}
+            className={`absolute right-0 top-0 bottom-0 w-2 cursor-col-resize hover:bg-teal-500/30 transition-colors z-20 ${isResizingSidebar ? "bg-teal-400/50" : ""
+              }`}
             title="Drag right edge to resize sidebar"
           />
         )}
@@ -2448,10 +2465,10 @@ export default function DashboardPage() {
           </div>
 
           <nav className="flex-1 overflow-y-auto space-y-1 pr-1" style={{ scrollbarWidth: 'thin', scrollbarColor: '#1c2541 transparent' }}>
-            {sidebarItems.map((item, itemIndex) => {
+            {filteredSidebarItems.map((item, itemIndex) => {
               const Icon = item.icon;
               const isSelected = activeTab === item.label;
-              const showSection = itemIndex === 0 || sidebarItems[itemIndex - 1].section !== item.section;
+              const showSection = itemIndex === 0 || filteredSidebarItems[itemIndex - 1].section !== item.section;
               if (item.children) {
                 const isFellowshipGroup = item.label === "Fellowship Program";
                 const menuOpen = isFellowshipGroup ? fellowshipOpen : careerToolsOpen;
@@ -2539,7 +2556,7 @@ export default function DashboardPage() {
                     {userInitials}
                   </div>
                 )}
-                {!sidebarCollapsed && <div className="leading-tight min-w-0"><div className="text-xs font-bold text-white truncate">{username}</div><div className="text-[10px] text-slate-500 font-medium truncate">Explorer · {totalPoints.toLocaleString()} points</div></div>}
+                {!sidebarCollapsed && <div className="leading-tight min-w-0"><div className="text-xs font-bold text-white truncate">{username}</div><div className="text-[10px] text-[#0EA8B9] font-bold uppercase truncate">{userPlan} Plan · {(userSub.tokensRemaining || 10000).toLocaleString()} tokens</div></div>}
               </div>
               {!sidebarCollapsed && <button onClick={() => setAccountMenuOpen((open) => !open)} className="ml-2 flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white/5 hover:text-white" aria-expanded={accountMenuOpen}><ChevronDown size={15} className={`transition-transform ${accountMenuOpen ? "rotate-180" : ""}`} /></button>}
               {accountMenuOpen && !sidebarCollapsed && <div className="absolute bottom-12 left-0 right-0 rounded-xl border border-slate-700 bg-[#111c36] p-2 shadow-2xl"><button onClick={() => handleTabChange("My Profile")} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/5"><UserRound size={14} /> Manage profile</button><button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/10"><LogOut size={14} /> Sign out</button></div>}
@@ -2579,10 +2596,10 @@ export default function DashboardPage() {
 
               <div className="mb-3 px-2 text-[10px] font-bold uppercase tracking-widest text-slate-500">Menu</div>
               <nav className="space-y-1">
-                {sidebarItems.map((item, itemIndex) => {
+                {filteredSidebarItems.map((item, itemIndex) => {
                   const Icon = item.icon;
                   const isSelected = activeTab === item.label;
-                  const showSection = itemIndex === 0 || sidebarItems[itemIndex - 1].section !== item.section;
+                  const showSection = itemIndex === 0 || filteredSidebarItems[itemIndex - 1].section !== item.section;
                   if (item.children) {
                     const isFellowshipGroup = item.label === "Fellowship Program";
                     const menuOpen = isFellowshipGroup ? fellowshipOpen : careerToolsOpen;
@@ -2644,7 +2661,7 @@ export default function DashboardPage() {
               </nav>
               <button onClick={() => { handleTabChange(nextAction.tab); setSidebarOpen(false); }} className="mt-5 w-full rounded-xl border border-teal-500/15 bg-teal-500/[0.06] p-3 text-left"><div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-400">Your next move</span><Target size={13} className="text-teal-400" /></div><div className="mt-1.5 text-xs font-bold text-white">{nextAction.label}</div><div className="mt-1 text-[10px] text-slate-500">{nextAction.detail}</div></button>
             </div>
-            <div className="mt-4 flex items-center gap-3 border-t border-slate-800 px-2 pt-4">{user?.imageUrl ? <img src={user.imageUrl} alt={username} className="h-9 w-9 rounded-full object-cover" /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">{userInitials}</div>}<div className="min-w-0 flex-1"><div className="truncate text-xs font-bold text-white">{username}</div><div className="truncate text-[10px] text-slate-500">Explorer · {totalPoints.toLocaleString()} points</div></div><LogOut size={15} className="text-slate-500" /></div>
+            <div className="mt-4 flex items-center gap-3 border-t border-slate-800 px-2 pt-4">{user?.imageUrl ? <img src={user.imageUrl} alt={username} className="h-9 w-9 rounded-full object-cover" /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">{userInitials}</div>}<div className="min-w-0 flex-1"><div className="truncate text-xs font-bold text-white">{username}</div><div className="truncate text-[10px] text-[#0EA8B9] font-bold uppercase">{userPlan} Plan · {(userSub.tokensRemaining || 10000).toLocaleString()} tokens</div></div><LogOut size={15} className="text-slate-500" /></div>
           </aside>
         </div>
       )}
@@ -2681,12 +2698,12 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
                   <div className="h-7 w-7 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center"><Zap size={14} fill="currentColor" /></div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">CS Points Used</div><div className="text-sm font-black text-slate-800 mt-1">{totalPoints}</div></div>
+                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">AI Tokens Remaining</div><div className="text-sm font-black text-slate-800 mt-1">{(userSub.tokensRemaining || 10000).toLocaleString()}</div></div>
                 </div>
-                <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
-                  <div className="h-7 w-7 rounded-md bg-emerald-50 text-emerald-500 flex items-center justify-center font-bold text-sm">$</div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Bill</div><div className="text-sm font-black text-slate-800 mt-1">${totalCost.toFixed(4)}</div></div>
-                </div>
+                <Link to="/pricing" className="bg-white border border-slate-200/60 hover:border-[#0EA8B9] rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs transition">
+                  <div className="h-7 w-7 rounded-md bg-cyan-50 text-cyan-600 flex items-center justify-center font-black text-xs uppercase">{(userPlan || "f")[0]}</div>
+                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Active Tier</div><div className="text-sm font-black text-[#0EA8B9] mt-1 uppercase">{userPlan}</div></div>
+                </Link>
               </div>
             </div>}
 

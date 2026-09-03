@@ -43,21 +43,21 @@ function ComingSoonModal({ phase, onClose }) {
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-slate-900/80" />
-      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900" onClick={(e) => e.stopPropagation()}>
+      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-[22px] border border-[#DCE5F1] bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-4">
           <div>
-            <span className="inline-flex rounded-full bg-cyan-100 dark:bg-cyan-950 px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-700 dark:text-cyan-400">Coming Soon</span>
-            <h3 className="mt-3 text-2xl font-bold text-slate-900 dark:text-white">{phase.tool}</h3>
+            <span className="inline-flex rounded-full bg-blue-100 dark:bg-cyan-950 px-3 py-1 text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-cyan-400">Coming Soon</span>
+            <h3 className="mt-3 text-2xl font-bold text-[#071536] dark:text-white">{phase.tool}</h3>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Launching {new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" }).format(launchTargetDate)}</p>
           </div>
-          <button onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-700">
+          <button onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-[14px] border border-[#DCE5F1] dark:border-slate-700 text-slate-400 hover:text-slate-700">
             <X size={18} />
           </button>
         </div>
         <div className="mt-6 grid grid-cols-4 gap-3">
           {[{ l: "Days", v: t.days }, { l: "Hours", v: t.hours }, { l: "Min", v: t.minutes }, { l: "Sec", v: t.seconds }].map(({ l, v }) => (
-            <div key={l} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 py-4 text-center">
-              <div className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white">{pad(v)}</div>
+            <div key={l} className="rounded-[14px] border border-[#DCE5F1] dark:border-slate-800 bg-[#F8FAFE] dark:bg-slate-800/50 py-4 text-center">
+              <div className="text-3xl font-bold tabular-nums text-[#071536] dark:text-white">{pad(v)}</div>
               <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">{l}</div>
             </div>
           ))}
@@ -72,8 +72,8 @@ function ScoreRing({ score, readinessLevel, isLight }) {
   const r = 52;
   const circ = 2 * Math.PI * r;
   const offset = circ - (score / 100) * circ;
-  const colors = { red: "#ef4444", amber: "#f59e0b", yellow: "#eab308", emerald: "#10b981", cyan: "#06b6d4" };
-  const stroke = colors[readinessLevel.color] || "#06b6d4";
+  const colors = { red: "#ef4444", amber: "#f59e0b", yellow: "#eab308", emerald: "#10b981", cyan: "#0ea5e9" };
+  const stroke = colors[readinessLevel.color] || "#0ea5e9";
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -90,8 +90,8 @@ function ScoreRing({ score, readinessLevel, isLight }) {
         />
       </svg>
       <div className="absolute text-center">
-        <div className={`text-3xl font-extrabold tabular-nums ${isLight ? "text-slate-900" : "text-white"}`}>{score}</div>
-        <div className={`text-[10px] font-bold uppercase tracking-widest ${isLight ? "text-slate-600" : "text-slate-400"}`}>/ 100</div>
+        <div className={`text-3xl font-extrabold tabular-nums ${isLight ? "text-[#071536]" : "text-white"}`}>{score}</div>
+        <div className={`text-[10px] font-bold uppercase tracking-widest ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>/ 100</div>
       </div>
     </div>
   );
@@ -121,22 +121,22 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
   const progressPercent = Math.max(0, Math.min(100, (completedCount / (phaseList.length - 1)) * 100));
 
   return (
-    <div className={`mt-4 rounded-3xl border p-6 sm:p-9 transition-all duration-300 ${
+    <div className={`mt-4 rounded-[26px] border p-6 sm:p-9 transition-all duration-300 ${
       isLight 
-        ? "border-slate-200/90 bg-gradient-to-b from-white via-slate-50/60 to-white text-slate-900 shadow-xl shadow-slate-200/50" 
+        ? "border-[#DCE5F1] bg-gradient-to-b from-white via-slate-50/60 to-white text-[#071536] shadow-[0_18px_50px_rgba(28,77,145,0.06)]" 
         : "border-slate-800/90 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 text-white shadow-2xl shadow-black/60"
     }`}>
       {/* Header */}
       <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b pb-6 mb-10 gap-4 ${
-        isLight ? "border-slate-200/80" : "border-slate-800/80"
+        isLight ? "border-[#DCE5F1]" : "border-slate-800/80"
       }`}>
         <div>
           <div className="flex items-center gap-2">
-            <h3 className={`text-2xl font-black tracking-tight ${isLight ? "text-slate-900" : "text-white"}`}>
+            <h3 className={`text-2xl font-black tracking-tight ${isLight ? "text-[#071536]" : "text-white"}`}>
               Creation Pipeline
             </h3>
             <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-widest ${
-              isLight ? "bg-cyan-100 text-cyan-800 border border-cyan-300" : "bg-cyan-950 text-cyan-300 border border-cyan-800/50"
+              isLight ? "bg-blue-100 text-blue-700 border border-blue-200" : "bg-cyan-950 text-cyan-300 border border-cyan-800/50"
             }`}>
               <Sparkles size={12} className="text-cyan-500" /> Interactive Map
             </span>
@@ -151,11 +151,11 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
           </p>
         </div>
 
-        <div className={`flex items-center gap-4 text-xs font-extrabold px-4 py-2 rounded-2xl border ${
-          isLight ? "bg-white border-slate-200/80 text-slate-600 shadow-xs" : "bg-slate-900/80 border-slate-800 text-slate-400"
+        <div className={`flex items-center gap-4 text-xs font-extrabold px-4 py-2 rounded-[22px] border ${
+          isLight ? "bg-white border-[#DCE5F1] text-[#52627C] shadow-xs" : "bg-slate-900/80 border-slate-800 text-slate-400"
         }`}>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-xs shadow-emerald-500/50 animate-pulse"></span> Completed</span>
-          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-xs shadow-cyan-500/50"></span> Focus</span>
+          <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-xs shadow-cyan-500/50"></span> Focus</span>
           <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-slate-300 dark:bg-slate-700"></span> Pending</span>
         </div>
       </div>
@@ -168,7 +168,7 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
         }`}>
           {/* Animated Gradient Fill Bar */}
           <div 
-            className="h-full rounded-full bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500 transition-all duration-700 ease-out shadow-md shadow-emerald-500/30" 
+            className="h-full rounded-full bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 transition-all duration-700 ease-out shadow-md shadow-emerald-500/30" 
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -179,7 +179,7 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
             const isDone = phase.isDone;
             const IconComponent = phaseIconMap[phase.id] || FileText;
 
-            let statusTagClass = "bg-slate-100 text-slate-500 border-slate-200 dark:bg-slate-800/80 dark:text-slate-400 dark:border-slate-700/60";
+            let statusTagClass = "bg-slate-100 text-slate-500 border-[#DCE5F1] dark:bg-slate-800/80 dark:text-slate-400 dark:border-slate-700/60";
             let statusText = "PENDING";
 
             if (isDone) {
@@ -187,7 +187,7 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
               statusTagClass = "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/50 font-black";
             } else if (isFocus) {
               statusText = "IN PROGRESS";
-              statusTagClass = "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow-md shadow-cyan-500/25 animate-pulse border-transparent";
+              statusTagClass = "bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 text-white font-black shadow-md shadow-cyan-500/25 animate-pulse border-transparent";
             } else if (phase.status === "coming-soon") {
               statusText = "COMING SOON";
               statusTagClass = "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50 font-black";
@@ -211,11 +211,11 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
                       isFocus 
                         ? isLight 
                           ? "bg-gradient-to-tr from-slate-900 via-cyan-950 to-slate-900 border-cyan-400 text-white shadow-xl shadow-cyan-500/30 ring-4 ring-cyan-500/20 scale-115 hover:scale-120" 
-                          : "bg-gradient-to-tr from-cyan-600 via-teal-500 to-blue-600 border-cyan-300 text-white shadow-xl shadow-cyan-500/40 ring-4 ring-cyan-400/30 scale-115 hover:scale-120"
+                          : "bg-gradient-to-tr from-blue-600 via-sky-500 to-cyan-400 border-blue-200 text-white shadow-xl shadow-cyan-500/40 ring-4 ring-cyan-400/30 scale-115 hover:scale-120"
                         : isDone
                         ? "bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-300 text-white shadow-lg shadow-emerald-500/30 scale-105 hover:scale-110"
                         : isLight 
-                        ? "bg-white border-slate-300 text-slate-400 group-hover:border-cyan-400 group-hover:text-cyan-600 shadow-sm hover:scale-105" 
+                        ? "bg-white border-[#CDD8E6] text-slate-400 group-hover:border-cyan-400 group-hover:text-blue-600 shadow-sm hover:scale-105" 
                         : "bg-slate-900 border-slate-800 text-slate-500 group-hover:border-cyan-500 group-hover:text-cyan-400 shadow-sm hover:scale-105"
                     }`}
                   >
@@ -243,10 +243,10 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
                 <div className="mt-3.5 text-center min-w-0 px-1">
                   <p className={`text-xs font-black uppercase tracking-wider truncate transition-colors ${
                     isFocus 
-                      ? isLight ? "text-slate-900 font-extrabold" : "text-white font-extrabold"
+                      ? isLight ? "text-[#071536] font-extrabold" : "text-white font-extrabold"
                       : isDone 
                       ? isLight ? "text-emerald-800" : "text-emerald-300"
-                      : isLight ? "text-slate-600" : "text-slate-400"
+                      : isLight ? "text-[#52627C]" : "text-slate-400"
                   }`}>
                     {phase.label}
                   </p>
@@ -266,7 +266,7 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
 
       {/* Grid of Interactive Phase Cards below Stepper */}
       <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-10 pt-6 border-t ${
-        isLight ? "border-slate-200/80" : "border-slate-800/80"
+        isLight ? "border-[#DCE5F1]" : "border-slate-800/80"
       }`}>
         {phaseList.map((phase) => {
           const isDone = phase.isDone;
@@ -282,24 +282,24 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
             <div
               key={phase.id}
               onClick={handleClick}
-              className={`group rounded-2xl border p-4 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
+              className={`group rounded-[22px] border p-4 cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${
                 isFocus
                   ? isLight
-                    ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-slate-900 shadow-md ring-2 ring-cyan-500/20"
+                    ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-[#071536] shadow-md ring-2 ring-cyan-500/20"
                     : "border-cyan-500/70 bg-gradient-to-b from-slate-900 via-cyan-950/40 to-slate-900 text-white shadow-xl ring-2 ring-cyan-500/30"
                   : isDone
                   ? isLight
-                    ? "border-emerald-200 bg-emerald-50/30 text-slate-900 shadow-xs hover:border-emerald-300"
+                    ? "border-emerald-200 bg-emerald-50/30 text-[#071536] shadow-xs hover:border-emerald-300"
                     : "border-emerald-900/50 bg-emerald-950/20 text-white hover:border-emerald-800"
                   : isLight
-                  ? "border-slate-200/80 bg-white text-slate-800 hover:border-cyan-300 shadow-xs"
+                  ? "border-[#DCE5F1] bg-white text-slate-800 hover:border-blue-200 shadow-xs"
                   : "border-slate-800 bg-slate-900/60 text-slate-300 hover:border-slate-700"
               }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <span className={`flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider ${
                   isFocus 
-                    ? isLight ? "text-cyan-700" : "text-cyan-400" 
+                    ? isLight ? "text-blue-700" : "text-cyan-400" 
                     : isDone 
                     ? "text-emerald-600" 
                     : "text-slate-400"
@@ -310,23 +310,23 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
                   isDone 
                     ? "bg-emerald-600 text-white" 
                     : isFocus 
-                    ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black" 
-                    : isLight ? "bg-slate-100 text-slate-600 border border-slate-200" : "bg-slate-800 text-slate-400 border border-slate-700"
+                    ? "bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 text-white font-black" 
+                    : isLight ? "bg-slate-100 text-[#52627C] border border-[#DCE5F1]" : "bg-slate-800 text-slate-400 border border-slate-700"
                 }`}>
                   {isDone ? "✓ Done" : isFocus ? "Focus" : "Pending"}
                 </span>
               </div>
               
               <h4 className={`text-sm font-black truncate transition-colors ${
-                isFocus ? isLight ? "text-slate-900" : "text-white" : isDone ? isLight ? "text-emerald-900" : "text-emerald-200" : ""
+                isFocus ? isLight ? "text-[#071536]" : "text-white" : isDone ? isLight ? "text-emerald-900" : "text-emerald-200" : ""
               }`}>{phase.tool}</h4>
               
               <div className="mt-3 flex items-center justify-between text-xs font-extrabold">
-                <span className={isFocus ? isLight ? "text-cyan-700" : "text-cyan-400" : isDone ? "text-emerald-600" : "text-slate-400"}>
+                <span className={isFocus ? isLight ? "text-blue-700" : "text-cyan-400" : isDone ? "text-emerald-600" : "text-slate-400"}>
                   {phase.score}% Score
                 </span>
                 <span className={`inline-flex items-center gap-1 text-[11px] font-black transition-transform group-hover:translate-x-0.5 ${
-                  isFocus ? isLight ? "text-slate-900" : "text-cyan-300" : isDone ? "text-emerald-600" : "text-slate-400"
+                  isFocus ? isLight ? "text-[#071536]" : "text-cyan-300" : isDone ? "text-emerald-600" : "text-slate-400"
                 }`}>
                   {phase.status === "coming-soon" ? "Soon" : isDone ? "View" : "Open"} <ExternalLink size={11} />
                 </span>
@@ -352,16 +352,16 @@ function SprintSection({ sprintPlan, completedPhases, onOpenComingSoon, isLight 
   };
 
   return (
-    <div className={`mt-8 rounded-2xl border p-7 shadow-sm ${isLight ? "border-slate-200 bg-white text-slate-900" : "border-slate-800 bg-slate-900 text-white"}`}>
+    <div className={`mt-8 rounded-[22px] border p-7 shadow-sm ${isLight ? "border-[#DCE5F1] bg-white text-[#071536]" : "border-slate-800 bg-slate-900 text-white"}`}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
           <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wider ${isLight ? "bg-amber-100 text-amber-900 border border-amber-300" : "bg-amber-950/40 text-amber-400 border border-amber-800/40"}`}>
             <Calendar size={13} /> {sprintPlan.title || "7-Day Execution Sprint"}
           </span>
-          <h3 className={`mt-2 text-xl font-bold ${isLight ? "text-slate-900" : "text-white"}`}>
+          <h3 className={`mt-2 text-xl font-bold ${isLight ? "text-[#071536]" : "text-white"}`}>
             Day-by-Day Execution Strategy
           </h3>
-          <p className={`mt-1 text-sm ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+          <p className={`mt-1 text-sm ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>
             {sprintPlan.goal || "Follow this sequenced timeline to maximize your callback rate."}
           </p>
         </div>
@@ -380,7 +380,7 @@ function SprintSection({ sprintPlan, completedPhases, onOpenComingSoon, isLight 
           }
 
           return (
-            <div key={idx} className={`flex flex-col justify-between rounded-xl border p-5 ${isDone ? (isLight ? "border-emerald-300 bg-emerald-50/40 text-slate-900" : "border-emerald-800/60 bg-emerald-950/20 text-white") : (isLight ? "border-slate-200 bg-slate-50 text-slate-900" : "border-slate-800 bg-slate-800/50 text-white")}`}>
+            <div key={idx} className={`flex flex-col justify-between rounded-[14px] border p-5 ${isDone ? (isLight ? "border-emerald-300 bg-emerald-50/40 text-[#071536]" : "border-emerald-800/60 bg-emerald-950/20 text-white") : (isLight ? "border-[#DCE5F1] bg-[#F8FAFE] text-[#071536]" : "border-slate-800 bg-slate-800/50 text-white")}`}>
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                   <span className="inline-block rounded-full bg-slate-900 dark:bg-slate-700 px-3 py-1 text-[11px] font-extrabold text-white tracking-wide">
@@ -392,19 +392,19 @@ function SprintSection({ sprintPlan, completedPhases, onOpenComingSoon, isLight 
                     </span>
                   )}
                 </div>
-                <h4 className={`text-base font-bold leading-snug ${isLight ? "text-slate-900" : "text-white"}`}>
+                <h4 className={`text-base font-bold leading-snug ${isLight ? "text-[#071536]" : "text-white"}`}>
                   {item.title}
                 </h4>
-                <p className={`mt-2 text-xs leading-relaxed ${isLight ? "text-slate-600" : "text-slate-300"}`}>
+                <p className={`mt-2 text-xs leading-relaxed ${isLight ? "text-[#52627C]" : "text-slate-300"}`}>
                   {item.description}
                 </p>
               </div>
 
-              <div className={`mt-4 pt-3 border-t ${isLight ? "border-slate-200" : "border-slate-700/60"}`}>
+              <div className={`mt-4 pt-3 border-t ${isLight ? "border-[#DCE5F1]" : "border-slate-700/60"}`}>
                 <button
                   type="button"
                   onClick={handleCta}
-                  className={`flex items-center justify-between w-full text-xs font-bold ${isDone ? "text-emerald-700 dark:text-emerald-400" : isLight ? "text-cyan-700 hover:text-cyan-800" : "text-cyan-400"}`}
+                  className={`flex items-center justify-between w-full text-xs font-bold ${isDone ? "text-emerald-700 dark:text-emerald-400" : isLight ? "text-blue-700 hover:text-blue-700" : "text-cyan-400"}`}
                 >
                   <span>{isDone ? `View ${item.tool} ✓` : `Use ${item.tool}`}</span>
                   <ArrowRight size={12} />
@@ -440,7 +440,7 @@ function RoadmapTimeline({ archetype, categoryScores, onOpenComingSoon, aiDiagno
           }
 
           return (
-            <div key={i} className={`relative rounded-2xl border p-6 shadow-sm ${isLight ? "border-slate-200 bg-white text-slate-900" : "border-slate-800 bg-slate-900 text-white"}`}>
+            <div key={i} className={`relative rounded-[22px] border p-6 shadow-sm ${isLight ? "border-[#DCE5F1] bg-white text-[#071536]" : "border-slate-800 bg-slate-900 text-white"}`}>
               <div className="flex items-center justify-between gap-2 mb-4">
                 <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-widest ${i === 0 ? "bg-red-100 text-red-800" : i === 1 ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-700"}`}>
                   {i === 0 ? "Top Priority" : i === 1 ? "Priority 2" : "Priority 3"}
@@ -452,8 +452,8 @@ function RoadmapTimeline({ archetype, categoryScores, onOpenComingSoon, aiDiagno
                 <span className={`text-xs font-semibold uppercase tracking-widest ${isLight ? "text-slate-500" : "text-slate-400"}`}>{phase?.tool}</span>
               </div>
 
-              <h4 className={`text-base font-bold leading-snug ${isLight ? "text-slate-900" : "text-white"}`}>{action.title}</h4>
-              <p className={`mt-2 text-sm leading-relaxed ${isLight ? "text-slate-600" : "text-slate-300"}`}>{action.body}</p>
+              <h4 className={`text-base font-bold leading-snug ${isLight ? "text-[#071536]" : "text-white"}`}>{action.title}</h4>
+              <p className={`mt-2 text-sm leading-relaxed ${isLight ? "text-[#52627C]" : "text-slate-300"}`}>{action.body}</p>
 
               <div className="mt-3 flex items-center gap-2">
                 <span className={`text-xs ${isLight ? "text-slate-500" : "text-slate-400"}`}>Current Readiness:</span>
@@ -463,14 +463,14 @@ function RoadmapTimeline({ archetype, categoryScores, onOpenComingSoon, aiDiagno
               <button
                 type="button"
                 onClick={handleCta}
-                className="mt-5 w-full rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-2.5 text-sm font-semibold text-white shadow-md shadow-cyan-500/20 transition hover:brightness-105 hover:shadow-lg"
+                className="mt-5 w-full rounded-[14px] bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 py-2.5 text-sm font-semibold text-white shadow-md shadow-cyan-500/20 transition hover:brightness-105 hover:shadow-lg"
               >
                 {action.cta} →
               </button>
 
               {i < actions.length - 1 && (
                 <div className="hidden sm:block absolute top-1/2 -right-2 z-10">
-                  <ArrowRight size={16} className={isLight ? "text-slate-400" : "text-slate-600"} />
+                  <ArrowRight size={16} className={isLight ? "text-slate-400" : "text-[#52627C]"} />
                 </div>
               )}
             </div>
@@ -503,26 +503,26 @@ function ScoreBreakdown({ categoryScores, onOpenComingSoon, isLight }) {
         }
 
         return (
-          <div key={key} className={`rounded-xl border p-5 shadow-sm ${isLight ? "border-slate-200 bg-white text-slate-900" : "border-slate-800 bg-slate-900 text-white"}`}>
+          <div key={key} className={`rounded-[14px] border p-5 shadow-sm ${isLight ? "border-[#DCE5F1] bg-white text-[#071536]" : "border-slate-800 bg-slate-900 text-white"}`}>
             <div className="flex items-center justify-between gap-2 mb-3">
               <span className={`text-xs font-bold uppercase tracking-wider ${isLight ? "text-slate-500" : "text-slate-400"}`}>Phase {cat.phaseIndex + 1}</span>
               <span className={`text-xs font-bold ${status === "strong" ? "text-emerald-600" : status === "warn" ? "text-amber-600" : "text-red-500"}`}>
                 {score}%
               </span>
             </div>
-            <p className={`text-sm font-bold ${isLight ? "text-slate-900" : "text-white"}`}>{cat.label}</p>
+            <p className={`text-sm font-bold ${isLight ? "text-[#071536]" : "text-white"}`}>{cat.label}</p>
             <div className={`mt-2 h-1.5 w-full rounded-full overflow-hidden ${isLight ? "bg-slate-200" : "bg-slate-800"}`}>
               <div
                 className={`h-full rounded-full transition-all duration-1000 ${barColor}`}
                 style={{ width: `${score}%` }}
               />
             </div>
-            <p className={`mt-2 text-xs leading-relaxed ${isLight ? "text-slate-600" : "text-slate-400"}`}>{diagnosis}</p>
+            <p className={`mt-2 text-xs leading-relaxed ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>{diagnosis}</p>
             {phase && (
               <button
                 type="button"
                 onClick={handleTool}
-                className={`mt-3 flex items-center gap-1 text-xs font-semibold ${isLight ? "text-cyan-700 hover:text-cyan-800" : "text-cyan-400"}`}
+                className={`mt-3 flex items-center gap-1 text-xs font-semibold ${isLight ? "text-blue-700 hover:text-blue-700" : "text-cyan-400"}`}
               >
                 Fix with {phase.tool} {phase.status === "live" ? <ExternalLink size={11} /> : <ArrowRight size={11} />}
               </button>
@@ -552,7 +552,7 @@ function ShareSection({ profile, overallScore, readinessLevel, archetype }) {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-7 text-white shadow-xl dark:border-slate-800">
+    <div className="rounded-[22px] border border-[#DCE5F1] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-7 text-white shadow-xl dark:border-slate-800">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Share Your Score</p>
@@ -567,7 +567,7 @@ function ShareSection({ profile, overallScore, readinessLevel, archetype }) {
           <button
             type="button"
             onClick={handleShare}
-            className="flex items-center gap-2 rounded-xl bg-[#0a66c2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0958a8] transition"
+            className="flex items-center gap-2 rounded-[14px] bg-[#0a66c2] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#0958a8] transition"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="shrink-0">
               <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -576,7 +576,7 @@ function ShareSection({ profile, overallScore, readinessLevel, archetype }) {
           <button
             type="button"
             onClick={handleCopy}
-            className="flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/20 transition"
+            className="flex items-center gap-2 rounded-[14px] border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold hover:bg-white/20 transition"
           >
             <Share2 size={15} /> {copied ? "Copied!" : "Copy"}
           </button>
@@ -620,7 +620,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
       {/* PAGE 1: COVER PAGE */}
       <div className="pdf-page pdf-cover">
         <div className="brand-lockup">
-          <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'linear-gradient(135deg, #14B8A6, #1C64D1)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#ffffff', fontSize: '18px' }}>CS</div>
+          <div style={{ width: '42px', height: '42px', borderRadius: '10px', background: 'linear-gradient(135deg, #2563EB, #24C6DC)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#ffffff', fontSize: '18px' }}>CS</div>
           <div>
             <div className="name">CareerSense</div>
             <div className="tag">AI Career Copilot</div>
@@ -649,7 +649,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
       <div className="pdf-page pdf-content">
         <div className="pdf-topbar">
           <div className="brand-lockup">
-            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #14B8A6, #1C64D1)', display: 'flex', alignItems: 'center', justify: 'center', fontWeight: 800, color: '#ffffff', fontSize: '12px' }}>CS</div>
+            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #2563EB, #24C6DC)', display: 'flex', alignItems: 'center', justify: 'center', fontWeight: 800, color: '#ffffff', fontSize: '12px' }}>CS</div>
             <div className="name">CareerSense</div>
           </div>
           <div className="page-label">Readiness Overview</div>
@@ -665,8 +665,8 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
                 strokeDasharray={bigC} strokeDashoffset={bigOff} transform="rotate(-90 75 75)" />
               <defs>
                 <linearGradient id="pdfGrad" x1="0" y1="0" x2="150" y2="150">
-                  <stop offset="0%" stopColor="#14B8A6" />
-                  <stop offset="100%" stopColor="#1C64D1" />
+                  <stop offset="0%" stopColor="#2563EB" />
+                  <stop offset="100%" stopColor="#0EA5E9" />
                 </linearGradient>
               </defs>
             </svg>
@@ -690,7 +690,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
             const r = (size / 2) - 5;
             const c = 2 * Math.PI * r;
             const pct = Math.round(dm.score);
-            const color = pct >= 75 ? '#16A34A' : (pct >= 50 ? '#1C64D1' : '#F5821F');
+            const color = pct >= 75 ? '#16A34A' : (pct >= 50 ? '#0EA5E9' : '#F5821F');
             const off = c - (c * (pct / 100));
             return (
               <div key={dm.label} className="pdf-mini">
@@ -722,7 +722,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
       <div className="pdf-page pdf-content">
         <div className="pdf-topbar">
           <div className="brand-lockup">
-            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #14B8A6, #1C64D1)', display: 'flex', items: 'center', justify: 'center', fontWeight: 800, color: '#ffffff', fontSize: '12px' }}>CS</div>
+            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #2563EB, #24C6DC)', display: 'flex', items: 'center', justify: 'center', fontWeight: 800, color: '#ffffff', fontSize: '12px' }}>CS</div>
             <div className="name">CareerSense</div>
           </div>
           <div className="page-label">Priority Roadmap</div>
@@ -733,7 +733,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
 
         <div className="pdf-steps">
           {sortedDims.map((dm, i) => {
-            const numColors = ['#F5821F', '#1C64D1', '#7C6FEE', '#14B8A6', '#16A34A', '#F5821F'];
+            const numColors = ['#F5821F', '#0EA5E9', '#7C6FEE', '#2563EB', '#16A34A', '#F5821F'];
             return (
               <div key={dm.label} className="pdf-step">
                 <div className="n" style={{ background: numColors[i % numColors.length] }}>{i + 1}</div>
@@ -753,7 +753,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
       <div className="pdf-page pdf-content">
         <div className="pdf-topbar">
           <div className="brand-lockup">
-            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #14B8A6, #1C64D1)', display: 'flex', items: 'center', justify: 'center', fontWeight: 800, color: '#ffffff', fontSize: '12px' }}>CS</div>
+            <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: 'linear-gradient(135deg, #2563EB, #24C6DC)', display: 'flex', items: 'center', justify: 'center', fontWeight: 800, color: '#ffffff', fontSize: '12px' }}>CS</div>
             <div className="name">CareerSense</div>
           </div>
           <div className="page-label">Execution Plan</div>
@@ -766,7 +766,7 @@ function PdfReportPages({ profile, overallScore, categoryScores, readinessLevel,
 
         {sprintDays.map(p => (
           <div key={p.range} className="pdf-phase">
-            <span className="range" style={{ background: '#1C64D1' }}>{p.range}</span>
+            <span className="range" style={{ background: '#0EA5E9' }}>{p.range}</span>
             <h4>{p.title}</h4>
             <p>{p.description}</p>
           </div>
@@ -834,27 +834,27 @@ export default function GpsResults({
   }
 
   return (
-    <section className="mx-auto max-w-7xl px-6 py-12 lg:px-10">
+    <section className={`mx-auto max-w-[1460px] px-6 py-10 lg:px-10 xl:px-14 ${isLight ? "bg-[#F8FAFE]" : "bg-slate-950"}`}>
       {/* Header */}
-      <div className="mb-10">
+      <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest ${isLight ? "bg-cyan-50 text-cyan-800 border border-cyan-300" : "bg-cyan-900/40 text-cyan-400 border border-cyan-800/40"}`}>
+              <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold uppercase tracking-widest ${isLight ? "bg-blue-50 text-blue-700 border border-blue-200" : "bg-cyan-900/40 text-cyan-400 border border-cyan-800/40"}`}>
                 Your Career GPS Report
               </span>
               {aiDiagnosis?.isAiGenerated && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-sm">
+                <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white shadow-sm">
                   <Sparkles size={12} /> AI Verified Diagnosis
                 </span>
               )}
             </div>
-            <h1 className={`mt-3 text-3xl font-extrabold sm:text-4xl ${isLight ? "text-slate-900" : "text-white"}`}>
+            <h1 className={`mt-3 text-[32px] font-extrabold tracking-[-0.035em] sm:text-[38px] ${isLight ? "text-[#071536]" : "text-white"}`}>
               {profile.name ? `${profile.name}'s` : "Your"} Career Map
             </h1>
-            <p className={`mt-2 text-base ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+            <p className={`mt-2 text-[13px] ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>
               {archetype && <span className="font-semibold">{archetype.label} · </span>}
-              {profile.targetRole && <span>Targeting: <strong className={isLight ? "text-slate-900" : "text-slate-200"}>{profile.targetRole}</strong></span>}
+              {profile.targetRole && <span>Targeting: <strong className={isLight ? "text-[#071536]" : "text-slate-200"}>{profile.targetRole}</strong></span>}
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -862,7 +862,7 @@ export default function GpsResults({
               type="button"
               onClick={handleSync}
               disabled={isSyncing}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all border ${isLight ? "border-cyan-300 bg-cyan-50 text-cyan-800 hover:bg-cyan-100" : "border-cyan-700 bg-cyan-950/60 text-cyan-300 hover:bg-cyan-900"
+              className={`flex items-center gap-2 rounded-[14px] px-4 py-2.5 text-sm font-semibold transition-all border ${isLight ? "border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100" : "border-cyan-700 bg-cyan-950/60 text-cyan-300 hover:bg-cyan-900"
                 }`}
             >
               <RotateCcw size={14} className={isSyncing ? "animate-spin" : ""} /> {isSyncing ? "Syncing..." : "Sync Live Activity 🔄"}
@@ -872,14 +872,14 @@ export default function GpsResults({
               id="pdfBtn"
               disabled={isGeneratingPdf}
               onClick={handleDownloadPdf}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-teal-500/20 hover:brightness-105 transition-all disabled:opacity-50"
+              className="flex items-center gap-2 rounded-[14px] bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 px-4 py-2.5 text-sm font-bold text-white shadow-[0_10px_28px_rgba(37,99,235,0.18)] hover:brightness-105 transition-all disabled:opacity-50"
             >
               <Download size={15} /> {isGeneratingPdf ? "Generating PDF..." : "Download PDF Report"}
             </button>
             <button
               type="button"
               onClick={onRestart}
-              className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all border ${isLight ? "border-slate-300 bg-white text-slate-700 hover:bg-slate-50" : "border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600"}`}
+              className={`flex items-center gap-2 rounded-[14px] px-4 py-2.5 text-sm font-medium transition-all border ${isLight ? "border-[#CDD8E6] bg-white text-slate-700 hover:bg-[#F8FAFE]" : "border-slate-700 bg-slate-800 text-slate-300 hover:border-slate-600"}`}
             >
               <RotateCcw size={14} /> Retake
             </button>
@@ -890,31 +890,31 @@ export default function GpsResults({
       {/* 1. Your Career Pipeline (FIRST after header) */}
       <div className="mb-8">
         <div className="mb-4">
-          <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Your Career Pipeline</h2>
-          <p className={`text-sm mt-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>5 phases, scored. Click any phase to open the tool.</p>
+          <h2 className={`text-lg font-bold ${isLight ? "text-[#071536]" : "text-white"}`}>Your Career Pipeline</h2>
+          <p className={`text-sm mt-1 ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>5 phases, scored. Click any phase to open the tool.</p>
         </div>
         <PipelinePhases categoryScores={categoryScores} archetype={archetype} completedPhases={aiDiagnosis?.completedPhases} onOpenComingSoon={setComingSoonPhase} isLight={isLight} />
       </div>
 
       {/* 2. Overall Score + Archetype Insight Box */}
-      <div className={`mb-8 grid gap-6 lg:grid-cols-[auto_1fr] items-center rounded-2xl border p-7 sm:p-9 ${isLight ? "border-slate-200 bg-white shadow-md text-slate-900" : "border-slate-700/80 bg-slate-900 text-white"}`}>
+      <div className={`mb-8 grid gap-6 lg:grid-cols-[auto_1fr] items-center rounded-[22px] border p-7 sm:p-9 ${isLight ? "border-[#DCE5F1] bg-white shadow-[0_18px_50px_rgba(28,77,145,0.055)] text-[#071536]" : "border-slate-700/80 bg-slate-900 text-white"}`}>
         <div className="flex flex-col items-center gap-3 text-center">
           <ScoreRing score={overallScore} readinessLevel={readinessLevel} isLight={isLight} />
           <div>
-            <p className={`text-sm font-bold ${isLight ? "text-slate-600" : "text-slate-400"}`}>Overall Readiness</p>
-            <p className="text-lg font-extrabold mt-0.5 bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+            <p className={`text-sm font-bold ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>Overall Readiness</p>
+            <p className="text-lg font-extrabold mt-0.5 bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 bg-clip-text text-transparent">
               {readinessLevel.label}
             </p>
           </div>
         </div>
         <div>
-          <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${isLight ? "text-cyan-700" : "text-cyan-400"}`}>
+          <p className={`text-xs font-bold uppercase tracking-widest mb-2 ${isLight ? "text-blue-700" : "text-cyan-400"}`}>
             {archetype?.label} · Your GPS Insight
           </p>
           <p className={`text-base leading-relaxed ${isLight ? "text-slate-700" : "text-slate-300"}`}>
             {archetype?.actionIntro || readinessLevel.summary}
           </p>
-          <div className={`mt-4 p-3.5 rounded-xl text-sm leading-relaxed ${isLight ? "bg-slate-50 border border-slate-200 text-slate-700" : "bg-slate-800 text-slate-400"}`}>
+          <div className={`mt-4 p-3.5 rounded-[14px] text-sm leading-relaxed ${isLight ? "bg-[#F8FAFE] border border-[#DCE5F1] text-slate-700" : "bg-slate-800 text-slate-400"}`}>
             {readinessLevel.summary}
           </div>
         </div>
@@ -922,14 +922,14 @@ export default function GpsResults({
 
       {/* 3. AI Diagnosis Insights Panel */}
       {aiDiagnosis && (
-        <div className={`mb-8 rounded-2xl border p-7 sm:p-8 shadow-xl transition-all ${isLight ? "border-cyan-300 bg-white text-slate-900" : "border-cyan-500/30 bg-slate-900 text-white"}`}>
+        <div className={`mb-8 rounded-[22px] border p-7 sm:p-8 shadow-xl transition-all ${isLight ? "border-[#D7E5F5] bg-white text-[#071536]" : "border-cyan-500/30 bg-slate-900 text-white"}`}>
           <div className="flex items-center justify-between gap-3 mb-3">
             <div className="flex items-center gap-2">
               <Sparkles size={18} className="text-cyan-500" />
-              <h3 className="text-base font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">AI Executive Career Diagnosis</h3>
+              <h3 className="text-base font-bold bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 bg-clip-text text-transparent">AI Executive Career Diagnosis</h3>
             </div>
             {aiDiagnosis.isAiGenerated && (
-              <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase tracking-widest ${isLight ? "bg-cyan-100 text-cyan-800 border border-cyan-300" : "bg-cyan-900/50 text-cyan-300 border border-cyan-700/50"}`}>
+              <span className={`rounded-full px-3 py-0.5 text-[11px] font-bold uppercase tracking-widest ${isLight ? "bg-blue-100 text-blue-700 border border-blue-200" : "bg-cyan-900/50 text-cyan-300 border border-cyan-700/50"}`}>
                 AI Live Diagnosis
               </span>
             )}
@@ -940,8 +940,8 @@ export default function GpsResults({
           </p>
 
           {aiDiagnosis.targetRoleBenchmark && (
-            <div className={`mt-4 rounded-xl border p-4 ${isLight ? "border-cyan-200 bg-cyan-50/60 text-slate-800" : "border-slate-700/80 bg-slate-800/60 text-slate-300"}`}>
-              <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${isLight ? "text-cyan-800" : "text-cyan-400"}`}>
+            <div className={`mt-4 rounded-[14px] border p-4 ${isLight ? "border-blue-100 bg-blue-50/70 text-slate-800" : "border-slate-700/80 bg-slate-800/60 text-slate-300"}`}>
+              <p className={`text-xs font-bold uppercase tracking-widest mb-1 ${isLight ? "text-blue-700" : "text-cyan-400"}`}>
                 Target Role Industry Benchmark · {profile.targetRole || "Target Role"}
               </p>
               <p className="text-sm leading-relaxed">{aiDiagnosis.targetRoleBenchmark}</p>
@@ -950,7 +950,7 @@ export default function GpsResults({
 
           {aiDiagnosis.roleGaps && Array.isArray(aiDiagnosis.roleGaps) && aiDiagnosis.roleGaps.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className={`text-xs font-bold uppercase tracking-widest mr-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>AI Identified Core Gaps:</span>
+              <span className={`text-xs font-bold uppercase tracking-widest mr-1 ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>AI Identified Core Gaps:</span>
               {aiDiagnosis.roleGaps.map((gap, i) => (
                 <span key={i} className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${isLight ? "bg-red-50 text-red-800 border border-red-200" : "bg-red-950/50 text-red-300 border border-red-800/50"}`}>
                   <AlertTriangle size={12} /> {gap}
@@ -969,8 +969,8 @@ export default function GpsResults({
       {/* 5. Personalized 3-Step Action Plan */}
       <div className="mb-8">
         <div className="mb-4">
-          <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Your 3-Step Action Plan</h2>
-          <p className={`text-sm mt-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>
+          <h2 className={`text-lg font-bold ${isLight ? "text-[#071536]" : "text-white"}`}>Your 3-Step Action Plan</h2>
+          <p className={`text-sm mt-1 ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>
             {aiDiagnosis?.isAiGenerated ? `AI-Tailored for your target role (${profile.targetRole || 'Target Role'})` : `Tailored for ${archetype?.label || "your profile"}`} — do these in order for the fastest progress.
           </p>
         </div>
@@ -980,8 +980,8 @@ export default function GpsResults({
       {/* 6. Score Breakdown */}
       <div className="mb-8">
         <div className="mb-4">
-          <h2 className={`text-lg font-bold ${isLight ? "text-slate-900" : "text-white"}`}>Full Score Breakdown</h2>
-          <p className={`text-sm mt-1 ${isLight ? "text-slate-600" : "text-slate-400"}`}>Diagnosis and direct tool links for each area.</p>
+          <h2 className={`text-lg font-bold ${isLight ? "text-[#071536]" : "text-white"}`}>Full Score Breakdown</h2>
+          <p className={`text-sm mt-1 ${isLight ? "text-[#52627C]" : "text-slate-400"}`}>Diagnosis and direct tool links for each area.</p>
         </div>
         <ScoreBreakdown categoryScores={categoryScores} onOpenComingSoon={setComingSoonPhase} isLight={isLight} />
       </div>
@@ -995,7 +995,7 @@ export default function GpsResults({
             type="button"
             disabled={isGeneratingPdf}
             onClick={handleDownloadPdf}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-blue-600 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-teal-500/25 hover:brightness-105 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 rounded-[14px] bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 px-6 py-3 text-sm font-bold text-white shadow-[0_14px_34px_rgba(37,99,235,0.20)] hover:brightness-105 transition-all disabled:opacity-50"
           >
             <Download size={16} /> {isGeneratingPdf ? "Generating PDF Report..." : "Download Full PDF Report"}
           </button>

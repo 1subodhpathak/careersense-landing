@@ -24,9 +24,9 @@ function PartnerPass() {
         </div>
 
         <div className="mt-5 space-y-2 text-[9px] font-semibold text-[#D3E0ED]">
-          <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> 50,000 Credits / Month</div>
+          <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> 500,000 Credits / Month</div>
           <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> Partner Workspace Access</div>
-          <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> 20 Real-World Assignments</div>
+          <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> 20 Real-World Business Projects</div>
           <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> Leadership & Founder Exposure</div>
           <div className="flex items-center gap-2"><span className="text-[#22D3C5] font-bold">●</span> Certificate & Completion Letter</div>
         </div>
@@ -45,31 +45,151 @@ export default function PartnerFaqSection({ isDark = false }) {
   const [openIdx, setOpenIdx] = useState(0);
 
   const faqs = [
-    {
-      q: "What is the CareerSense Partner Program?",
-      a: "The CareerSense Partner Program is a 3-month (12-week) experiential startup program where participants work on 20 real-world assignments across product, AI, growth, design, and strategy under the guidance of startup founders.",
-    },
-    {
-      q: "How long is the program?",
-      a: "The program runs for 3 months (12 weeks) with flexible remote participation.",
-    },
-    {
-      q: "Do I need prior startup experience?",
-      a: "No prior experience is required. All assignments provide structured context, resources, and mentorship to guide you step-by-step.",
-    },
-    {
-      q: "Will I receive a certificate?",
-      a: "Yes, participants who complete at least 12 core assignments and achieve a 70%+ score receive an official Partner Program Certificate and Completion Letter.",
-    },
-    {
-      q: "How many assignments are included?",
-      a: "The program features 20 real-world startup assignments divided into 5 phases: Discover, Build, Analyse, Grow, and Lead.",
-    },
-    {
-      q: "What do I receive after onboarding?",
-      a: "Upon onboarding, you receive 50,000 CS Credits/month, access to the Partner Workspace, an official Partner ID card, and an engagement letter.",
-    },
-  ];
+  {
+    q: "What is the CareerSense Partner Program?",
+    a: (
+      <>
+        The <strong>CareerSense Partner Program</strong> is a{" "}
+        <span className="font-semibold text-cyan-600">
+          3-month (12-week) experiential startup program
+        </span>{" "}
+        where participants work through practical challenges across{" "}
+        <strong>
+          product, technology, AI, analytics, growth, partnerships, and business
+          strategy
+        </strong>
+        . The journey follows five phases:{" "}
+        <span className="font-semibold text-cyan-600">
+          Discover → Build → Analyse → Grow → Lead
+        </span>
+        .
+      </>
+    ),
+  },
+
+  {
+    q: "Who can join the Partner Program?",
+    a: (
+      <>
+        The program is designed for{" "}
+        <strong>
+          students, fresh graduates, working professionals, builders, designers,
+          analysts, marketers, and aspiring founders
+        </strong>{" "}
+        who want practical startup exposure.{" "}
+        <span className="font-semibold text-cyan-600">
+          No prior startup experience is required
+        </span>
+        , and you do not need to be an expert in every area to participate.
+      </>
+    ),
+  },
+
+  {
+    q: "How long is the program and how much time do I need to commit?",
+    a: (
+      <>
+        The Partner Program runs for{" "}
+        <span className="font-semibold text-cyan-600">
+          3 months (12 weeks)
+        </span>{" "}
+        with <strong>flexible, assignment-based participation</strong>. Partners
+        are expected to complete assigned activities within reasonable timelines
+        and participate in required{" "}
+        <strong>sessions, reviews, and program milestones</strong>.
+      </>
+    ),
+  },
+
+  {
+    q: "What will I actually work on as a CareerSense Partner?",
+    a: (
+      <>
+        Partners work through{" "}
+        <span className="font-semibold text-cyan-600">
+          20 structured real-world assignments
+        </span>{" "}
+        covering <strong>product research, UX, software development, AI, data
+        analytics, machine learning, experimentation, SEO, digital marketing,
+        college outreach, B2B partnerships, community building, and startup
+        strategy</strong>. The program concludes with the{" "}
+        <span className="font-semibold text-cyan-600">
+          CareerSense Boardroom Challenge
+        </span>
+        .
+      </>
+    ),
+  },
+
+  {
+    q: "What do I receive after onboarding?",
+    a: (
+      <>
+        After successful onboarding, Partners receive{" "}
+        <span className="font-semibold text-cyan-600">
+          500,000 CareerSense Credits per month
+        </span>
+        , access to a <strong>restricted Partner Workspace</strong>, an{" "}
+        <strong>official Partner ID</strong>,{" "}
+        <strong>Offer & Engagement Letter</strong>,{" "}
+        <strong>Partner Learning Library</strong>, structured assignments, and
+        selected <strong>leadership and community sessions</strong>.
+      </>
+    ),
+  },
+
+  {
+    q: "Is the Partner Program a job or internship? Will I be paid?",
+    a: (
+      <>
+        <span className="font-semibold text-cyan-600">
+          No. The CareerSense Partner Program is not a job or internship.
+        </span>{" "}
+        It is an <strong>experiential learning and contribution program</strong>{" "}
+        and does not create an employer-employee relationship. Participation does
+        not guarantee <strong>salary, compensation, or future employment</strong>.
+        Any separately approved{" "}
+        <strong>paid assignment, incentive, or performance bonus</strong> will be
+        communicated through specific written terms.
+      </>
+    ),
+  },
+
+  {
+    q: "How much does the Partner Program cost?",
+    a: (
+      <>
+        The current <strong>Founding Partner Program</strong> fee is{" "}
+        <span className="font-semibold text-cyan-600">
+          $24.99 per month for the complete 3-month program
+        </span>
+        . This provides access to the Partner experience and applicable program
+        resources for the full program term.
+      </>
+    ),
+  },
+
+  {
+    q: "What do I receive after completing the program?",
+    a: (
+      <>
+        Partners who successfully meet the program requirements may receive an{" "}
+        <strong>official Partner Certificate</strong>,{" "}
+        <strong>Completion or Relieving Letter</strong>, and a{" "}
+        <span className="font-semibold text-cyan-600">
+          verified Contribution or Experience Letter
+        </span>{" "}
+        based on the work actually completed. Successful completion requires
+        meeting the applicable{" "}
+        <strong>
+          assignment, score, project, session, Boardroom Challenge, and
+          professional conduct requirements
+        </strong>
+        .
+      </>
+    ),
+  },
+];
 
   const toggleFaq = (idx) => {
     setOpenIdx(openIdx === idx ? null : idx);

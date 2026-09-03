@@ -153,7 +153,7 @@ export default function Footer({ heroTheme = "light" }) {
             }`}
           >
             <p className="flex items-center gap-3">
-              <Mail size={14} /> support.careersense@gmail.com
+              <Mail size={14} /> Support@CareersenseAi.com
             </p>
             <p className="flex items-center gap-3">
               <Phone size={14} /> 🇺🇸 +1 (201) 893-6385
