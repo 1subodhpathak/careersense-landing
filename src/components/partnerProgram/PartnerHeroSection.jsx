@@ -5,6 +5,50 @@ import { CheckCircle2, ArrowRight, PlayCircle } from "lucide-react";
 
 const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerSense%20Partner%20Program%20Application&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AName%3A%0ACollege%20%2F%20Company%3A%0ALocation%3A%0AArea%20of%20Interest%3A%0ALinkedIn%3A%0A";
 
+const passBenefits = [
+  "500,000 Credits / Month",
+  "Partner Workspace Access",
+  "20 Real-World Business Projects",
+  "Leadership & Founder Exposure",
+  "Certificate & Completion Letter",
+];
+
+function PartnerPassCard({ isDark }) {
+  return (
+    <div className={`rounded-[22px] border p-4 shadow-[0_24px_60px_rgba(7,26,56,0.22)] backdrop-blur-md sm:p-5 ${
+      isDark
+        ? "border-cyan-500/50 bg-[#071A38]/95 text-white"
+        : "border-cyan-200/80 bg-white/95 text-[#071536]"
+    }`}>
+      <div className="grid gap-4 sm:grid-cols-2 sm:items-center">
+        <div className={`sm:border-r-2 sm:pr-5 ${isDark ? "sm:border-white/20" : "sm:border-slate-300"}`}>
+          <p className="text-[10px] font-black uppercase tracking-[0.13em] text-[#0EA8B9]">
+            CareerSense Partner Pass
+          </p>
+          <p className="mt-3 text-[13px] font-black uppercase tracking-[0.02em] text-[#0EA8B9]">
+            3 Months · 12 Weeks
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-2.5">
+            <strong className="text-[34px] font-black leading-none tracking-[-0.04em]">$24.99</strong>
+            <span className="rounded-md bg-[#DDF7F5] px-2.5 py-1.5 text-[9px] font-black uppercase tracking-[0.08em] text-[#087F8A]">
+              Founding Price
+            </span>
+          </div>
+        </div>
+
+        <div className="grid gap-2">
+          {passBenefits.map((benefit) => (
+            <div key={benefit} className="flex items-center gap-2.5 text-[10px] font-bold sm:text-[11px]">
+              <CheckCircle2 className="h-4 w-4 shrink-0 text-[#0EA8B9]" />
+              {benefit}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function PartnerHeroSection({ applyLink = DEFAULT_APPLY_LINK, isDark = false }) {
   const highlights = [
     "Real startup experience",
@@ -21,7 +65,7 @@ export default function PartnerHeroSection({ applyLink = DEFAULT_APPLY_LINK, isD
   const activeHeroImg = isDark ? heroDarkImg : heroImg;
 
   return (
-    <section className={`relative overflow-hidden pt-8 pb-12 sm:pb-16 lg:py-24 min-h-[460px] lg:min-h-[540px] flex items-center transition-colors duration-300 ${isDark ? "bg-[#041024] text-white" : "bg-white text-slate-900"}`}>
+    <section className={`relative flex min-h-[460px] items-center overflow-hidden pb-10 pt-6 transition-colors duration-300 sm:pb-12 lg:min-h-[540px] lg:py-12 ${isDark ? "bg-[#041024] text-white" : "bg-white text-slate-900"}`}>
       {/* Full-bleed borderless right hero background image - Hidden on mobile (< lg) */}
       <div className="hidden lg:block absolute inset-y-0 right-0 w-full lg:w-3/5 pointer-events-none z-0">
         <img
@@ -33,20 +77,32 @@ export default function PartnerHeroSection({ applyLink = DEFAULT_APPLY_LINK, isD
         <div className={`absolute inset-y-0 left-0 w-2/5 bg-gradient-to-r ${isDark ? "from-[#041024] via-[#041024]/90 to-transparent" : "from-white via-white/90 to-transparent"}`} />
       </div>
 
+      <div
+        className="pointer-events-none absolute z-30 hidden lg:block"
+        style={{ bottom: "4.5rem", left: 0, right: 0, top: "auto" }}
+      >
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="ml-auto" style={{ width: "50%" }}>
+            <PartnerPassCard isDark={isDark} />
+          </div>
+        </div>
+      </div>
+
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 w-full">
-        <div className="max-w-2xl lg:max-w-xl xl:max-w-2xl">
+        <div className="max-w-2xl lg:max-w-[560px] xl:max-w-[610px]">
           <div className="inline-flex items-center gap-2 rounded-full border border-[#0EA8B9]/30 bg-[#0EA8B9]/10 px-3 py-1 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-widest text-[#0993A3]">
             <span className="h-2 w-2 rounded-full bg-[#0EA8B9] animate-pulse" />
             CareerSense Partner Program
           </div>
 
-          <h1 className={`mt-4 sm:mt-5 text-3xl font-black tracking-tight sm:text-5xl lg:text-[56px] leading-[1.15] lg:leading-[1.12] ${isDark ? "text-white" : "text-slate-900"}`}>
-            Build. Learn. Lead. <br className="hidden sm:inline" />
-            Make a <span className="bg-gradient-to-r from-[#0EA8B9] via-[#06B6D4] to-[#2563EB] bg-clip-text text-transparent">Real Impact.</span>
+          <h1 className={`mt-4 text-[32px] font-black leading-[1.1] tracking-tight sm:mt-5 sm:text-[42px] lg:text-[48px] xl:text-[52px] ${isDark ? "text-white" : "text-slate-900"}`}>
+            <span className="block">Learn how startups</span>
+            <span className="block">work by working</span>
+            <span className="block bg-gradient-to-r from-[#0EA8B9] via-[#06B6D4] to-[#2563EB] bg-clip-text text-transparent">inside one.</span>
           </h1>
 
-          <p className={`mt-4 sm:mt-5 text-sm sm:text-base font-medium leading-relaxed sm:text-lg ${isDark ? "text-slate-300" : "text-slate-600"}`}>
-            Join the CareerSense Partner Program and work inside one of India’s fastest-growing career platforms.
+          <p className={`mt-4 text-[13px] font-medium leading-6 sm:mt-5 sm:text-[15px] sm:leading-7 ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+            A 12-week hands-on program where you contribute to real projects, learn from the leadership team and build professional experience that sets you apart.
           </p>
 
           {/* Checkmark Highlights Grid */}
@@ -83,6 +139,10 @@ export default function PartnerHeroSection({ applyLink = DEFAULT_APPLY_LINK, isD
               <PlayCircle className="h-4.5 w-4.5 text-[#0EA8B9] shrink-0" />
               <span>Explore Program</span>
             </button>
+          </div>
+
+          <div className="mt-10 lg:hidden">
+            <PartnerPassCard isDark={isDark} />
           </div>
         </div>
       </div>

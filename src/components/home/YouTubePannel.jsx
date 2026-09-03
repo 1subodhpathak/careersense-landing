@@ -21,7 +21,7 @@ const videos = [
   {
     id: '7_kw3EFxi7g',
     title: "Don't Get Scammed! The TRUTH About Data Analytics Courses",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "12K views",
     duration: "33:24",
     category: "AI Builder",
@@ -30,7 +30,7 @@ const videos = [
   {
     id: 'WcMu3mGwwgU',
     title: "Claude Fable 5 vs Opus 4.8 vs GPT-5.5 Codex - Who Builds Better?",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "240K Views",
     duration: "19:37",
     category: "AI Battle",
@@ -39,7 +39,7 @@ const videos = [
   {
     id: 'wgdeJUm38yU',
     title: "Python Project 1: Build Snake Game in Python",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "12K Views",
     duration: "36:48",
     category: "Python",
@@ -49,7 +49,7 @@ const videos = [
   {
     id: 'GYNal5k6Nlo',
     title: "AWS for FREE on Your Laptop • 47 Services • No Credit Card",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "18K Views",
     duration: "09:05",
     category: "Cloud",
@@ -58,7 +58,7 @@ const videos = [
   {
     id: 'F1B3KRG-A1w',
     title: "Claude Fable 5 vs GPT-5.5 Play Chess: One Broke the Rules",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "100k Views",
     duration: "10:45",
     category: "AI Challenge",
@@ -67,7 +67,7 @@ const videos = [
   {
     id: 'b8kFTTFh-_I',
     title: "How to Upload a Project to GitHub from Your Laptop",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "8K Views",
     duration: "36:12",
     category: "GitHub",
@@ -76,7 +76,7 @@ const videos = [
   {
       id: 'sMeeC6IJ2Qo',
       title: "Complete SQL Roadmap for Data Science",
-      channel: "DataSense",
+      channel: "CareerSense",
       views: "8.5K views",
       duration: "45:20",
       category: "SQL Mastery",
@@ -87,7 +87,7 @@ const videos = [
 
     id: 'W-jQg5D1RoE',
     title: "Power BI 15 Day Crash Course - Full Playlist",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "25K views",
     duration: "1:30:00",
     category: "Power BI",
@@ -97,7 +97,7 @@ const videos = [
   {
     id: '1wND5uT3H7A',
     title: "Reinforcement Learning for First-Timers",
-    channel: "DataSense",
+    channel: "CareerSense",
     views: "15K Views",
     duration: "01:06:13",
     category: "AI/ML",

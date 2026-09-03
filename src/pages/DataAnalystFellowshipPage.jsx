@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 import {
   ArrowRight, Award, BookOpen, Briefcase, Calendar, Check,
-  Rocket, ShieldCheck, Target, User, Users
+  Rocket, ShieldCheck, Tag, Target, User, Users
 } from "lucide-react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
@@ -30,7 +31,6 @@ import daMatplotlibSvg from "../Assets/data_analyst_pack/tools/matplotlib.svg";
 import daSeabornSvg from "../Assets/data_analyst_pack/tools/seaborn.svg";
 import daGoogleSheetsSvg from "../Assets/data_analyst_pack/tools/google-sheets.svg";
 
-import daCredentialStackSvg from "../Assets/data_analyst_pack/credentials/credential-stack.svg";
 import daWhyJoinSvg from "../Assets/data_analyst_pack/illustrations/why-join-data-analysis.svg";
 import daDashboardCtaSvg from "../Assets/data_analyst_pack/illustrations/dashboard-cta.svg";
 
@@ -57,7 +57,6 @@ import dsSeabornSvg from "../Assets/data_science_pack/tools/seaborn.svg";
 import dsJupyterSvg from "../Assets/data_science_pack/tools/jupyter.svg";
 import dsPowerBiSvg from "../Assets/data_science_pack/tools/power-bi.svg";
 
-import dsCredentialStackSvg from "../Assets/data_science_pack/credentials/credential-stack.svg";
 import dsWhyJoinSvg from "../Assets/data_science_pack/illustrations/why-join-data-science.svg";
 import dsDashboardCtaSvg from "../Assets/data_science_pack/illustrations/data-science-cta-dashboard.svg";
 
@@ -84,7 +83,6 @@ import aiStreamlitSvg from "../Assets/ai_pack/tools/streamlit.svg";
 import aiGithubSvg from "../Assets/ai_pack/tools/github.svg";
 import aiApisSvg from "../Assets/ai_pack/tools/apis.svg";
 
-import aiCredentialStackSvg from "../Assets/ai_pack/credentials/credential-stack.svg";
 import aiWhyJoinSvg from "../Assets/ai_pack/illustrations/why-join-ai-hologram.svg";
 import aiDashboardCtaSvg from "../Assets/ai_pack/illustrations/ai-cta-dashboard.svg";
 
@@ -111,7 +109,6 @@ import uiMazeSvg from "../Assets/uiux_pack/tools/maze.svg";
 import uiWebflowSvg from "../Assets/uiux_pack/tools/webflow.svg";
 import uiGoogleFormsSvg from "../Assets/uiux_pack/tools/google-forms.svg";
 
-import uiCredentialStackSvg from "../Assets/uiux_pack/credentials/credential-stack.svg";
 import uiWhyJoinSvg from "../Assets/uiux_pack/illustrations/why-join-uiux.svg";
 import uiDashboardCtaSvg from "../Assets/uiux_pack/illustrations/uiux-cta-dashboard.svg";
 
@@ -138,7 +135,6 @@ import adExpressJsSvg from "../Assets/app_dev_pack/tools/expressjs.svg";
 import adGitGithubSvg from "../Assets/app_dev_pack/tools/git-github.svg";
 import adPostmanSvg from "../Assets/app_dev_pack/tools/postman.svg";
 
-import adCredentialStackSvg from "../Assets/app_dev_pack/credentials/credential-stack.svg";
 import adWhyJoinSvg from "../Assets/app_dev_pack/illustrations/why-join-app-developer.svg";
 import adDashboardCtaSvg from "../Assets/app_dev_pack/illustrations/app-developer-cta.svg";
 
@@ -170,12 +166,13 @@ import fsAwsSvg from "../Assets/full_stack_pack/tools/aws.svg";
 import fsFirebaseSvg from "../Assets/full_stack_pack/tools/firebase.svg";
 import fsPostmanSvg from "../Assets/full_stack_pack/tools/postman.svg";
 
-import fsCredentialStackSvg from "../Assets/full_stack_pack/credentials/credential-stack.svg";
 import fsWhyJoinSvg from "../Assets/full_stack_pack/illustrations/why-join-full-stack.svg";
 import fsDashboardCtaSvg from "../Assets/full_stack_pack/illustrations/full-stack-cta.svg";
+import ctaDotPatternSvg from "../Assets/uiux_pack/backgrounds/cta-dot-pattern.svg";
 
 // ── ORIGINAL HERO BACKGROUND IMAGES ──────────────────────────────────
 import dataAnalystHeroBg from "../Assets/DataAnalyst/DA.png";
+import dataAnalystCombinedSvg from "../Assets/DataAnalyst/combined.svg";
 import dataScienceHeroBg from "../Assets/DataAnalyst/DS.png";
 import artificialIntelligenceHeroBg from "../Assets/DataAnalyst/AI.png";
 import uiuxDesignHeroBg from "../Assets/DataAnalyst/UI.png";
@@ -231,7 +228,7 @@ const fellowshipTracksConfig = {
       "Joining Letter & Relieving Letter",
       "Project Showcase on CareerSense",
     ],
-    credentialStack: daCredentialStackSvg,
+    credentialStack: dataAnalystCombinedSvg,
     whyJoinPoints: [
       "Build a strong foundation in data analysis",
       "Work on practical, real-world projects",
@@ -302,7 +299,7 @@ const fellowshipTracksConfig = {
       "Joining Letter & Relieving Letter",
       "Project Showcase on CareerSense",
     ],
-    credentialStack: dsCredentialStackSvg,
+    credentialStack: dataAnalystCombinedSvg,
     whyJoinPoints: [
       "Build a strong foundation in data science",
       "Work on practical, real-world projects",
@@ -374,7 +371,7 @@ const fellowshipTracksConfig = {
       "Joining Letter & Relieving Letter",
       "Project Showcase on CareerSense",
     ],
-    credentialStack: aiCredentialStackSvg,
+    credentialStack: dataAnalystCombinedSvg,
     whyJoinPoints: [
       "Build a strong foundation in AI",
       "Work on practical, real-world projects",
@@ -446,7 +443,7 @@ const fellowshipTracksConfig = {
       "Joining Letter & Relieving Letter",
       "Portfolio Showcase on CareerSense",
     ],
-    credentialStack: uiCredentialStackSvg,
+    credentialStack: dataAnalystCombinedSvg,
     whyJoinPoints: [
       "Build a strong foundation in UI/UX design",
       "Work on practical, real-world projects",
@@ -518,7 +515,7 @@ const fellowshipTracksConfig = {
       "Joining Letter & Relieving Letter",
       "GitHub Portfolio to Showcase Projects",
     ],
-    credentialStack: adCredentialStackSvg,
+    credentialStack: dataAnalystCombinedSvg,
     whyJoinPoints: [
       "Build real-world mobile applications",
       "Learn from industry experts & mentors",
@@ -595,7 +592,7 @@ const fellowshipTracksConfig = {
       "Joining Letter & Relieving Letter",
       "GitHub Portfolio to Showcase Projects",
     ],
-    credentialStack: fsCredentialStackSvg,
+    credentialStack: dataAnalystCombinedSvg,
     whyJoinPoints: [
       "Build end-to-end web applications",
       "Work on real-world industry projects",
@@ -621,10 +618,41 @@ const fellowshipTracksConfig = {
 };
 
 export default function DataAnalystFellowshipPage() {
+  const { user } = useUser();
   const { programId = "data-analyst" } = useParams();
   const track = fellowshipTracksConfig[programId] || fellowshipTracksConfig["data-analyst"];
-  const applyLink = `/dashboard?tab=Fellowship%20Program&fellowship=${programId}`;
   const [heroTheme, setHeroTheme] = useState("light");
+  const [userPlan, setUserPlan] = useState("free");
+  const [purchasedFellowships, setPurchasedFellowships] = useState([]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    const fetchSubStatus = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const res = await fetch(`${backendUrl}/careersense/subscription/status?clerkId=${user.id}`);
+        const data = await res.json();
+        if (data.success) {
+          setUserPlan(data.plan);
+          setPurchasedFellowships(data.purchasedFellowships || []);
+        }
+      } catch (err) {
+        console.error("Error fetching subscription status in Fellowship Page:", err);
+      }
+    };
+    fetchSubStatus();
+  }, [user?.id]);
+
+  const isPurchased = purchasedFellowships.includes(programId) || (userPlan === "intern");
+
+  // Dynamic CTAs
+  const ctaLink = isPurchased
+    ? `/dashboard?tab=Fellowship%20Program&fellowship=${programId}`
+    : `/pricing?fellowship=${programId}`;
+
+  const heroCtaText = isPurchased ? "View Fellowship Workspace" : "Apply Now";
+  const bannerCtaText = isPurchased ? `Go to ${track.name} Workspace` : `Apply Now for ${track.name} Fellowship`;
+  const stickyCtaText = isPurchased ? "View Workspace" : "Apply now";
 
   return (
     <main className="min-h-screen bg-[#f4f8ff] text-slate-900 font-sans">
@@ -687,35 +715,50 @@ export default function DataAnalystFellowshipPage() {
                 {track.description}
               </p>
 
-              {/* Metric Badges Row */}
-              <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-2 max-w-2xl">
+              {/* Compact program stats */}
+              <div className="mt-8 grid max-w-2xl grid-cols-2 border-y border-slate-300/80 py-4 sm:grid-cols-4 sm:border-y-0 sm:py-0">
                 {track.metrics.map((m) => {
                   const Icon = m.icon;
                   return (
-                    <div key={m.label} className="flex items-center gap-3.5 rounded-2xl bg-white p-3.5 shadow-xs border border-blue-100/80">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-[#1577EE]">
-                        <Icon size={24} />
+                    <div key={m.label} className="flex min-w-0 items-center gap-2.5 px-3 py-3 first:pl-0 even:border-l even:border-slate-300/80 sm:min-h-[76px] sm:border-l sm:border-slate-300/80 sm:px-4 sm:py-0 sm:first:border-l-0 sm:first:pl-0">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center text-[#1577EE]">
+                        <Icon size={31} strokeWidth={1.9} />
                       </div>
-                      <div>
-                        <div className="text-l font-black leading-none text-[#071B49]">{m.value}</div>
-                        <div className="text-[10px] font-bold text-slate-500 mt-1">{m.label}</div>
+                      <div className="min-w-0">
+                        <div className={`whitespace-nowrap font-black leading-none text-[#1577EE] ${m.value === "Fellowship" ? "text-[15px] sm:text-base" : "text-xl sm:text-2xl"}`}>{m.value}</div>
+                        <div className="mt-1 text-[10px] font-extrabold leading-[1.25] text-[#071B49] sm:text-[11px]">{m.label}</div>
                       </div>
                     </div>
                   );
                 })}
               </div>
 
+              {/* Program fee */}
+              <div className="mt-5 flex w-full max-w-[290px] items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50/90 px-4 py-3 shadow-[0_6px_16px_rgba(5,150,105,0.07)]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                  <Tag size={20} strokeWidth={2.2} />
+                </span>
+                <span>
+                  <span className="block text-[9px] font-black uppercase tracking-[0.18em] text-emerald-700 sm:text-[10px]">
+                    {isPurchased ? "Status: Active Fellow" : "One-time program fee"}
+                  </span>
+                  <span className="mt-1 block text-xl font-black leading-none text-emerald-950">
+                    {isPurchased ? "Enrolled" : "₹2,000"}
+                  </span>
+                </span>
+              </div>
+
               {/* Action Buttons */}
-              <div className="mt-8 flex flex-wrap items-center gap-4">
+              <div className="mt-5 grid max-w-[500px] gap-3 sm:grid-cols-2">
                 <Link
-                  to={applyLink}
-                  className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-full bg-[#071B49] px-8 text-sm font-black text-white shadow-lg transition-all hover:bg-[#0c2869] active:scale-95"
+                  to={ctaLink}
+                  className="inline-flex min-h-[50px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#12bdd0] via-[#18bfa6] to-[#2869ed] px-5 text-sm font-black text-white shadow-[0_9px_22px_rgba(37,105,237,0.18)] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#1577EE] active:translate-y-0"
                 >
-                  Apply Now <ArrowRight size={16} />
+                  {heroCtaText} <ArrowRight size={16} />
                 </Link>
                 <a
                   href="#learn-build"
-                  className="inline-flex min-h-[50px] items-center justify-center rounded-full border border-[#071B49] bg-white px-8 text-sm font-bold text-[#071B49] shadow-xs transition-all hover:bg-slate-50 active:scale-95"
+                  className="inline-flex min-h-[50px] items-center justify-center rounded-xl border border-blue-100 bg-white px-5 text-sm font-black text-[#111a35] shadow-[0_8px_18px_rgba(7,27,73,0.07)] transition duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#1577EE] active:translate-y-0"
                 >
                   Know More
                 </a>
@@ -814,11 +857,11 @@ export default function DataAnalystFellowshipPage() {
               </div>
 
               {/* Certificate & ID Stack Graphic */}
-              <div className="flex justify-center">
+              <div className="relative z-0 flex justify-center hover:z-20">
                 <img
                   src={track.credentialStack}
                   alt={`${track.name} Fellowship Certificate and ID Card`}
-                  className="w-full max-w-[260px] h-auto object-contain drop-shadow-md"
+                  className="h-auto w-full max-w-[260px] cursor-zoom-in object-contain drop-shadow-md transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.55] hover:drop-shadow-2xl motion-reduce:transition-none motion-reduce:hover:scale-100"
                 />
               </div>
             </div>
@@ -889,12 +932,14 @@ export default function DataAnalystFellowshipPage() {
       {/* ── 5. SLEEK COMPACT BOTTOM CALLOUT BANNER ────────────────────────── */}
       <section className="py-10 px-5 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-[1440px]">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06172f] via-[#071B49] to-[#0a3766] py-6 px-8 sm:px-10 text-white shadow-xl">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#06172f] via-[#071B49] to-[#0a3766] px-8 py-6 text-white shadow-xl sm:px-10 lg:min-h-[300px]">
 
             {/* Background Dotted Patterns */}
             <div className="absolute -right-10 -top-10 h-48 w-48 rounded-full border border-cyan-400/20" />
+            <img src={ctaDotPatternSvg} alt="" aria-hidden="true" className="pointer-events-none absolute -left-16 -top-14 w-[310px] opacity-35" />
+            <img src={ctaDotPatternSvg} alt="" aria-hidden="true" className="pointer-events-none absolute -right-16 top-1/2 w-[340px] -translate-y-1/2 opacity-45" />
 
-            <div className="grid lg:grid-cols-[1.3fr_0.7fr] items-center gap-6 relative z-10">
+            <div className="relative z-10 grid items-center gap-4 lg:min-h-[252px] lg:grid-cols-[1.15fr_0.85fr]">
 
               {/* Left Callout Text */}
               <div>
@@ -911,20 +956,20 @@ export default function DataAnalystFellowshipPage() {
 
                 <div className="mt-5">
                   <Link
-                    to={applyLink}
-                    className="inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full bg-[#00c49f] px-7 text-xs sm:text-sm font-black text-[#071B49] shadow-lg transition-all hover:bg-[#02dbb4] active:scale-95"
+                    to={ctaLink}
+                    className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#12bdd0] via-[#18bfa6] to-[#2869ed] px-8 text-sm font-black text-white shadow-[0_12px_28px_rgba(37,105,237,0.24)] transition duration-200 hover:-translate-y-0.5 hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white active:translate-y-0"
                   >
-                    {track.ctaButtonText} <ArrowRight size={16} />
+                    {bannerCtaText} <ArrowRight size={16} />
                   </Link>
                 </div>
               </div>
 
               {/* Right Callout Dashboard CTA SVG (Sleek Compact Size) */}
-              <div className="flex justify-center lg:justify-end">
+              <div className="flex justify-center lg:-my-12 lg:justify-end">
                 <img
                   src={track.ctaIllustration}
                   alt={`${track.name} CTA analytics preview`}
-                  className="w-full max-w-[270px] h-auto object-contain drop-shadow-2xl"
+                  className="h-auto w-full max-w-[340px] object-contain drop-shadow-2xl lg:max-w-[390px]"
                 />
               </div>
 
@@ -980,11 +1025,11 @@ export default function DataAnalystFellowshipPage() {
       <aside aria-label={`${track.name} fellowship application`} className="fixed inset-x-0 bottom-0 z-50 px-3 pb-3 sm:px-5 sm:pb-4">
         <div className="mx-auto flex max-w-[1260px] items-center justify-between gap-4 overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-r from-[#071B49] via-[#0b376f] to-[#1577EE] px-4 py-3 text-white shadow-2xl sm:px-6">
           <div className="min-w-0">
-            <p className="truncate text-sm font-black sm:text-base">Start your {track.name} Fellowship</p>
-            <p className="mt-0.5 hidden text-[11px] font-semibold text-white/80 sm:block">3 months · 20 projects · One-time fee ₹2,000</p>
+            <p className="truncate text-sm font-black sm:text-base">{isPurchased ? `${track.name} Active Fellowship` : `Start your ${track.name} Fellowship`}</p>
+            <p className="mt-0.5 hidden text-[11px] font-semibold text-white/80 sm:block">{isPurchased ? "Access your projects & assignments" : "3 months · 20 projects · One-time fee ₹2,000"}</p>
           </div>
-          <Link to={applyLink} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full bg-[#00c49f] px-5 sm:px-7 text-xs sm:text-sm font-black text-[#071B49] shadow-md transition-all hover:bg-[#02dbb4]">
-            Apply now <ArrowRight size={16} />
+          <Link to={ctaLink} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#12bdd0] via-[#18bfa6] to-[#2869ed] px-5 text-xs font-black text-white shadow-md transition duration-200 hover:brightness-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-7 sm:text-sm">
+            {stickyCtaText} <ArrowRight size={16} />
           </Link>
         </div>
       </aside>

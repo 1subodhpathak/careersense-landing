@@ -27,6 +27,7 @@ import {
   LayoutTemplate,
   Link2,
   ListChecks,
+  Lock,
   LockKeyhole,
   PanelsTopLeft,
   ReceiptIndianRupee,
@@ -686,20 +687,48 @@ function ActiveFellowship({ enrollment, program, onChange, user }) {
       <section className="overflow-hidden rounded-[26px] border border-[#dceaf4] bg-white shadow-[0_12px_34px_rgba(22,63,98,0.06)]">
         <div className="flex flex-col gap-3 border-b border-[#e7eff5] px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-7">
           <div><div className="text-[9px] font-black uppercase tracking-[0.16em] text-[#18a8c7]">Real work experience</div><h2 className="mt-1 text-2xl font-black tracking-tight text-[#07182f]">My Projects</h2><p className="mt-1 text-xs font-medium text-slate-500">All your internship projects in one place.</p></div>
-          <span className="w-fit rounded-full border border-[#ccebf4] bg-[#f2fbfe] px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-[#1589aa]">All projects unlocked</span>
+          <span className="w-fit rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-[9px] font-black uppercase tracking-wider text-amber-600">Sequential 7-Day Unlocking Active</span>
         </div>
         <div className="space-y-8 bg-[#fbfdff] p-4 sm:p-6 lg:p-7">
           {fellowshipPhases.map((phase) => { const Icon = phase.icon; return <div key={phase.id}>
             <div className="mb-4 flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-xl shadow-[0_8px_20px_rgba(24,183,204,0.10)]" style={{ background: phase.soft, color: phase.color, border: `1px solid ${phase.line}` }}><Icon size={18} /></div><div><div className="text-[9px] font-black uppercase tracking-[0.15em]" style={{ color: phase.color }}>Phase {phase.id} · {phase.range}</div><div className="text-base font-black text-[#07182f]">{phase.title}</div></div></div>
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {phase.assignmentIds.map((id, assignmentIndex) => { const assignment = assignments[id - 1]; const record = assignmentRecords[id] || {}; const status = record.status || "available"; const submitted = status === "under_review" || status === "passed"; const hasNext = assignmentIndex < phase.assignmentIds.length - 1; const label = status === "in_progress" ? "IN PROGRESS" : status === "under_review" ? "IN REVIEW" : status === "passed" ? "COMPLETED" : "OPEN"; return <div key={id} className="relative">
-                {hasNext && <><div className={`pointer-events-none absolute left-[calc(100%-1px)] top-1/2 z-0 hidden h-[3px] w-5 -translate-y-1/2 rounded-full xl:block ${submitted ? "bg-blue-500" : "bg-slate-200"}`} /><div className={`pointer-events-none absolute left-1/2 top-full z-0 hidden h-5 w-[3px] -translate-x-1/2 rounded-full md:block xl:hidden ${submitted ? "bg-blue-500" : "bg-slate-200"}`} /><div className={`pointer-events-none absolute left-1/2 top-full z-0 h-5 w-[3px] -translate-x-1/2 rounded-full md:hidden ${submitted ? "bg-blue-500" : "bg-slate-200"}`} /></>}
-                <article className={`group relative z-10 flex min-h-[220px] flex-col rounded-[20px] border bg-white p-4 transition duration-300 hover:-translate-y-0.5 sm:p-5 ${submitted ? "shadow-[0_8px_24px_rgba(23,185,216,0.12),0_0_20px_rgba(23,185,216,0.08)]" : "shadow-[0_8px_22px_rgba(22,63,98,0.05)] hover:shadow-[0_14px_28px_rgba(22,63,98,0.09)]"}`} style={{ borderColor: submitted ? "#73dce9" : phase.line }}>
-                  <div className="flex items-start justify-between gap-3"><div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-black" style={{ background: phase.soft, color: phase.color }}>{String(id).padStart(2, "0")}</span><div><div className="text-[8px] font-black uppercase tracking-[0.14em]" style={{ color: phase.color }}>Project {id}</div><div className="mt-0.5 flex items-center gap-1 text-[9px] font-bold text-slate-400"><Clock3 size={10} /> Week {assignment.week}, Day 1 - Week {assignment.week}, Day 7</div></div></div><span className={`rounded-full border px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.14em] ${submitted ? "border-cyan-200 bg-cyan-50 text-cyan-700" : status === "in_progress" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>{label}</span></div>
-                  <h3 className="mt-4 text-[15px] font-black leading-snug text-[#07182f]">{assignment.title}</h3><p className="mt-2 line-clamp-3 text-[11px] font-medium leading-[1.65] text-slate-500">{assignment.summary}</p>
-                  <div className="mt-auto pt-4"><div className="flex items-center justify-between border-t border-[#edf2f6] pt-3 text-[9px] font-bold"><span className="inline-flex items-center gap-1 text-amber-700"><Coins size={11} /> {assignment.points.toLocaleString("en-IN")} points</span><span className="text-slate-400">Score {record.score ?? "--"}/100</span></div><div className="mt-3 grid grid-cols-2 gap-2"><button type="button" onClick={() => setSelectedDetailsId(id)} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#dbe7ef] bg-white text-[10px] font-black text-[#30455c] transition hover:bg-[#f6fbfe]"><Eye size={13} /> Details</button><button type="button" onClick={() => setSelectedProjectId(id)} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl text-[10px] font-black text-white shadow-sm transition hover:brightness-105" style={{ backgroundColor: phase.color, boxShadow: `0 8px 18px ${phase.color}2e` }}><Rocket size={13} /> {status === "in_progress" ? "Continue" : submitted ? "Review" : "Begin"}</button></div></div>
-                </article><div className={`pointer-events-none absolute -right-2 top-1/2 z-20 hidden h-4 w-4 -translate-y-1/2 rounded-full border-[3px] border-white xl:block ${submitted ? "bg-blue-500" : "bg-slate-300"}`} />
-              </div>; })}
+              {phase.assignmentIds.map((id, assignmentIndex) => {
+                const assignment = assignments[id - 1];
+                const record = assignmentRecords[id] || {};
+                const status = record.status || "available";
+                const submitted = status === "under_review" || status === "passed";
+                const hasNext = assignmentIndex < phase.assignmentIds.length - 1;
+                const label = status === "in_progress" ? "IN PROGRESS" : status === "under_review" ? "IN REVIEW" : status === "passed" ? "COMPLETED" : "OPEN";
+                const unlockStatus = getAssignmentUnlockStatus(id, assignmentRecords);
+
+                return (
+                  <div key={id} className="relative">
+                    {hasNext && <><div className={`pointer-events-none absolute left-[calc(100%-1px)] top-1/2 z-0 hidden h-[3px] w-5 -translate-y-1/2 rounded-full xl:block ${submitted ? "bg-blue-500" : "bg-slate-200"}`} /><div className={`pointer-events-none absolute left-1/2 top-full z-0 hidden h-5 w-[3px] -translate-x-1/2 rounded-full md:block xl:hidden ${submitted ? "bg-blue-500" : "bg-slate-200"}`} /><div className={`pointer-events-none absolute left-1/2 top-full z-0 h-5 w-[3px] -translate-x-1/2 rounded-full md:hidden ${submitted ? "bg-blue-500" : "bg-slate-200"}`} /></>}
+                    <article className={`group relative z-10 flex min-h-[220px] flex-col rounded-[20px] border bg-white p-4 transition duration-300 sm:p-5 ${!unlockStatus.isUnlocked ? "filter blur-[1.5px] opacity-60 pointer-events-none select-none" : submitted ? "shadow-[0_8px_24px_rgba(23,185,216,0.12),0_0_20px_rgba(23,185,216,0.08)] hover:-translate-y-0.5" : "shadow-[0_8px_22px_rgba(22,63,98,0.05)] hover:shadow-[0_14px_28px_rgba(22,63,98,0.09)] hover:-translate-y-0.5"}`} style={{ borderColor: submitted ? "#73dce9" : phase.line }}>
+                      <div className="flex items-start justify-between gap-3"><div className="flex items-center gap-2"><span className="flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-black" style={{ background: phase.soft, color: phase.color }}>{String(id).padStart(2, "0")}</span><div><div className="text-[8px] font-black uppercase tracking-[0.14em]" style={{ color: phase.color }}>Project {id}</div><div className="mt-0.5 flex items-center gap-1 text-[9px] font-bold text-slate-400"><Clock3 size={10} /> Week {assignment.week}, Day 1 - Week {assignment.week}, Day 7</div></div></div><span className={`rounded-full border px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.14em] ${submitted ? "border-cyan-200 bg-cyan-50 text-cyan-700" : status === "in_progress" ? "border-blue-200 bg-blue-50 text-blue-700" : "border-slate-200 bg-slate-50 text-slate-500"}`}>{label}</span></div>
+                      <h3 className="mt-4 text-[15px] font-black leading-snug text-[#07182f]">{assignment.title}</h3><p className="mt-2 line-clamp-3 text-[11px] font-medium leading-[1.65] text-slate-500">{assignment.summary}</p>
+                      <div className="mt-auto pt-4"><div className="flex items-center justify-between border-t border-[#edf2f6] pt-3 text-[9px] font-bold"><span className="inline-flex items-center gap-1 text-amber-700"><Coins size={11} /> {assignment.points.toLocaleString("en-IN")} points</span><span className="text-slate-400">Score {record.score ?? "--"}/100</span></div><div className="mt-3 grid grid-cols-2 gap-2"><button type="button" onClick={() => unlockStatus.isUnlocked && setSelectedDetailsId(id)} disabled={!unlockStatus.isUnlocked} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#dbe7ef] bg-white text-[10px] font-black text-[#30455c] transition hover:bg-[#f6fbfe] disabled:opacity-50"><Eye size={13} /> Details</button><button type="button" onClick={() => unlockStatus.isUnlocked && setSelectedProjectId(id)} disabled={!unlockStatus.isUnlocked} className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl text-[10px] font-black text-white shadow-sm transition hover:brightness-105 disabled:opacity-50" style={{ backgroundColor: phase.color, boxShadow: `0 8px 18px ${phase.color}2e` }}><Rocket size={13} /> {status === "in_progress" ? "Continue" : submitted ? "Review" : "Begin"}</button></div></div>
+                    </article>
+
+                    {!unlockStatus.isUnlocked && (
+                      <div className="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-[20px] bg-slate-950/75 backdrop-blur-[3px] p-5 text-center text-white shadow-xl">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-400 shadow-md">
+                          <Lock size={22} />
+                        </div>
+                        <span className="mt-2.5 text-[10px] font-black uppercase tracking-widest text-amber-300">
+                          Project {id} Locked
+                        </span>
+                        <p className="mt-1 max-w-[200px] text-[11px] font-bold leading-relaxed text-slate-200">
+                          {unlockStatus.lockReason}
+                        </p>
+                      </div>
+                    )}
+
+                    <div className={`pointer-events-none absolute -right-2 top-1/2 z-20 hidden h-4 w-4 -translate-y-1/2 rounded-full border-[3px] border-white xl:block ${submitted ? "bg-blue-500" : "bg-slate-300"}`} />
+                  </div>
+                );
+              })}
             </div>
           </div>; })}
         </div>

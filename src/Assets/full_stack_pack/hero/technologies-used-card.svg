@@ -1,26 +1,97 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
-<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#173CFF"/><stop offset="1" stop-color="#6B4CFF"/></linearGradient>
-<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00A98F"/><stop offset="1" stop-color="#23D0B2"/></linearGradient>
-<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#5747F2"/><stop offset="1" stop-color="#7A5BFF"/></linearGradient>
-<linearGradient id="coral" x1="0" x2="1"><stop stop-color="#FF4E80"/><stop offset="1" stop-color="#FF9136"/></linearGradient>
-<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0C3472"/></linearGradient>
-<radialGradient id="glow"><stop stop-color="#4374FF" stop-opacity=".42"/><stop offset="1" stop-color="#4374FF" stop-opacity="0"/></radialGradient>
-<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
-<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
-</defs>
-<g filter="url(#shadow)">
-<rect x="18" y="18" width="476" height="476" rx="34" fill="#fff"/>
-<text x="48" y="72" font-family="Inter,Arial" font-size="27" font-weight="700" fill="#071B49">Technologies Used</text>
-<g transform="translate(55,138)">
-<!-- React -->
-<circle cx="42" cy="70" r="8" fill="#16BCE5"/><ellipse cx="42" cy="70" rx="38" ry="15" fill="none" stroke="#16BCE5" stroke-width="5"/><ellipse cx="42" cy="70" rx="38" ry="15" fill="none" stroke="#16BCE5" stroke-width="5" transform="rotate(60 42 70)"/><ellipse cx="42" cy="70" rx="38" ry="15" fill="none" stroke="#16BCE5" stroke-width="5" transform="rotate(-60 42 70)"/>
-<!-- node -->
-<polygon points="118,35 154,55 154,95 118,115 82,95 82,55" fill="#69B94B"/><text x="118" y="84" text-anchor="middle" font-family="Inter" font-size="36" font-weight="800" fill="#fff">JS</text>
-<!-- mongo -->
-<path d="M198 30 C228 56 234 92 203 117 C176 91 173 59 198 30Z" fill="#169B45"/><path d="M198 31 V120" stroke="#0A6B33" stroke-width="4"/>
-<!-- aws -->
-<text x="273" y="82" text-anchor="middle" font-family="Inter,Arial" font-size="34" font-weight="800" fill="#F29B2F">aws</text><path d="M241 98 Q270 116 307 102" fill="none" stroke="#F29B2F" stroke-width="5" stroke-linecap="round"/>
-<!-- docker -->
-<g transform="translate(330,42)" fill="#179BDB"><rect x="0" y="22" width="24" height="18"/><rect x="28" y="22" width="24" height="18"/><rect x="56" y="22" width="24" height="18"/><rect x="28" y="0" width="24" height="18"/><rect x="56" y="0" width="24" height="18"/><path d="M-6 44 H90 Q80 78 40 82 Q6 82 -6 44Z"/></g>
-</g>
-</g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="720" viewBox="0 0 1024 720">
+  <defs>
+    <linearGradient id="panelGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F7F9FC"/>
+    </linearGradient>
+    <linearGradient id="nodeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#76C44E"/>
+      <stop offset="100%" stop-color="#4E9E39"/>
+    </linearGradient>
+    <linearGradient id="mongoGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#28B463"/>
+      <stop offset="100%" stop-color="#12823D"/>
+    </linearGradient>
+    <linearGradient id="awsGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFB347"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+    <linearGradient id="dockerGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2EAADC"/>
+      <stop offset="100%" stop-color="#0D87C7"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#0B1F4C" flood-opacity="0.10"/>
+    </filter>
+    <filter id="iconShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#0B1F4C" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- transparent canvas outside this card -->
+  <g filter="url(#shadow)">
+    <rect x="28" y="28" width="968" height="664" rx="54" fill="url(#panelGrad)"/>
+    <rect x="28.75" y="28.75" width="966.5" height="662.5" rx="53.25" fill="none" stroke="#E2E8F0" stroke-width="1.5"/>
+  </g>
+
+  <text x="78" y="116" font-family="Inter, Arial, sans-serif" font-size="52" font-weight="800" fill="#0C2559">Technologies Used</text>
+  <text x="78" y="154" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="500" fill="#718096">Core technologies applied across the fellowship projects</text>
+  <line x1="78" y1="184" x2="946" y2="184" stroke="#E7ECF3" stroke-width="2"/>
+
+  <!-- React -->
+  <g transform="translate(132 356)" filter="url(#iconShadow)">
+    <circle cx="0" cy="0" r="14" fill="#24B6E3"/>
+    <ellipse cx="0" cy="0" rx="76" ry="29" fill="none" stroke="#24B6E3" stroke-width="11"/>
+    <ellipse cx="0" cy="0" rx="76" ry="29" fill="none" stroke="#24B6E3" stroke-width="11" transform="rotate(60)"/>
+    <ellipse cx="0" cy="0" rx="76" ry="29" fill="none" stroke="#24B6E3" stroke-width="11" transform="rotate(-60)"/>
+  </g>
+  <text x="132" y="485" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#102A66">React</text>
+  <text x="132" y="518" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" fill="#718096">Frontend UI</text>
+
+  <!-- Node.js -->
+  <g transform="translate(322 356)" filter="url(#iconShadow)">
+    <polygon points="0,-78 68,-39 68,39 0,78 -68,39 -68,-39" fill="url(#nodeGrad)"/>
+    <text x="0" y="13" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="54" font-weight="800" fill="#FFFFFF">JS</text>
+  </g>
+  <text x="322" y="485" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#102A66">Node.js</text>
+  <text x="322" y="518" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" fill="#718096">Backend Runtime</text>
+
+  <!-- MongoDB -->
+  <g transform="translate(512 356)" filter="url(#iconShadow)">
+    <path d="M0,-84 C55,-38 58,39 8,84 C-45,37 -50,-37 0,-84 Z" fill="url(#mongoGrad)"/>
+    <path d="M0,-81 C2,-18 2,42 2,88" fill="none" stroke="#0B6E35" stroke-width="7" stroke-linecap="round"/>
+    <path d="M1,7 C18,-5 29,-20 36,-40" fill="none" stroke="#DDF4E5" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+  </g>
+  <text x="512" y="485" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#102A66">MongoDB</text>
+  <text x="512" y="518" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" fill="#718096">Database</text>
+
+  <!-- AWS -->
+  <g transform="translate(702 350)" filter="url(#iconShadow)">
+    <text x="0" y="16" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="64" font-weight="800" fill="#232F3E">aws</text>
+    <path d="M-66,44 Q-6,80 67,50" fill="none" stroke="url(#awsGrad)" stroke-width="9" stroke-linecap="round"/>
+    <path d="M51,48 L72,47 L61,62" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="702" y="485" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#102A66">AWS</text>
+  <text x="702" y="518" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" fill="#718096">Cloud Services</text>
+
+  <!-- Docker -->
+  <g transform="translate(888 346)" filter="url(#iconShadow)">
+    <g fill="url(#dockerGrad)">
+      <rect x="-67" y="-32" width="32" height="25" rx="3"/>
+      <rect x="-30" y="-32" width="32" height="25" rx="3"/>
+      <rect x="7" y="-32" width="32" height="25" rx="3"/>
+      <rect x="-30" y="-62" width="32" height="25" rx="3"/>
+      <rect x="7" y="-62" width="32" height="25" rx="3"/>
+      <rect x="44" y="-32" width="32" height="25" rx="3"/>
+      <path d="M-80,4 H78 C70,48 33,71 -12,71 C-47,71 -70,50 -80,4 Z"/>
+    </g>
+    <path d="M75,12 C91,3 101,6 111,18 C102,19 93,22 85,28" fill="none" stroke="#0D87C7" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <text x="888" y="485" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="700" fill="#102A66">Docker</text>
+  <text x="888" y="518" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" fill="#718096">Containerization</text>
+
+  <!-- footer accent -->
+  <rect x="78" y="592" width="868" height="8" rx="4" fill="#EEF3F8"/>
+  <rect x="78" y="592" width="250" height="8" rx="4" fill="#2FD8D0"/>
+  <rect x="328" y="592" width="250" height="8" rx="4" fill="#2E8BFF"/>
+</svg>

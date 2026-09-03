@@ -38,7 +38,7 @@ export default function WeekJourneySection() {
   ];
 
   return (
-    <section id="journey" className="relative overflow-hidden bg-[#041024] py-16 sm:py-20 text-white select-none">
+    <section id="journey" className="relative overflow-hidden bg-[#041024] py-10 sm:py-12 text-white select-none">
       {/* Background SVG */}
       <img
         src={ctaDarkBg}

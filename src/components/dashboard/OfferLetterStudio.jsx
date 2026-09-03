@@ -38,7 +38,7 @@ export default function OfferLetterStudio({ profile, user }) {
     workingMode: "Remote",
     location: profile.location || profile.geographicalAlignment || "Delhi",
     engagementType: "Partner / Community Collaboration",
-    initialTerm: "6 months, renewable by mutual agreement",
+    initialTerm: "3 months, renewable by mutual agreement",
     timeCommitment: "Flexible and task-based; agreed with the Partner Lead",
     compensation: "As applicable to the specific Partner Program and communicated separately",
   });

@@ -12,6 +12,7 @@ const globalStyles = `
 export default function InteractiveCertificateAnatomy() {
   return (
     <section
+      id="certificate-sample"
       className="relative flex flex-col items-center px-4 py-8 sm:min-h-screen sm:justify-center sm:px-6 sm:py-12 lg:px-8"
       style={{ fontFamily: 'Manrope, sans-serif' }}
     >

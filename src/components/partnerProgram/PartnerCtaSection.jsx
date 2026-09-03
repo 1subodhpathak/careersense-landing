@@ -6,7 +6,7 @@ const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerS
 
 export default function PartnerCtaSection({ applyLink = DEFAULT_APPLY_LINK, isDark = false }) {
   return (
-    <section className={`py-12 sm:py-16 transition-colors duration-300 ${isDark ? "bg-[#041024]" : "bg-white"}`}>
+    <section className={`py-6 sm:py-8 transition-colors duration-300 ${isDark ? "bg-[#041024]" : "bg-white"}`}>
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0A1128] via-[#0F1C3F] to-[#091024] p-6 sm:p-10 lg:p-12 text-white shadow-2xl border border-white/10">
           {/* Background Decorative Rocket */}

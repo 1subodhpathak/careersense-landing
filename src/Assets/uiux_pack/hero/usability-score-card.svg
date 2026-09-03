@@ -1,25 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
-<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1474E8"/><stop offset="1" stop-color="#287CF4"/></linearGradient>
-<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#08A88D"/><stop offset="1" stop-color="#21D0B0"/></linearGradient>
-<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#654CF0"/><stop offset="1" stop-color="#9B76FF"/></linearGradient>
-<linearGradient id="pink" x1="0" x2="1"><stop stop-color="#FF5C86"/><stop offset="1" stop-color="#FF9AB2"/></linearGradient>
-<linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#061947"/><stop offset="1" stop-color="#0D3974"/></linearGradient>
-<radialGradient id="glow"><stop stop-color="#28D4FF" stop-opacity=".52"/><stop offset="1" stop-color="#28D4FF" stop-opacity="0"/></radialGradient>
-<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
-<filter id="deepShadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="20" stdDeviation="24" flood-color="#04132F" flood-opacity=".25"/></filter>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+
+<defs>
+  <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#2F80ED"/>
+    <stop offset="100%" stop-color="#4EA5FF"/>
+  </linearGradient>
+  <linearGradient id="tealGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#11A98D"/>
+    <stop offset="100%" stop-color="#35D3BA"/>
+  </linearGradient>
+  <linearGradient id="purpleGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#6654E8"/>
+    <stop offset="100%" stop-color="#9A7CFF"/>
+  </linearGradient>
+  <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#102A56" flood-opacity=".12"/>
+  </filter>
 </defs>
-<g filter="url(#shadow)">
-<rect x="18" y="18" width="476" height="476" rx="34" fill="#fff"/>
-<text x="48" y="69" font-family="Inter,Arial" font-size="28" font-weight="700" fill="#071B49">Usability Score</text>
-<g transform="translate(48,114)">
-<circle cx="92" cy="104" r="62" fill="none" stroke="#E7EEF7" stroke-width="18"/>
-<circle cx="92" cy="104" r="62" fill="none" stroke="#1672E7" stroke-width="18" stroke-dasharray="260 390" transform="rotate(-90 92 104)"/>
-<circle cx="92" cy="104" r="62" fill="none" stroke="#10A98A" stroke-width="18" stroke-dasharray="95 390" stroke-dashoffset="-260" transform="rotate(-90 92 104)"/>
-<text x="92" y="119" text-anchor="middle" font-family="Inter,Arial" font-size="38" font-weight="800" fill="#071B49">92%</text>
+
+<g filter="url(#cardShadow)">
+  <rect x="32" y="32" width="960" height="960" rx="64" fill="#F8FAFD"/>
 </g>
-<g transform="translate(220,126)" font-family="Inter,Arial">
-<text x="0" y="28" font-size="18" fill="#33415E">Efficiency</text><rect x="125" y="12" width="105" height="10" rx="5" fill="#E7EEF8"/><rect x="125" y="12" width="99" height="10" rx="5" fill="#14B79A"/><text x="240" y="27" font-size="17" fill="#33415E">94%</text>
-<text x="0" y="93" font-size="18" fill="#33415E">Learnability</text><rect x="125" y="77" width="105" height="10" rx="5" fill="#E7EEF8"/><rect x="125" y="77" width="97" height="10" rx="5" fill="#18B89C"/><text x="240" y="92" font-size="17" fill="#33415E">92%</text>
-<text x="0" y="158" font-size="18" fill="#33415E">Satisfaction</text><rect x="125" y="142" width="105" height="10" rx="5" fill="#E7EEF8"/><rect x="125" y="142" width="94" height="10" rx="5" fill="#20B59B"/><text x="240" y="157" font-size="17" fill="#33415E">90%</text>
-</g>
-</g></svg>
+<rect x="64" y="64" width="896" height="896" rx="44" fill="#FFFFFF" opacity=".72"/>
+<text x="88" y="122" font-family="Inter,Arial,sans-serif" font-size="48" font-weight="800" fill="#0B2454">Usability Score</text>
+
+
+<circle cx="300" cy="470" r="150" fill="none" stroke="#E7EDF5" stroke-width="34"/>
+<circle cx="300" cy="470" r="150" fill="none" stroke="#2F80ED" stroke-width="34" stroke-linecap="round"
+        stroke-dasharray="650 943" transform="rotate(-90 300 470)"/>
+<circle cx="300" cy="470" r="150" fill="none" stroke="#13B79A" stroke-width="34" stroke-linecap="round"
+        stroke-dasharray="217 943" stroke-dashoffset="-650" transform="rotate(-90 300 470)"/>
+<text x="300" y="492" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="72" font-weight="850" fill="#0B2454">92%</text>
+
+<text x="530" y="300" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#304663">Efficiency</text>
+<text x="888" y="300" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#304663">94%</text>
+<rect x="530" y="328" width="358" height="22" rx="11" fill="#E9EEF5"/>
+<rect x="530" y="328" width="336.5" height="22" rx="11" fill="url(#tealGrad)"/>
+
+<text x="530" y="470" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#304663">Learnability</text>
+<text x="888" y="470" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#304663">92%</text>
+<rect x="530" y="498" width="358" height="22" rx="11" fill="#E9EEF5"/>
+<rect x="530" y="498" width="329.4" height="22" rx="11" fill="url(#tealGrad)"/>
+
+<text x="530" y="640" font-family="Inter,Arial,sans-serif" font-size="27" font-weight="650" fill="#304663">Satisfaction</text>
+<text x="888" y="640" text-anchor="end" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#304663">90%</text>
+<rect x="530" y="668" width="358" height="22" rx="11" fill="#E9EEF5"/>
+<rect x="530" y="668" width="322.2" height="22" rx="11" fill="url(#tealGrad)"/>
+</svg>

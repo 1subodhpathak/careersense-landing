@@ -32,7 +32,7 @@ export default function CompletionEarnSection({ isDark = false }) {
   ];
 
   return (
-    <section className={`py-12 sm:py-16 transition-colors duration-300 border-t border-b ${
+    <section className={`py-8 sm:py-10 transition-colors duration-300 border-t border-b ${
       isDark
         ? "bg-[#071731] border-slate-800 text-white"
         : "bg-slate-50 border-slate-200/60 text-slate-800"

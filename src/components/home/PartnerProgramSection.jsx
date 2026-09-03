@@ -189,7 +189,7 @@ export default function PartnerProgramSection() {
               Flexible Mode
             </span>
             <span className="rounded-full border border-slate-300/60 bg-white/50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#071a38] backdrop-blur-sm">
-              6 Months
+              3 Months
             </span>
             <span className="flex items-center gap-1.5 text-[12px] font-semibold text-[#071a38]">
               Selected: <Check size={14} className="rounded-full bg-teal-100 p-[2px] text-teal-600" />

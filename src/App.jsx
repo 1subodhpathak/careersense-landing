@@ -11,6 +11,7 @@ import ELearningPage from "./pages/ELearningPage";
 import EbookReaderPage from "./pages/EbookReaderPage";
 import PartnerProgramPage from "./pages/PartnerProgramPage";
 import DataAnalystFellowshipPage from "./pages/DataAnalystFellowshipPage";
+import PricingPage from "./pages/PricingPage";
 
 function ProtectedRoute({ children }) {
   return (
@@ -28,6 +29,7 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/pricing" element={<PricingPage />} />
         <Route path="/u/:publicId" element={<PublicProfilePage />} />
         <Route path="/public-profile/:publicId" element={<PublicProfilePage />} />
         <Route

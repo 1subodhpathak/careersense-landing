@@ -1,21 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><defs>
-<linearGradient id="blue" x1="0" x2="1"><stop stop-color="#1269F3"/><stop offset="1" stop-color="#39A7FF"/></linearGradient>
-<linearGradient id="teal" x1="0" x2="1"><stop stop-color="#00B894"/><stop offset="1" stop-color="#22D3B6"/></linearGradient>
-<linearGradient id="purple" x1="0" x2="1"><stop stop-color="#7B61FF"/><stop offset="1" stop-color="#A875FF"/></linearGradient>
-<linearGradient id="orange" x1="0" x2="1"><stop stop-color="#FF5E78"/><stop offset="1" stop-color="#FF9A2F"/></linearGradient>
-<filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0D2B5B" flood-opacity=".14"/></filter>
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+
+<defs>
+  <linearGradient id="blueGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#2F80ED"/>
+    <stop offset="100%" stop-color="#4EA5FF"/>
+  </linearGradient>
+  <linearGradient id="tealGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#11A98D"/>
+    <stop offset="100%" stop-color="#35D3BA"/>
+  </linearGradient>
+  <linearGradient id="purpleGrad" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#6654E8"/>
+    <stop offset="100%" stop-color="#9A7CFF"/>
+  </linearGradient>
+  <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#102A56" flood-opacity=".12"/>
+  </filter>
 </defs>
-<g filter="url(#shadow)">
-<rect x="18" y="18" width="476" height="476" rx="34" fill="#fff"/>
-<text x="48" y="70" font-family="Inter,Arial" font-size="28" font-weight="700" fill="#091A43">Top Features</text>
-<g font-family="Inter,Arial" font-size="18" fill="#33415E">
-<text x="48" y="134">Age</text><text x="48" y="198">Income</text><text x="48" y="262">Credit Score</text><text x="48" y="326">Tenure</text><text x="48" y="390">Balance</text>
+
+<g filter="url(#cardShadow)">
+  <rect x="32" y="32" width="960" height="960" rx="64" fill="#F8FAFD"/>
 </g>
-<g transform="translate(168,112)">
-<rect width="205" height="18" rx="9" fill="#EAF1FA"/><rect width="145" height="18" rx="9" fill="#1577EE"/><text x="220" y="16" font-family="Inter" font-size="18" fill="#33415E">0.28</text>
-<rect y="64" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="64" width="114" height="18" rx="9" fill="#2D8EF4"/><text x="220" y="80" font-family="Inter" font-size="18" fill="#33415E">0.22</text>
-<rect y="128" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="128" width="94" height="18" rx="9" fill="#5BA7F8"/><text x="220" y="144" font-family="Inter" font-size="18" fill="#33415E">0.18</text>
-<rect y="192" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="192" width="62" height="18" rx="9" fill="#278BC4"/><text x="220" y="208" font-family="Inter" font-size="18" fill="#33415E">0.12</text>
-<rect y="256" width="205" height="18" rx="9" fill="#EAF1FA"/><rect y="256" width="42" height="18" rx="9" fill="#0ABF9A"/><text x="220" y="272" font-family="Inter" font-size="18" fill="#33415E">0.08</text>
-</g>
-</g></svg>
+<rect x="64" y="64" width="896" height="896" rx="44" fill="#FFFFFF" opacity=".72"/>
+<text x="88" y="122" font-family="Inter,Arial,sans-serif" font-size="48" font-weight="800" fill="#0B2454">Top Features</text>
+
+
+<text x="104" y="250" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="650" fill="#243A60">Age</text>
+<rect x="340" y="223" width="430" height="24" rx="12" fill="#EAF0F7"/>
+<rect x="340" y="223" width="401.3" height="24" rx="12" fill="#2F80ED"/>
+<rect x="800" y="207" width="116" height="48" rx="24" fill="#F1F5FA"/>
+<text x="858" y="240" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#40536F">0.28</text>
+
+<text x="104" y="368" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="650" fill="#243A60">Income</text>
+<rect x="340" y="341" width="430" height="24" rx="12" fill="#EAF0F7"/>
+<rect x="340" y="341" width="315.3" height="24" rx="12" fill="#4A93F2"/>
+<rect x="800" y="325" width="116" height="48" rx="24" fill="#F1F5FA"/>
+<text x="858" y="358" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#40536F">0.22</text>
+
+<text x="104" y="486" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="650" fill="#243A60">Credit Score</text>
+<rect x="340" y="459" width="430" height="24" rx="12" fill="#EAF0F7"/>
+<rect x="340" y="459" width="258.0" height="24" rx="12" fill="#66A6F5"/>
+<rect x="800" y="443" width="116" height="48" rx="24" fill="#F1F5FA"/>
+<text x="858" y="476" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#40536F">0.18</text>
+
+<text x="104" y="604" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="650" fill="#243A60">Tenure</text>
+<rect x="340" y="577" width="430" height="24" rx="12" fill="#EAF0F7"/>
+<rect x="340" y="577" width="172.0" height="24" rx="12" fill="#36A8C9"/>
+<rect x="800" y="561" width="116" height="48" rx="24" fill="#F1F5FA"/>
+<text x="858" y="594" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#40536F">0.12</text>
+
+<text x="104" y="722" font-family="Inter,Arial,sans-serif" font-size="28" font-weight="650" fill="#243A60">Balance</text>
+<rect x="340" y="695" width="430" height="24" rx="12" fill="#EAF0F7"/>
+<rect x="340" y="695" width="114.7" height="24" rx="12" fill="#19B99D"/>
+<rect x="800" y="679" width="116" height="48" rx="24" fill="#F1F5FA"/>
+<text x="858" y="712" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-size="25" font-weight="700" fill="#40536F">0.08</text>
+</svg>
