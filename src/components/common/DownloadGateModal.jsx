@@ -23,7 +23,7 @@ export default function DownloadGateModal({
     setError(null);
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+      const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
 
       // Verify pass directly or trigger Razorpay
       const res = await fetch(`${backendUrl}/careersense/download/verify-pass`, {

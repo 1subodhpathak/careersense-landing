@@ -47,7 +47,7 @@ export default function PricingPage() {
     if (!user) return;
     const fetchStatus = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
         const res = await fetch(`${backendUrl}/careersense/subscription/status?clerkId=${user.id}`);
         const data = await res.json();
         if (data.success) {
@@ -100,7 +100,7 @@ export default function PricingPage() {
         return;
       }
 
-      const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+      const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
 
       // 1. Create Razorpay Order
       const orderRes = await fetch(`${backendUrl}/careersense/subscription/create-order`, {
@@ -345,9 +345,8 @@ export default function PricingPage() {
           {/* Current Status Pill if Logged In */}
           {user && (
             <div className="mt-8 flex justify-center">
-              <div className={`inline-flex items-center gap-3 rounded-2xl border px-5 py-2.5 shadow-sm ${
-                isDark ? "border-slate-800 bg-[#0A2647] text-slate-200" : "border-slate-200 bg-white text-slate-800"
-              }`}>
+              <div className={`inline-flex items-center gap-3 rounded-2xl border px-5 py-2.5 shadow-sm ${isDark ? "border-slate-800 bg-[#0A2647] text-slate-200" : "border-slate-200 bg-white text-slate-800"
+                }`}>
                 <Zap className="h-5 w-5 text-amber-400 fill-amber-400" />
                 <span className="text-xs font-bold">
                   Active Plan: <span className="uppercase text-[#0EA8B9] font-black">{currentPlan}</span>
@@ -362,17 +361,15 @@ export default function PricingPage() {
 
           {/* Currency Toggle (INR vs USD) */}
           <div className="mt-5 flex justify-center">
-            <div className={`inline-flex items-center rounded-2xl border p-1 shadow-sm ${
-              isDark ? "border-slate-800 bg-[#0A2647]" : "border-slate-200 bg-white"
-            }`}>
+            <div className={`inline-flex items-center rounded-2xl border p-1 shadow-sm ${isDark ? "border-slate-800 bg-[#0A2647]" : "border-slate-200 bg-white"
+              }`}>
               <button
                 type="button"
                 onClick={() => setCurrency("INR")}
-                className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black transition-all ${
-                  currency === "INR"
+                className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black transition-all ${currency === "INR"
                     ? "bg-gradient-to-r from-[#0EA8B9] to-[#2563EB] text-white shadow-sm"
                     : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 <span>🇮🇳</span>
                 <span>INR (₹)</span>
@@ -380,11 +377,10 @@ export default function PricingPage() {
               <button
                 type="button"
                 onClick={() => setCurrency("USD")}
-                className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black transition-all ${
-                  currency === "USD"
+                className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black transition-all ${currency === "USD"
                     ? "bg-gradient-to-r from-[#0EA8B9] to-[#2563EB] text-white shadow-sm"
                     : isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 <span>🇺🇸</span>
                 <span>USD ($)</span>
@@ -403,13 +399,12 @@ export default function PricingPage() {
                 <div
                   key={plan.id}
                   id={plan.id === "intern" ? "intern-card" : undefined}
-                  className={`relative flex flex-col justify-between rounded-3xl border p-6 transition-all duration-300 hover:-translate-y-1 ${
-                    plan.popular
+                  className={`relative flex flex-col justify-between rounded-3xl border p-6 transition-all duration-300 hover:-translate-y-1 ${plan.popular
                       ? "border-[#0EA8B9] shadow-[0_12px_40px_rgba(14,168,185,0.2)] ring-1 ring-[#0EA8B9]/30"
                       : isDark
-                      ? "border-slate-800 bg-[#0A2647]/80"
-                      : "border-slate-200 bg-white shadow-sm"
-                  } ${isDark ? "bg-[#0A2647]/90" : "bg-white"}`}
+                        ? "border-slate-800 bg-[#0A2647]/80"
+                        : "border-slate-200 bg-white shadow-sm"
+                    } ${isDark ? "bg-[#0A2647]/90" : "bg-white"}`}
                 >
                   {/* Top Badge */}
                   <div className="flex items-center justify-between">
@@ -458,22 +453,20 @@ export default function PricingPage() {
                         <button
                           type="button"
                           onClick={() => setPartnerBillingCycle("monthly")}
-                          className={`flex-1 rounded-md py-1.5 text-[10.5px] font-extrabold transition-all ${
-                            partnerBillingCycle === "monthly"
+                          className={`flex-1 rounded-md py-1.5 text-[10.5px] font-extrabold transition-all ${partnerBillingCycle === "monthly"
                               ? "bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 shadow-sm"
                               : "text-slate-400 hover:text-white"
-                          }`}
+                            }`}
                         >
                           {currency === "USD" ? "Monthly ($24.99)" : "Monthly (₹2,499)"}
                         </button>
                         <button
                           type="button"
                           onClick={() => setPartnerBillingCycle("half_yearly")}
-                          className={`flex-1 rounded-md py-1.5 text-[10.5px] font-extrabold transition-all ${
-                            partnerBillingCycle === "half_yearly"
+                          className={`flex-1 rounded-md py-1.5 text-[10.5px] font-extrabold transition-all ${partnerBillingCycle === "half_yearly"
                               ? "bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 shadow-sm"
                               : "text-slate-400 hover:text-white"
-                          }`}
+                            }`}
                         >
                           {currency === "USD" ? "6-Month ($99.99)" : "6-Month (₹10,000)"}
                         </button>
@@ -490,9 +483,8 @@ export default function PricingPage() {
                       <select
                         value={selectedFellowship}
                         onChange={(e) => setSelectedFellowship(e.target.value)}
-                        className={`mt-1.5 w-full rounded-lg border border-indigo-500/40 px-2.5 py-1.5 text-xs font-bold shadow-xs outline-hidden ${
-                          isDark ? "bg-[#061838] text-white" : "bg-white text-slate-900"
-                        }`}
+                        className={`mt-1.5 w-full rounded-lg border border-indigo-500/40 px-2.5 py-1.5 text-xs font-bold shadow-xs outline-hidden ${isDark ? "bg-[#061838] text-white" : "bg-white text-slate-900"
+                          }`}
                       >
                         <option value="data-analyst">Data Analyst Fellowship</option>
                         <option value="data-science">Data Science Fellowship</option>
@@ -528,9 +520,8 @@ export default function PricingPage() {
                     type="button"
                     onClick={() => !isCurrent && handleUpgrade(plan.id)}
                     disabled={isCurrent || loadingPlan}
-                    className={`flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-xs font-black transition-all ${
-                      isCurrent ? "bg-slate-700/40 text-slate-400 cursor-default" : plan.buttonStyle
-                    }`}
+                    className={`flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-xs font-black transition-all ${isCurrent ? "bg-slate-700/40 text-slate-400 cursor-default" : plan.buttonStyle
+                      }`}
                   >
                     <span>{isCurrent ? "Current Plan Active" : plan.buttonText}</span>
                     {!isCurrent && <ArrowRight className="h-3.5 w-3.5" />}
@@ -546,9 +537,8 @@ export default function PricingPage() {
       {/* CUSTOM PAYMENT RESULT MODAL */}
       {modalConfig.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md transition-all animate-in fade-in duration-200">
-          <div className={`relative w-full max-w-md overflow-hidden rounded-3xl border p-6 sm:p-8 shadow-2xl transition-all ${
-            isDark ? "border-cyan-500/30 bg-[#081836] text-white" : "border-slate-200 bg-white text-slate-900"
-          }`}>
+          <div className={`relative w-full max-w-md overflow-hidden rounded-3xl border p-6 sm:p-8 shadow-2xl transition-all ${isDark ? "border-cyan-500/30 bg-[#081836] text-white" : "border-slate-200 bg-white text-slate-900"
+            }`}>
 
             <button
               type="button"

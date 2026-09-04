@@ -263,7 +263,7 @@ export default function DashboardPage() {
     if (!user?.id) return;
     const fetchUserSub = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
         const res = await fetch(`${backendUrl}/careersense/subscription/status?clerkId=${user.id}`);
         const data = await res.json();
         if (data.success) {
@@ -535,7 +535,7 @@ export default function DashboardPage() {
       setServerLedgerLoading(true);
       try {
         const token = await getToken();
-        const apiBase = import.meta.env.VITE_API_URL || "http://localhost:4000";
+        const apiBase = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
         const response = await fetch(`${apiBase}/careersense/dashboard/summary`, {
           headers: {
             "Authorization": `Bearer ${token}`
