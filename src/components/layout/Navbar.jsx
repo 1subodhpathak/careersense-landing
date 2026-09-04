@@ -56,7 +56,7 @@ function SubscriptionProfilePage() {
     if (!user?.id) return;
     const fetchStatus = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
         const res = await fetch(`${backendUrl}/careersense/subscription/status?clerkId=${user.id}`);
         if (res.ok) {
           const data = await res.json();
@@ -185,7 +185,7 @@ function BillingProfilePage() {
     if (!user?.id) return;
     const fetchLedger = async () => {
       try {
-        const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
+        const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
         const res = await fetch(`${backendUrl}/careersense/subscription/ledger?clerkId=${user.id}`);
         if (res.ok) {
           const data = await res.json();
