@@ -40,6 +40,7 @@ export default function FinalCTASection() {
             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Link
                 to="/career-gps"
+                onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "auto" })}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-5 py-3 text-[13px] font-bold text-white shadow-[0_18px_36px_rgba(37,99,235,0.24)] transition hover:brightness-105"
               >
                 Start Free Career Check <ArrowRight size={14} />

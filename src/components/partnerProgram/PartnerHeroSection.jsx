@@ -3,7 +3,8 @@ import heroImg from "../../Assets/partnerProgram/hero_section.png";
 import heroDarkImg from "../../Assets/partnerProgram/hero-dark.png";
 import { CheckCircle2, ArrowRight, PlayCircle } from "lucide-react";
 
-const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerSense%20Partner%20Program%20Application&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AName%3A%0ACollege%20%2F%20Company%3A%0ALocation%3A%0AArea%20of%20Interest%3A%0ALinkedIn%3A%0A";
+// const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerSense%20Partner%20Program%20Application&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AName%3A%0ACollege%20%2F%20Company%3A%0ALocation%3A%0AArea%20of%20Interest%3A%0ALinkedIn%3A%0A";
+const DEFAULT_APPLY_LINK = "/pricing";
 
 const passBenefits = [
   "500,000 Credits / Month",
@@ -15,11 +16,10 @@ const passBenefits = [
 
 function PartnerPassCard({ isDark }) {
   return (
-    <div className={`rounded-[22px] border p-4 shadow-[0_24px_60px_rgba(7,26,56,0.22)] backdrop-blur-md sm:p-5 ${
-      isDark
-        ? "border-cyan-500/50 bg-[#071A38]/95 text-white"
-        : "border-cyan-200/80 bg-white/95 text-[#071536]"
-    }`}>
+    <div className={`rounded-[22px] border p-4 shadow-[0_24px_60px_rgba(7,26,56,0.22)] backdrop-blur-md sm:p-5 ${isDark
+      ? "border-cyan-500/50 bg-[#071A38]/95 text-white"
+      : "border-cyan-200/80 bg-white/95 text-[#071536]"
+      }`}>
       <div className="grid gap-4 sm:grid-cols-2 sm:items-center">
         <div className={`sm:border-r-2 sm:pr-5 ${isDark ? "sm:border-white/20" : "sm:border-slate-300"}`}>
           <p className="text-[10px] font-black uppercase tracking-[0.13em] text-[#0EA8B9]">
@@ -119,8 +119,6 @@ export default function PartnerHeroSection({ applyLink = DEFAULT_APPLY_LINK, isD
           <div className="mt-8 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 sm:gap-4">
             <a
               href={applyLink}
-              target="_blank"
-              rel="noreferrer"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0EA8B9] to-[#2563EB] px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#0EA8B9]/25 transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 text-center"
             >
               <span>Apply Now & Become a Partner</span>
@@ -130,11 +128,10 @@ export default function PartnerHeroSection({ applyLink = DEFAULT_APPLY_LINK, isD
             <button
               type="button"
               onClick={() => scrollToSection("journey")}
-              className={`inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-3.5 text-sm font-bold shadow-xs transition ${
-                isDark
-                  ? "border-slate-700 bg-[#0A2647] text-white hover:bg-[#0E355E] hover:border-slate-600"
-                  : "border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900"
-              }`}
+              className={`inline-flex items-center justify-center gap-2 rounded-xl border px-5 py-3.5 text-sm font-bold shadow-xs transition ${isDark
+                ? "border-slate-700 bg-[#0A2647] text-white hover:bg-[#0E355E] hover:border-slate-600"
+                : "border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 hover:text-slate-900"
+                }`}
             >
               <PlayCircle className="h-4.5 w-4.5 text-[#0EA8B9] shrink-0" />
               <span>Explore Program</span>

@@ -2,7 +2,8 @@ import React from "react";
 import teamPhoto from "../../Assets/partnerProgram/team_photo.png";
 import { ArrowRight, Rocket } from "lucide-react";
 
-const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerSense%20Partner%20Program%20Application&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AName%3A%0ACollege%20%2F%20Company%3A%0ALocation%3A%0AArea%20of%20Interest%3A%0ALinkedIn%3A%0A";
+// const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerSense%20Partner%20Program%20Application&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AName%3A%0ACollege%20%2F%20Company%3A%0ALocation%3A%0AArea%20of%20Interest%3A%0ALinkedIn%3A%0A";
+const DEFAULT_APPLY_LINK = "/pricing";
 
 export default function PartnerCtaSection({ applyLink = DEFAULT_APPLY_LINK, isDark = false }) {
   return (
@@ -41,8 +42,6 @@ export default function PartnerCtaSection({ applyLink = DEFAULT_APPLY_LINK, isDa
             <div className="lg:col-span-3 flex justify-center lg:justify-end">
               <a
                 href={applyLink}
-                target="_blank"
-                rel="noreferrer"
                 className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#0EA8B9] to-[#2563EB] px-6 py-3.5 text-xs font-black text-white shadow-xl shadow-cyan-500/20 transition hover:-translate-y-0.5 text-center"
               >
                 <span>Apply for the Partner Program</span>

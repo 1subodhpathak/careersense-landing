@@ -276,6 +276,132 @@ export default function DashboardPage() {
     fetchUserSub();
   }, [user?.id]);
 
+  const [tokenAddonLoading, setTokenAddonLoading] = useState(false);
+  const [tokenModalConfig, setTokenModalConfig] = useState({
+    isOpen: false,
+    type: "success",
+    title: "",
+    message: "",
+    newBalance: 0
+  });
+
+  const handleBuyTokenAddon = async () => {
+    if (!user) return;
+    setTokenAddonLoading(true);
+    try {
+      const isLoaded = await new Promise((resolve) => {
+        if (window.Razorpay) return resolve(true);
+        const script = document.createElement("script");
+        script.src = "https://checkout.razorpay.com/v1/checkout.js";
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.body.appendChild(script);
+      });
+
+      if (!isLoaded) {
+        setTokenModalConfig({
+          isOpen: true,
+          type: "error",
+          title: "Connection Error",
+          message: "Failed to load Razorpay payment SDK. Please check your internet connection and try again.",
+        });
+        setTokenAddonLoading(false);
+        return;
+      }
+
+      const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
+
+      const orderRes = await fetch(`${backendUrl}/careersense/subscription/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clerkId: user.id,
+          planKey: "token_addon",
+        }),
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderData.success) {
+        setTokenModalConfig({
+          isOpen: true,
+          type: "error",
+          title: "Order Error",
+          message: orderData.message || "Failed to create payment order.",
+        });
+        setTokenAddonLoading(false);
+        return;
+      }
+
+      const options = {
+        key: orderData.keyId || import.meta.env.VITE_CAREERSENSE_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "CareerSense AI",
+        description: "50,000 AI Tokens Add-On",
+        order_id: orderData.orderId,
+        prefill: {
+          name: user.fullName || user.firstName || "CareerSense User",
+          email: user.primaryEmailAddress?.emailAddress || "",
+        },
+        theme: { color: "#F59E0B" },
+        handler: async function (response) {
+          try {
+            const verifyRes = await fetch(`${backendUrl}/careersense/subscription/verify-payment`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                clerkId: user.id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                planKey: "token_addon",
+              }),
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.success) {
+              setUserSub(verifyData);
+              setTokenModalConfig({
+                isOpen: true,
+                type: "success",
+                title: "Payment Successful!",
+                message: "🎉 50,000 AI Tokens have been successfully added to your balance.",
+                newBalance: verifyData.tokensRemaining,
+              });
+            } else {
+              setTokenModalConfig({
+                isOpen: true,
+                type: "error",
+                title: "Verification Failed",
+                message: verifyData.message || "Payment verification failed.",
+              });
+            }
+          } catch (err) {
+            console.error("Token add-on verification error:", err);
+            setTokenModalConfig({
+              isOpen: true,
+              type: "error",
+              title: "Verification Error",
+              message: "An error occurred while verifying your payment.",
+            });
+          } finally {
+            setTokenAddonLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setTokenAddonLoading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      console.error("Token add-on order error:", err);
+      setTokenAddonLoading(false);
+    }
+  };
+
   // Master Profile Form State
   const [profileForm, setProfileForm] = useState({
     fullName: "",
@@ -2275,16 +2401,53 @@ export default function DashboardPage() {
         const letterCount = dashboardData?.coverLetter?.savedLetters?.length || 0;
 
         const tokenAllowanceMap = { free: "10,000 One-Time", student: "100,000 / Mo", intern: "500,000 / Mo", partner: "1,000,000 / Mo" };
+        const subEndDateFormatted = userPlan === "free"
+          ? "Lifetime Free Access"
+          : userSub.planExpiresAt
+          ? `End Date: ${new Date(userSub.planExpiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+          : userSub.tokenRenewalDate
+          ? `End Date: ${new Date(userSub.tokenRenewalDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+          : "Active Subscription";
+
         return {
           title: "Infrastructure Tokens & Billing Ledger",
           subtitle: "Verify computational quota allocations and clear transaction operational history.",
           stats: [
             { label: "AI Tokens Remaining", value: `${(userSub.tokensRemaining || 10000).toLocaleString()}`, status: "Reverse countdown balance", color: "text-amber-600", bg: "bg-amber-50", icon: <Zap size={16} fill="currentColor" /> },
-            { label: "Active Operational Tier", value: `${userPlan.toUpperCase()} Plan`, status: "CareerSense subscription", color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
+            { label: "Active Operational Tier", value: `${userPlan.toUpperCase()} Plan`, status: subEndDateFormatted, color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
             { label: "Monthly Token Allowance", value: tokenAllowanceMap[userPlan] || "10,000", status: userPlan === "free" ? "One-Time Allocation" : "Monthly Auto-Renewal", color: "text-emerald-600", bg: "bg-emerald-50", icon: <ShieldCheck size={16} /> }
           ],
           renderExtra: () => (
             <div className="space-y-6 mt-6">
+              {/* Quick Token Top-Up Banner */}
+              <div className="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-600/10 border border-amber-500/30 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="h-11 w-11 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-600 shrink-0">
+                    <Zap className="h-6 w-6 fill-amber-500" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-black text-slate-900">Need Extra AI Tokens?</h4>
+                      <span className="bg-amber-500/20 text-amber-700 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md border border-amber-500/30">
+                        Token Add-On
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium mt-0.5">
+                      Get <strong className="text-slate-800">50,000 additional AI tokens</strong> added directly to your current balance for just <strong className="text-amber-600">₹99 ($1)</strong>.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleBuyTokenAddon()}
+                  disabled={tokenAddonLoading}
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 px-5 py-2.5 text-xs font-black text-white shadow-md shadow-amber-500/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                >
+                  {tokenAddonLoading ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : <Zap className="h-4 w-4 fill-white" />}
+                  <span>Buy 50,000 Tokens (₹99)</span>
+                </button>
+              </div>
+
               {/* Site Sumup Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
@@ -2850,16 +3013,14 @@ export default function DashboardPage() {
         </div>
 
         {(activeTab === "Resume Builder" || activeTab === "Interview Practice") && (() => {
-          // Compute a stable launch date: 28 days from the fixed reference (today at midnight UTC)
-          const LAUNCH_DATES = {
-            "Resume Builder": (() => {
-              const d = new Date(); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 28); return d;
-            })(),
-            "Interview Practice": (() => {
-              const d = new Date(); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 28); return d;
-            })()
+          // Resolution dates:
+          // Resume Builder: 10th September 2026
+          // Interview Practice: 25th September 2026
+          const TARGET_DATES = {
+            "Resume Builder": new Date(2026, 8, 10, 0, 0, 0),
+            "Interview Practice": new Date(2026, 8, 25, 0, 0, 0)
           };
-          const launchDate = LAUNCH_DATES[activeTab];
+          const launchDate = TARGET_DATES[activeTab];
           const diff = Math.max(0, launchDate - currentTime);
           const days = Math.floor(diff / (1000 * 60 * 60 * 24));
           const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -2867,31 +3028,34 @@ export default function DashboardPage() {
           const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
           const isResume = activeTab === "Resume Builder";
-          const accentColor = isResume ? "from-blue-600 to-indigo-600" : "from-violet-600 to-purple-600";
-          const accentBg = isResume ? "bg-blue-50" : "bg-violet-50";
-          const accentText = isResume ? "text-blue-600" : "text-violet-600";
-          const accentBorder = isResume ? "border-blue-100" : "border-violet-100";
-          const Icon = isResume ? FileText : MessageSquareText;
+          const accentColor = isResume ? "from-amber-600 to-orange-600" : "from-violet-600 to-purple-600";
+          const accentBg = isResume ? "bg-amber-50" : "bg-violet-50";
+          const accentText = isResume ? "text-amber-600" : "text-violet-600";
+          const accentBorder = isResume ? "border-amber-200" : "border-violet-200";
+          const Icon = isResume ? AlertTriangle : MessageSquareText;
 
           return (
-            <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/20 backdrop-blur-[3px]">
+            <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-[4px]">
               <div className="bg-white border border-slate-200/80 rounded-2xl p-8 shadow-2xl max-w-md w-full text-center relative z-50 mx-4" style={{ boxShadow: "0 32px 64px rgba(15,23,42,0.18)" }}>
                 {/* Icon badge */}
                 <div className={`h-14 w-14 rounded-2xl ${accentBg} ${accentText} flex items-center justify-center mx-auto mb-5 border ${accentBorder}`}>
                   <Icon size={26} />
                 </div>
 
-                {/* Gradient label */}
-                <span className={`inline-block bg-gradient-to-r ${accentColor} bg-clip-text text-transparent text-xs font-black uppercase tracking-widest mb-2`}>
-                  Coming Soon
+                {/* Maintenance Badge */}
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300/80 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-amber-900 mb-3 shadow-2xs">
+                  <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                  Under Maintenance
                 </span>
 
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                  {activeTab} is almost here
+                  {activeTab} Under Maintenance
                 </h3>
                 <p className="text-slate-500 text-xs mt-2 mb-6 leading-relaxed max-w-xs mx-auto">
-                  We're building an intelligent AI-powered workspace for this module.
-                  Launching in exactly:
+                  {isResume 
+                    ? "We are upgrading the AI Resume Builder workspace to serve you better."
+                    : "We are enhancing our AI Interview Simulator with advanced feedback models."}
+                  <br />Expected resolution in:
                 </p>
 
                 {/* Countdown boxes */}
@@ -2902,21 +3066,77 @@ export default function DashboardPage() {
                     { label: "Mins", value: String(mins).padStart(2, "0") },
                     { label: "Secs", value: String(secs).padStart(2, "0") }
                   ].map(({ label, value }) => (
-                    <div key={label} className={`rounded-xl border ${accentBorder} ${accentBg} p-3 flex flex-col items-center`}>
+                    <div key={label} className={`rounded-xl border ${accentBorder} ${accentBg} p-3 flex flex-col items-center shadow-2xs`}>
                       <span className={`text-2xl font-black tabular-nums ${accentText}`}>{value}</span>
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{label}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* Launch date */}
-                <p className="text-[11px] text-slate-400 font-semibold">
-                  Estimated launch: <span className="text-slate-600 font-bold">{launchDate.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}</span>
+                {/* Resolution date */}
+                <p className="text-[11.5px] text-slate-400 font-semibold">
+                  Expected Resolution Date: <span className="text-slate-800 font-bold">{isResume ? "September 10, 2026" : "September 25, 2026"}</span>
                 </p>
               </div>
             </div>
           );
         })()}
+
+        {/* CUSTOM TOKEN ADD-ON RESULT MODAL */}
+        {tokenModalConfig.isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm transition-all animate-in fade-in duration-200">
+            <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 text-slate-900 shadow-2xl transition-all">
+              <button
+                type="button"
+                onClick={() => setTokenModalConfig({ ...tokenModalConfig, isOpen: false })}
+                className="absolute right-4 top-4 rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors cursor-pointer"
+              >
+                <X size={20} />
+              </button>
+
+              <div className="flex flex-col items-center text-center">
+                {tokenModalConfig.type === "success" ? (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 shadow-lg shadow-emerald-500/10">
+                    <CheckCircle2 size={36} />
+                  </div>
+                ) : (
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 shadow-lg shadow-rose-500/10">
+                    <AlertCircle size={36} />
+                  </div>
+                )}
+
+                <h3 className="mt-4 text-2xl font-black tracking-tight text-slate-900">
+                  {tokenModalConfig.title}
+                </h3>
+
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {tokenModalConfig.message}
+                </p>
+
+                {tokenModalConfig.type === "success" && (
+                  <div className="mt-5 w-full rounded-2xl border border-amber-200/80 bg-amber-50/70 p-4 text-left">
+                    <div className="flex justify-between items-center text-xs font-bold border-b border-amber-200/60 pb-2">
+                      <span className="text-slate-500">Tokens Added:</span>
+                      <span className="text-amber-600 font-black">+50,000 AI Tokens</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs font-bold pt-2">
+                      <span className="text-slate-500">New Total Balance:</span>
+                      <span className="text-slate-900 font-black">{(tokenModalConfig.newBalance || userSub.tokensRemaining).toLocaleString()} Tokens</span>
+                    </div>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setTokenModalConfig({ ...tokenModalConfig, isOpen: false })}
+                  className="mt-6 w-full rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 py-3.5 text-xs font-black text-white shadow-lg shadow-amber-500/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                >
+                  Got It!
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </section>
     </main>

@@ -59,7 +59,7 @@ export default function CollegesSection() {
                 onClick={() => setIsPartnershipModalOpen(true)}
                 className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-5 py-3 text-[13px] font-bold text-white shadow-[0_18px_36px_rgba(37,99,235,0.24)] transition hover:brightness-105"
               >
-                Partner With CareerSense <ArrowRight size={14} />
+                Connect With CareerSense Team <ArrowRight size={14} />
               </button>
               <button
                 type="button"
@@ -71,7 +71,7 @@ export default function CollegesSection() {
             </div>
           </div>
           <div className="overflow-hidden rounded-[20px] bg-[#0a1d45] p-6 text-white shadow-[0_20px_40px_rgba(15,23,42,0.16)]">
-          
+
             <h3 className="mt-5 text-[24px] font-black leading-tight tracking-tight text-Black md:text-[24px]">
               College{" "}
               <span className="bg-gradient-to-r from-cyan-700 via-teal-600 to-blue-400 bg-clip-text text-transparent">
