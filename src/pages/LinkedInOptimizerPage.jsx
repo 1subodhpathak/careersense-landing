@@ -286,7 +286,6 @@ export default function LinkedInOptimizerPage() {
     return () => delete document.documentElement.dataset.linkedinOptimizerTheme;
   }, [heroTheme]);
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, results, generated })); }, [values, results, generated]);
-  useEffect(() => { window.scrollTo({ top: 0, behavior: "smooth" }); }, [active]);
 
   const completed = useMemo(() => new Set([...Object.keys(results), ...Object.entries(generated).filter(([, list]) => list.length).map(([key]) => key)]), [results, generated]);
 

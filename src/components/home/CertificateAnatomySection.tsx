@@ -4,6 +4,7 @@ import shagunSignature from '../../Assets/ShagunSignature.png';
 import csSeal from '../../Assets/CSSeal.png';
 import csWatermark from '../../Assets/CSWatermark4.png';
 import barcodeImage from '../../Assets/Barcode.png';
+import CSLogo from "../../Assets/Logo.png";
 
 const globalStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@400;500;600;700;800&display=swap');
@@ -27,10 +28,10 @@ export default function InteractiveCertificateAnatomy() {
       {/* Certificate Render Frame */}
       <div className="relative z-10 w-full max-w-[920px] overflow-visible shadow-2xl">
         <div className="aspect-[1.02/1] w-full bg-[#fdfdfc] p-2 sm:aspect-[1.414/1] sm:p-4">
-          
+
           {/* Outer Thick Beige Border */}
           <div className="relative flex h-full flex-col justify-between border-[5px] border-[#d8c8b0] bg-white p-1.5 sm:p-2">
-            
+
             {/* Inner Thin Border */}
             <div className="pointer-events-none absolute inset-2 border-[1.5px] border-[#d8c8b0]/70" />
 
@@ -54,7 +55,7 @@ export default function InteractiveCertificateAnatomy() {
                 className="group h-full w-full cursor-help rounded-full bg-transparent focus:outline-none"
                 aria-label="Security Watermark information"
               >
-                <Tooltip 
+                <Tooltip
                   title="Security Watermark"
                   what="A subtle, embedded background layer that sits inside the certificate artwork."
                   why="It acts as a visual anti-tamper marker, helps the credential feel official, and makes the document harder to replicate cleanly."
@@ -64,13 +65,14 @@ export default function InteractiveCertificateAnatomy() {
             </div>
 
             {/* Content Container */}
-              <div className="relative z-10 flex h-full flex-col justify-between px-2.5 py-2.5 sm:px-8 sm:py-6">
-              
+            <div className="relative z-10 flex h-full flex-col justify-between px-2.5 py-2.5 sm:px-8 sm:py-6">
+
               {/* Header */}
               <div className="relative z-30 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="group relative flex cursor-help items-start gap-2.5 sm:items-center sm:gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-[#0F203C] sm:h-11 sm:w-11">
-                    <ShieldCheck className="h-4 w-4 text-[#d8c8b0] stroke-[1.5] sm:h-5 sm:w-5" />
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center sm:h-11 sm:w-11">
+                    {/* <ShieldCheck className="h-4 w-4 text-[#d8c8b0] stroke-[1.5] sm:h-5 sm:w-5" /> */}
+                    <img src={CSLogo} alt="CareerSense Logo" className="h-12 w-12 object-contain" />
                   </div>
                   <div className="min-w-0">
                     <div className="text-[0.72rem] font-medium tracking-[0.03em] text-[#0F203C] sm:text-[1.15rem] sm:tracking-[0.08em]" style={{ fontFamily: 'Libre Baskerville, serif' }}>
@@ -93,7 +95,7 @@ export default function InteractiveCertificateAnatomy() {
                   <div className="text-[4.5px] font-bold uppercase tracking-[0.16em] text-[#8e95a3] sm:text-[7px] sm:tracking-[0.2em]">Document Control</div>
                   <div className="mt-0.5 text-[7px] font-bold text-[#0F203C] sm:mt-1 sm:text-[11px]">ID: CS-966541</div>
                   <div className="mt-0.5 text-[5px] font-semibold tracking-[0.03em] text-[#c0a273] sm:text-[8px]">Secure Transcript Verified</div>
-                  <Tooltip 
+                  <Tooltip
                     title="Credential ID"
                     what="A unique record number tied specifically to this issued certificate."
                     why="Ensures every document can be traced back to its immutable ledger entry to prevent fraud."
@@ -156,7 +158,7 @@ export default function InteractiveCertificateAnatomy() {
                 <MetricCell label="Confidence" value="94%" />
                 <div className="my-1.5 w-px bg-slate-200 sm:my-2"></div>
                 <MetricCell label="Trust Score" value="100%" />
-                <Tooltip 
+                <Tooltip
                   title="Evaluation Metrics"
                   what="Verified scores outputting performance, confidence, and proctoring trust levels."
                   why="Proves the credential is based on actual, audited performance—not just participation."
@@ -182,7 +184,7 @@ export default function InteractiveCertificateAnatomy() {
                   {/* Interactive Academy Seal */}
                   <div className="group relative cursor-help transition-transform hover:scale-105">
                     <img src={csSeal} alt="CareerSense Seal" className="h-[28px] w-[28px] object-contain drop-shadow-md sm:h-[76px] sm:w-[76px]" />
-                    <Tooltip 
+                    <Tooltip
                       title="Academy Seal"
                       what="The formal insignia of the CareerSense ecosystem."
                       why="Adds institutional trust and visually validates that the certificate was formally audited and issued."
@@ -192,12 +194,12 @@ export default function InteractiveCertificateAnatomy() {
 
                   {/* Interactive Verification Barcode */}
                   <div className="group relative cursor-help transition-transform hover:scale-105">
-                    <img 
-                      src={barcodeImage} 
-                      alt="Verification Barcode" 
-                      className="h-7 w-7 object-contain sm:h-14 sm:w-14" 
+                    <img
+                      src={barcodeImage}
+                      alt="Verification Barcode"
+                      className="h-7 w-7 object-contain sm:h-14 sm:w-14"
                     />
-                    <Tooltip 
+                    <Tooltip
                       title="Verification Barcode"
                       what="A scannable digital gateway to the live credential."
                       why="Lets any recruiter or institution instantly validate the credential's authenticity from a public verification page."
@@ -242,17 +244,17 @@ function MetricCell({ label, value }) {
 
 function Tooltip({ title, what, why, positionClasses }) {
   return (
-    <div 
+    <div
       className={`invisible absolute z-50 w-56 sm:w-64 md:w-72 rounded-xl bg-[#0F203C] p-4 text-left opacity-0 shadow-2xl ring-1 ring-white/10 transition-all duration-300 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${positionClasses}`}
     >
       <p className="text-[10px] font-black uppercase tracking-widest text-[#d8c8b0]">{title}</p>
       <div className="mt-3 space-y-2.5">
         <p className="text-[12px] font-medium leading-relaxed text-slate-300 sm:text-[13px]">
-          <strong className="text-white">What it is: </strong> 
+          <strong className="text-white">What it is: </strong>
           {what}
         </p>
         <p className="text-[12px] font-medium leading-relaxed text-slate-300 sm:text-[13px]">
-          <strong className="text-white">Why it matters: </strong> 
+          <strong className="text-white">Why it matters: </strong>
           {why}
         </p>
       </div>

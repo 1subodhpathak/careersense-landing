@@ -804,6 +804,7 @@ export default function GpsResults({
   }
 
   async function handleDownloadPdf() {
+    /* PDF generation temporarily disabled for UI updates
     setIsGeneratingPdf(true);
     try {
       const pdfRoot = document.getElementById("pdfRootHtml");
@@ -831,6 +832,11 @@ export default function GpsResults({
     } finally {
       setIsGeneratingPdf(false);
     }
+    */
+    setComingSoonPhase({
+      tool: "Career Readiness PDF Report",
+      launchAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString()
+    });
   }
 
   return (

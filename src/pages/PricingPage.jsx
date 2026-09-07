@@ -165,8 +165,10 @@ export default function PricingPage() {
               setModalConfig({
                 isOpen: true,
                 type: "success",
-                title: "Payment Successful!",
-                message: `🎉 Congratulations! You have activated the ${targetPlan.toUpperCase()} Plan.`,
+                title: targetPlan === "token_addon" ? "Tokens Added Successfully!" : "Payment Successful!",
+                message: targetPlan === "token_addon"
+                  ? "🎉 50,000 AI Tokens have been successfully added to your balance."
+                  : `🎉 Congratulations! You have activated the ${targetPlan.toUpperCase()} Plan.`,
                 planKey: verifyData.plan,
                 tokensRemaining: verifyData.tokensRemaining,
               });
@@ -529,6 +531,46 @@ export default function PricingPage() {
                 </div>
               );
             })}
+          </div>
+
+          {/* --- TOKENS ADD-ON SERVICE SECTION --- */}
+          <div className="mt-12 rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-orange-500/5 to-amber-900/10 p-6 sm:p-8 shadow-xl relative overflow-hidden">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-inner">
+                  <Zap className="h-8 w-8 fill-amber-400" />
+                </div>
+                <div>
+                  <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-0.5 text-[10px] font-black uppercase tracking-widest text-amber-400">
+                    Instant Top-Up Service
+                  </div>
+                  <h3 className={`mt-2 text-2xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    50,000 AI Tokens Add-On
+                  </h3>
+                  <p className={`mt-1 text-sm font-medium leading-relaxed max-w-xl ${isDark ? "text-slate-300" : "text-slate-600"}`}>
+                    Need extra computation tokens for ATS Scans, Resume Generation, or Practice Hub? Purchase 50,000 tokens instantly without changing your subscription tier.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 w-full md:w-auto">
+                <div className="text-center md:text-right">
+                  <div className={`text-3xl font-black tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+                    {currency === "USD" ? "$1" : "₹99"}
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-400">One-Time Purchase</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleUpgrade("token_addon")}
+                  disabled={loadingPlan}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-6 py-3.5 text-xs font-black text-slate-950 shadow-lg shadow-amber-500/20 hover:brightness-110 active:scale-95 transition-all cursor-pointer"
+                >
+                  <Zap className="h-4 w-4 fill-slate-950" />
+                  <span>Buy 50,000 Tokens ({currency === "USD" ? "$1" : "₹99"})</span>
+                </button>
+              </div>
+            </div>
           </div>
 
         </div>

@@ -3,7 +3,8 @@ import { ArrowRight, BadgeCheck, CalendarRange, FileCheck2, FlipHorizontal2, Glo
 import { Link } from "react-router-dom";
 import CSLogo from "../../Assets/CSlogo.png";
 
-export const partnerApplicationLink = "mailto:support.careersense@gmail.com?subject=Application%20for%20CareerSense%20Partner%20Program&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AFull%20Name%3A%0ALocation%3A%0ACurrent%20Role%20or%20College%3A%0AArea%20of%20Interest%3A%0ALinkedIn%20Profile%3A%0A%0AThank%20you.";
+// export const partnerApplicationLink = "mailto:support.careersense@gmail.com?subject=Application%20for%20CareerSense%20Partner%20Program&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AFull%20Name%3A%0ALocation%3A%0ACurrent%20Role%20or%20College%3A%0AArea%20of%20Interest%3A%0ALinkedIn%20Profile%3A%0A%0AThank%20you.";
+export const partnerApplicationLink = "/partner-program"
 
 function MiniLogo({ inverse = false }) {
   return (
@@ -33,7 +34,7 @@ function MiniDetail({ icon: Icon, label, value }) {
 
 function SamplePartnerCard() {
   const [face, setFace] = useState("front");
-  
+
   return (
     <div className="relative z-10 flex w-full flex-col items-center pt-8">
       {/* Concentric Decorative Rings */}
@@ -46,25 +47,25 @@ function SamplePartnerCard() {
       {/* 3D Card */}
       <div className="partner-card-float relative z-10 h-[300px] w-[188px] [perspective:1000px]">
         <div className={`relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d] ${face === "back" ? "[transform:rotateY(180deg)]" : ""}`}>
-          
+
           {/* Front of Card */}
           <div className="absolute inset-0 overflow-hidden rounded-[17px] bg-[#06284c] shadow-[0_30px_60px_rgba(8,45,87,.3)] [backface-visibility:hidden]">
             <div className="relative h-[121px] bg-[#f9fbfd] p-4">
               <MiniLogo />
               <div className="absolute -bottom-7 left-1/2 h-20 w-[238px] -translate-x-1/2 rounded-[50%] bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-600" />
               <div className="absolute -bottom-5 left-1/2 h-[70px] w-[232px] -translate-x-1/2 rounded-[50%] bg-[#06284c]" />
-              
+
               {/* Photo Avatar instead of "S" */}
               <div className="absolute -bottom-11 left-1/2 h-[86px] w-[86px] -translate-x-1/2 overflow-hidden rounded-xl border-[3px] border-blue-500 bg-white shadow-lg">
-                <img 
-                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&h=200&q=80" 
-                  alt="Partner Profile" 
-                  className="h-full w-full object-cover" 
+                <img
+                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&h=200&q=80"
+                  alt="Partner Profile"
+                  className="h-full w-full object-cover"
                 />
                 <div className="absolute bottom-0 right-1 text-4xl font-black text-white/40 drop-shadow-md">S</div>
               </div>
             </div>
-            
+
             <div className="px-4 pb-3 pt-[50px]">
               <h3 className="text-center text-[13px] font-black uppercase text-white">Sample Partner</h3>
               <p className="mt-0.5 text-center text-[8px] font-bold text-teal-300">CareerSense Partner</p>
@@ -83,7 +84,7 @@ function SamplePartnerCard() {
             <div className="relative z-10 px-4 pt-4">
               <MiniLogo inverse />
               <div className="mt-7 text-center">
-                <h3 className="text-[19px] font-black uppercase leading-none text-white">Partner ID<br/>Card</h3>
+                <h3 className="text-[19px] font-black uppercase leading-none text-white">Partner ID<br />Card</h3>
                 <div className="mt-3 inline-flex rounded-md bg-gradient-to-r from-teal-400 to-cyan-300 px-3 py-1.5 text-[7px] font-black uppercase tracking-wider text-[#06284c]">Verified &amp; Active</div>
               </div>
             </div>
@@ -104,14 +105,14 @@ function SamplePartnerCard() {
       </div>
 
       {/* Elegant Bottom Toggle */}
-      <button 
-        type="button" 
-        onClick={() => setFace((current) => current === "front" ? "back" : "front")} 
+      <button
+        type="button"
+        onClick={() => setFace((current) => current === "front" ? "back" : "front")}
         aria-label="Toggle ID card face"
         className="mt-6 flex items-center gap-2 text-[13px] font-bold text-[#071a38] transition-colors hover:text-teal-600"
       >
-        <FlipHorizontal2 size={16} /> 
-        View Front | Back 
+        <FlipHorizontal2 size={16} />
+        View Front | Back
         <ArrowRight size={14} />
       </button>
     </div>
@@ -148,27 +149,27 @@ export default function PartnerProgramSection() {
           .partner-ring, .partner-card-float, .partner-status-pulse, .partner-network-drift { animation: none !important; }
         }
       `}</style>
-      
+
       {/* Unified Background Container */}
       <div className="relative mx-auto flex max-w-[1240px] flex-col items-center overflow-hidden rounded-[32px] bg-gradient-to-br from-[#e6f2f7] to-[#f0f8fa] p-8 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.6)] lg:flex-row lg:gap-16 lg:p-14">
         <div className="absolute right-5 top-5 z-30 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/85 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.12em] text-emerald-700 shadow-sm backdrop-blur-sm sm:right-7 sm:top-7">
           <span className="relative flex h-2.5 w-2.5 items-center justify-center"><span className="partner-status-pulse absolute h-2.5 w-2.5 rounded-full bg-emerald-400" /><span className="relative h-2 w-2 rounded-full bg-emerald-500" /></span>
           Active Now
         </div>
-        
+
         {/* Subtle Network & Dotted Background Overlays */}
         <div className="absolute left-0 top-0 h-full w-1/3 opacity-30" style={{ backgroundImage: "radial-gradient(rgba(14,116,144,.15) 1.5px, transparent 1.5px)", backgroundSize: "24px 24px" }} />
-        
+
         {/* Right side abstract graphic mimicking network/arrow */}
         <div className="partner-network-drift absolute right-0 top-0 h-full w-2/3 pointer-events-none overflow-hidden opacity-10">
-            <svg width="100%" height="100%" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
-              <path d="M100,500 L700,100 L700,300 M700,100 L500,100" stroke="#06b6d4" strokeWidth="60" fill="none" strokeLinejoin="round" strokeLinecap="round" />
-              <circle cx="200" cy="400" r="15" fill="#06b6d4" />
-              <circle cx="500" cy="250" r="25" fill="#06b6d4" />
-              <circle cx="650" cy="450" r="10" fill="#06b6d4" />
-              <line x1="200" y1="400" x2="500" y2="250" stroke="#06b6d4" strokeWidth="2" />
-              <line x1="500" y1="250" x2="650" y2="450" stroke="#06b6d4" strokeWidth="2" />
-            </svg>
+          <svg width="100%" height="100%" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+            <path d="M100,500 L700,100 L700,300 M700,100 L500,100" stroke="#06b6d4" strokeWidth="60" fill="none" strokeLinejoin="round" strokeLinecap="round" />
+            <circle cx="200" cy="400" r="15" fill="#06b6d4" />
+            <circle cx="500" cy="250" r="25" fill="#06b6d4" />
+            <circle cx="650" cy="450" r="10" fill="#06b6d4" />
+            <line x1="200" y1="400" x2="500" y2="250" stroke="#06b6d4" strokeWidth="2" />
+            <line x1="500" y1="250" x2="650" y2="450" stroke="#06b6d4" strokeWidth="2" />
+          </svg>
         </div>
 
         {/* Left Column: ID Card */}
@@ -178,11 +179,11 @@ export default function PartnerProgramSection() {
 
         {/* Right Column: Content */}
         <article className="relative z-10 flex w-full flex-col justify-center lg:w-[60%]">
-          
+
           <h4 className="text-[12px] font-bold uppercase tracking-[0.15em] text-teal-600">
             CareerSense Partner Program
           </h4>
-          
+
           {/* Glass-Pill Badges */}
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="rounded-full border border-slate-300/60 bg-white/50 px-4 py-1.5 text-[11px] font-bold uppercase tracking-wide text-[#071a38] backdrop-blur-sm">
@@ -195,15 +196,15 @@ export default function PartnerProgramSection() {
               Selected: <Check size={14} className="rounded-full bg-teal-100 p-[2px] text-teal-600" />
             </span>
           </div>
-          
+
           <h2 className="mt-6 text-[32px] font-black leading-[1.15] tracking-tight text-[#071a38] sm:text-[40px]">
             Work directly with CareerSense and build credible experience.
           </h2>
-          
+
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed text-slate-700">
             Contribute to live initiatives with guidance from the CareerSense leadership team. Selected Partners receive a verified ID and offer letter, with a relieving letter after successful program completion.
           </p>
-          
+
           {/* Feature List */}
           <div className="mt-7 flex flex-wrap gap-x-8 gap-y-3 text-[14px] font-bold text-[#071a38]">
             <span className="inline-flex items-center gap-2">
@@ -219,17 +220,17 @@ export default function PartnerProgramSection() {
               Structured contribution
             </span>
           </div>
-          
+
           {/* Buttons */}
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
-            <a 
-              href={partnerApplicationLink} 
+            <a
+              href={partnerApplicationLink}
               className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-8 text-[15px] font-bold text-white shadow-lg shadow-blue-500/20 transition-all hover:brightness-105 hover:shadow-xl"
             >
-              Apply Now <ArrowRight size={18} />
+              Start Now <ArrowRight size={18} />
             </a>
-            <Link 
-              to="/partner-program" 
+            <Link
+              to="/partner-program"
               onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "auto" })}
               className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-[14px] border border-slate-300 bg-white/40 px-8 text-[15px] font-bold text-[#071a38] backdrop-blur-md transition-all hover:bg-white/70"
             >

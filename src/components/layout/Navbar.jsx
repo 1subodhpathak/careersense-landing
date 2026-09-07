@@ -41,6 +41,19 @@ const fellowshipPrograms = [
   { id: "full-stack-development", href: "/fellowships/full-stack-development", label: "Full Stack Development", description: "React, Node.js and MongoDB", icon: Code2, tone: "text-amber-700 bg-amber-50" },
 ];
 
+const closeClerkModal = () => {
+  try {
+    const closeBtn = document.querySelector(
+      '.cl-modalCloseButton, .cl-userProfile-closeButton, button[aria-label="Close"], button[aria-label="Close dialog"]'
+    );
+    if (closeBtn) {
+      closeBtn.click();
+    }
+  } catch (err) {
+    console.error("Failed to close Clerk modal:", err);
+  }
+};
+
 function SubscriptionProfilePage() {
   const { user } = useUser();
   const [subData, setSubData] = useState({
@@ -95,10 +108,12 @@ function SubscriptionProfilePage() {
   ];
 
   const currentPlanKey = subData.plan || "free";
-  const renewalDateFormatted = subData.tokenRenewalDate
-    ? new Date(subData.tokenRenewalDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+  const expiryDateFormatted = currentPlanKey === "free"
+    ? "Lifetime Access"
     : subData.planExpiresAt
     ? new Date(subData.planExpiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+    : subData.tokenRenewalDate
+    ? new Date(subData.tokenRenewalDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
     : "No expiry";
 
   return (
@@ -128,8 +143,8 @@ function SubscriptionProfilePage() {
           <div className="flex items-center gap-3 rounded-xl border border-white bg-white/80 p-4">
             <Clock3 className="h-5 w-5 text-[#0EA8B9]" />
             <div>
-              <p className="text-xs font-bold text-[#667792]">Subscription Renewal</p>
-              <p className="mt-0.5 text-sm font-black">{renewalDateFormatted}</p>
+              <p className="text-xs font-bold text-[#667792]">Subscription End Date</p>
+              <p className="mt-0.5 text-sm font-black">{expiryDateFormatted}</p>
             </div>
           </div>
         </div>
@@ -138,7 +153,14 @@ function SubscriptionProfilePage() {
       <div className="mt-5">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-black">Available Plans</h3>
-          <Link to="/pricing" className="text-xs font-bold text-[#0EA8B9] hover:underline">
+          <Link
+            to="/pricing"
+            onClick={() => {
+              closeClerkModal();
+              window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+            }}
+            className="text-xs font-bold text-[#0EA8B9] hover:underline"
+          >
             View All Plans & Features →
           </Link>
         </div>
@@ -161,7 +183,14 @@ function SubscriptionProfilePage() {
                       Current
                     </span>
                   ) : (
-                    <Link to="/pricing" className="text-[10px] font-black text-[#0EA8B9] hover:underline">
+                    <Link
+                      to="/pricing"
+                      onClick={() => {
+                        closeClerkModal();
+                        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+                      }}
+                      className="text-[10px] font-black text-[#0EA8B9] hover:underline"
+                    >
                       Upgrade
                     </Link>
                   )}
@@ -343,7 +372,20 @@ function SupportProfilePage() {
         <a href="mailto:support.careersense@gmail.com" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-[#071536] px-4 py-3 text-sm font-extrabold text-white transition hover:bg-[#102753]"><Mail size={17} />Email support</a>
       </div>
       <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <a href="/#faq" className="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-cyan-300 hover:bg-cyan-50/30"><div className="flex items-center justify-between"><CircleHelp size={20} className="text-[#0EA8B9]" /><ExternalLink size={15} className="text-slate-400 group-hover:text-[#0EA8B9]" /></div><h3 className="mt-4 text-sm font-extrabold">Frequently asked questions</h3><p className="mt-1 text-xs leading-5 text-[#667792]">Find quick answers about CareerSense.</p></a>
+        <Link
+          to="/#faq"
+          onClick={() => {
+            closeClerkModal();
+          }}
+          className="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-cyan-300 hover:bg-cyan-50/30"
+        >
+          <div className="flex items-center justify-between">
+            <CircleHelp size={20} className="text-[#0EA8B9]" />
+            <ExternalLink size={15} className="text-slate-400 group-hover:text-[#0EA8B9]" />
+          </div>
+          <h3 className="mt-4 text-sm font-extrabold">Frequently asked questions</h3>
+          <p className="mt-1 text-xs leading-5 text-[#667792]">Find quick answers about CareerSense.</p>
+        </Link>
         <a href="mailto:support.careersense@gmail.com" className="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-cyan-300 hover:bg-cyan-50/30"><div className="flex items-center justify-between"><LifeBuoy size={20} className="text-[#0EA8B9]" /><ExternalLink size={15} className="text-slate-400 group-hover:text-[#0EA8B9]" /></div><h3 className="mt-4 text-sm font-extrabold">Contact the team</h3><p className="mt-1 text-xs leading-5 text-[#667792]">Reach us for account or program assistance.</p></a>
       </div>
     </div>

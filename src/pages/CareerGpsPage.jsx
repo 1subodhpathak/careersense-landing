@@ -1197,6 +1197,10 @@ export default function CareerGpsPage() {
   const isLight =
     heroTheme === "light";
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
+
   // ----------------------------------------------------------
   // INITIAL STEP
   // ----------------------------------------------------------
