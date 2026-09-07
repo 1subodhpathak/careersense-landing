@@ -106,7 +106,7 @@ export const toolCards = [
     featured: false,
     href: "/resume-builder",
     status: "coming-soon",
-    launchAt: get28DaysLaunchDate(),
+    launchAt: new Date(2026, 8, 10, 0, 0, 0).toISOString(),
   },
   {
     icon: MessagesSquare,
@@ -117,7 +117,7 @@ export const toolCards = [
     featured: true,
     href: "/interview-simulator",
     status: "coming-soon",
-    launchAt: get28DaysLaunchDate(),
+    launchAt: new Date(2026, 8, 25, 0, 0, 0).toISOString(),
   },
   {
     icon: SearchCheck,
