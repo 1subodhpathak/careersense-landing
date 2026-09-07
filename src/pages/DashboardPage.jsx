@@ -1157,14 +1157,24 @@ export default function DashboardPage() {
                                 statusText = "IN PROGRESS";
                                 statusTagClass = "bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow-md animate-pulse border-transparent";
                               } else if (phase.status === "coming-soon") {
-                                statusText = "COMING SOON";
-                                statusTagClass = "bg-amber-100 text-amber-800 border-amber-300 font-black";
+                                statusText = "UNDER MAINTENANCE";
+                                statusTagClass = "bg-amber-100 text-amber-900 border-amber-300 font-black";
                               }
 
                               return (
                                 <div
                                   key={phase.id}
-                                  onClick={() => { if (phase.href) window.open(phase.href, "_blank"); }}
+                                  onClick={() => {
+                                    if (phase.id === "resume") {
+                                      setActiveTab("Resume Builder");
+                                      return;
+                                    }
+                                    if (phase.id === "interview") {
+                                      setActiveTab("Interview Practice");
+                                      return;
+                                    }
+                                    if (phase.href) window.open(phase.href, "_blank");
+                                  }}
                                   className="group flex flex-col items-center cursor-pointer transition-all flex-1 min-w-0"
                                 >
                                   <div className="relative flex items-center justify-center">
@@ -1210,7 +1220,17 @@ export default function DashboardPage() {
                             return (
                               <div
                                 key={phase.id}
-                                onClick={() => { if (phase.href) window.open(phase.href, "_blank"); }}
+                                onClick={() => {
+                                  if (phase.id === "resume") {
+                                    setActiveTab("Resume Builder");
+                                    return;
+                                  }
+                                  if (phase.id === "interview") {
+                                    setActiveTab("Interview Practice");
+                                    return;
+                                  }
+                                  if (phase.href) window.open(phase.href, "_blank");
+                                }}
                                 className={`group rounded-xl border p-4 cursor-pointer transition-all hover:shadow-md hover:-translate-y-0.5 ${isFocus
                                   ? "border-cyan-500/80 bg-gradient-to-b from-white via-cyan-50/30 to-white text-slate-900 shadow-md ring-2 ring-cyan-500/20"
                                   : isDone
@@ -1229,7 +1249,7 @@ export default function DashboardPage() {
                                 <h4 className="text-sm font-black truncate">{phase.tool}</h4>
                                 <div className="mt-2.5 flex items-center justify-between text-xs font-extrabold">
                                   <span className={isFocus ? "text-cyan-700" : isDone ? "text-emerald-600" : "text-slate-400"}>{phase.score}% Score</span>
-                                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-cyan-700">Open <ExternalLink size={10} /></span>
+                                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-cyan-700">{phase.status === "coming-soon" ? "Soon" : isDone ? "View" : "Open"} <ExternalLink size={10} /></span>
                                 </div>
                               </div>
                             );

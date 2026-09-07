@@ -276,7 +276,7 @@ export const pipelinePhases = [
     tool: "Resume Builder",
     href: null, // coming-soon
     status: "coming-soon",
-    launchAt: get28DaysLaunchDate(),
+    launchAt: new Date(2026, 8, 10, 0, 0, 0).toISOString(),
     color: "violet",
     tip: "Your resume is your first impression. A targeted, ATS-ready resume is the foundation of everything.",
   },
@@ -317,7 +317,7 @@ export const pipelinePhases = [
     tool: "Interview Simulator",
     href: null, // coming-soon
     status: "coming-soon",
-    launchAt: get28DaysLaunchDate(),
+    launchAt: new Date(2026, 8, 25, 0, 0, 0).toISOString(),
     color: "orange",
     tip: "Most candidates walk in underprepared. The simulator gives you role-specific practice with real feedback.",
   },

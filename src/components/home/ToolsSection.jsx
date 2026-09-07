@@ -91,10 +91,10 @@ function getStatusUi(status) {
 
   return {
     badgeClass:
-      "border border-white/35 bg-[linear-gradient(135deg,rgba(103,232,249,0.96),rgba(45,212,191,0.95),rgba(96,165,250,0.94))] text-slate-950 shadow-[0_10px_24px_rgba(14,165,233,0.28)] ring-1 ring-white/20",
-    badgeText: "COMING SOON",
-    dotClass: "",
-    showDot: false,
+      "border border-amber-300/40 bg-amber-400/20 text-amber-200 ring-1 ring-amber-300/30",
+    badgeText: "UNDER MAINTENANCE",
+    dotClass: "bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.9)] animate-pulse",
+    showDot: true,
     buttonIcon: ArrowRight,
     external: false,
   };
@@ -113,18 +113,6 @@ function getTimeLeftParts(targetDate, now) {
 
 function formatCountdownUnit(value) {
   return String(value).padStart(2, "0");
-}
-
-function formatLaunchDate(launchAt) {
-  return new Intl.DateTimeFormat("en-IN", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    timeZone: "Asia/Kolkata",
-    timeZoneName: "short",
-  }).format(new Date(launchAt));
 }
 
 function ComingSoonModal({ tool, onClose }) {
@@ -155,14 +143,14 @@ function ComingSoonModal({ tool, onClose }) {
     };
   }, [onClose]);
 
+  const isResume = tool?.title?.toLowerCase().includes("resume");
+
   const launchTargetDate = useMemo(() => {
     const d = new Date(tool.launchAt);
     if (!isNaN(d.getTime()) && d > now) return d;
-    const fallback = new Date();
-    fallback.setUTCHours(0, 0, 0, 0);
-    fallback.setUTCDate(fallback.getUTCDate() + 28);
-    return fallback;
-  }, [tool?.launchAt]);
+    if (isResume) return new Date(2026, 8, 10, 0, 0, 0);
+    return new Date(2026, 8, 25, 0, 0, 0);
+  }, [tool?.launchAt, isResume, now]);
 
   const countdown = useMemo(
     () => getTimeLeftParts(launchTargetDate, now),
@@ -176,6 +164,11 @@ function ComingSoonModal({ tool, onClose }) {
     { label: "Seconds", value: formatCountdownUnit(countdown.seconds) },
   ];
 
+  const resolutionDateFormatted = isResume ? "September 10, 2026" : "September 25, 2026";
+  const maintenanceMessage = isResume
+    ? "We are upgrading the AI Resume Builder workspace to serve you better."
+    : "We are enhancing our AI Interview Simulator with advanced feedback models.";
+
   return (
     <div
       className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
@@ -184,53 +177,52 @@ function ComingSoonModal({ tool, onClose }) {
       aria-labelledby="tool-launch-title"
       onClick={onClose}
     >
-      {/* ENTERPRISE STYLING: Flat solid backdrop, no heavy glassmorphism */}
-      <div className="absolute inset-0 bg-slate-900/80" />
+      <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" />
       <div
-        className="relative z-10 w-full max-w-[820px] overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8"
+        className="relative z-10 w-full max-w-[760px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
-            <div className="max-w-[560px]">
-              <span className="inline-flex rounded-md bg-cyan-100 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-cyan-800">
-                Coming Soon
+            <div className="max-w-[580px]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300/80 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-amber-900 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                Under Maintenance
               </span>
               <h3
                 id="tool-launch-title"
-                className="mt-4 text-3xl font-bold leading-tight text-slate-900 sm:text-4xl"
+                className="mt-3 text-2xl font-black leading-tight text-slate-900 sm:text-3xl tracking-tight"
               >
-                {tool.title}
+                {tool.title} Under Maintenance
               </h3>
-              <p className="mt-3 max-w-[620px] text-base leading-relaxed text-slate-600">
-                Launching on{" "}
-                <span className="font-semibold text-slate-900">
-                  {formatLaunchDate(launchTargetDate)}
-                </span>
-                . The countdown below shows exactly how long is left.
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                {maintenanceMessage}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-500">
+                Expected Resolution Date: <span className="font-bold text-slate-900">{resolutionDateFormatted}</span>. Expected resolution in:
               </p>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:border-cyan-200 hover:text-slate-900"
-              aria-label="Close coming soon dialog"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-amber-300 hover:text-slate-900"
+              aria-label="Close maintenance dialog"
             >
-              <X size={24} strokeWidth={2.5} />
+              <X size={20} strokeWidth={2.5} />
             </button>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-4 sm:gap-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             {countdownBlocks.map((block) => (
               <div
                 key={block.label}
-                className="rounded-[24px] border border-slate-200/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(236,246,255,0.94))] px-4 py-6 text-center shadow-[0_14px_30px_rgba(148,163,184,0.12)]"
+                className="rounded-2xl border border-amber-200/80 bg-gradient-to-b from-amber-50/70 to-white px-4 py-5 text-center shadow-xs"
               >
-                <div className="bg-[linear-gradient(135deg,#0891b2,#14b8a6,#2563eb)] bg-clip-text text-[38px] font-black leading-none text-transparent sm:text-[44px]">
+                <div className="text-[34px] font-black leading-none text-slate-900 sm:text-[40px] tabular-nums">
                   {block.value}
                 </div>
-                <div className="mt-4 text-[11px] font-black uppercase tracking-[0.34em] text-slate-500">
+                <div className="mt-2.5 text-[10px] font-black uppercase tracking-[0.25em] text-slate-500">
                   {block.label}
                 </div>
               </div>
@@ -365,7 +357,7 @@ function MainToolCard({ tool, index, isVisible }) {
             onClick={tool.onOpen}
             className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[13px] font-extrabold shadow-lg transition-all duration-300 active:scale-95 sm:px-5 sm:py-2.5 sm:text-[13px] ${theme.button}`}
           >
-            {isComingSoon ? "View Launch Details" : tool.button}
+            {isComingSoon ? "View Maintenance Details" : tool.button}
             <StatusIcon
               size={15}
               className="transition-transform duration-300 group-hover:translate-x-1"

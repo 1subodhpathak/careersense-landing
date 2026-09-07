@@ -247,7 +247,7 @@ export const toolRecommendations = {
     cta: "Build My Resume",
     href: "/resume-builder",
     status: "coming-soon",
-    launchAt: get28DaysLaunchDate(),
+    launchAt: new Date(2026, 8, 10, 0, 0, 0).toISOString(),
   },
   ats: {
     title: "Improve your ATS score",
@@ -264,7 +264,7 @@ export const toolRecommendations = {
     cta: "Start Interview Practice",
     href: "/interview-simulator",
     status: "coming-soon",
-    launchAt: get28DaysLaunchDate(),
+    launchAt: new Date(2026, 8, 25, 0, 0, 0).toISOString(),
   },
   skills: {
     title: "Validate your skills",
