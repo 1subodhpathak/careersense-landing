@@ -21,7 +21,7 @@ function getTimeLeft(targetDate, now) {
 }
 const pad = (v) => String(v).padStart(2, "0");
 
-// ─── Coming-Soon Modal ───────────────────────────────────────
+// ─── Under Maintenance Modal ───────────────────────────────────────
 function ComingSoonModal({ phase, onClose }) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
@@ -30,35 +30,55 @@ function ComingSoonModal({ phase, onClose }) {
     return () => { clearInterval(id); document.body.style.overflow = ""; };
   }, []);
 
+  const isResume = phase?.id === "resume" || phase?.tool?.toLowerCase().includes("resume");
+
   const launchTargetDate = useMemo(() => {
     const d = new Date(phase.launchAt);
     if (!isNaN(d.getTime()) && d > now) return d;
-    const fallback = new Date();
-    fallback.setUTCHours(0, 0, 0, 0);
-    fallback.setUTCDate(fallback.getUTCDate() + 28);
-    return fallback;
-  }, [phase?.launchAt]);
+    if (isResume) return new Date(2026, 8, 10, 0, 0, 0);
+    return new Date(2026, 8, 25, 0, 0, 0);
+  }, [phase?.launchAt, isResume, now]);
 
   const t = getTimeLeft(launchTargetDate, now);
+  const resolutionDateFormatted = isResume ? "September 10, 2026" : "September 25, 2026";
+  const maintenanceMessage = isResume
+    ? "We are upgrading the AI Resume Builder workspace to serve you better."
+    : "We are enhancing our AI Interview Simulator with advanced feedback models.";
+
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-slate-900/80" />
-      <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-[22px] border border-[#DCE5F1] bg-white p-8 shadow-2xl dark:border-slate-700 dark:bg-slate-900" onClick={(e) => e.stopPropagation()}>
+      <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" />
+      <div className="relative z-10 w-full max-w-[760px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-8 dark:border-slate-700 dark:bg-slate-900" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <span className="inline-flex rounded-full bg-blue-100 dark:bg-cyan-950 px-3 py-1 text-xs font-bold uppercase tracking-widest text-blue-700 dark:text-cyan-400">Coming Soon</span>
-            <h3 className="mt-3 text-2xl font-bold text-[#071536] dark:text-white">{phase.tool}</h3>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Launching {new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "Asia/Kolkata" }).format(launchTargetDate)}</p>
+          <div className="max-w-[580px]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300/80 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-amber-900 shadow-2xs dark:bg-amber-950/70 dark:border-amber-700/60 dark:text-amber-300">
+              <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              Under Maintenance
+            </span>
+            <h3 className="mt-3 text-2xl font-black leading-tight text-slate-900 sm:text-3xl tracking-tight dark:text-white">
+              {phase.tool} Under Maintenance
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+              {maintenanceMessage}
+            </p>
+            <p className="mt-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
+              Expected Resolution Date: <span className="font-bold text-slate-900 dark:text-white">{resolutionDateFormatted}</span>. Expected resolution in:
+            </p>
           </div>
-          <button onClick={onClose} className="flex h-9 w-9 items-center justify-center rounded-[14px] border border-[#DCE5F1] dark:border-slate-700 text-slate-400 hover:text-slate-700">
-            <X size={18} />
+          <button onClick={onClose} className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-amber-300 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:text-white" aria-label="Close maintenance dialog">
+            <X size={20} strokeWidth={2.5} />
           </button>
         </div>
-        <div className="mt-6 grid grid-cols-4 gap-3">
-          {[{ l: "Days", v: t.days }, { l: "Hours", v: t.hours }, { l: "Min", v: t.minutes }, { l: "Sec", v: t.seconds }].map(({ l, v }) => (
-            <div key={l} className="rounded-[14px] border border-[#DCE5F1] dark:border-slate-800 bg-[#F8FAFE] dark:bg-slate-800/50 py-4 text-center">
-              <div className="text-3xl font-bold tabular-nums text-[#071536] dark:text-white">{pad(v)}</div>
-              <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-slate-400">{l}</div>
+        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+          {[
+            { label: "Days", value: pad(t.days) },
+            { label: "Hours", value: pad(t.hours) },
+            { label: "Minutes", value: pad(t.minutes) },
+            { label: "Seconds", value: pad(t.seconds) }
+          ].map(({ label, value }) => (
+            <div key={label} className="rounded-2xl border border-amber-200/80 bg-gradient-to-b from-amber-50/70 to-white px-4 py-5 text-center shadow-xs dark:border-slate-700 dark:bg-slate-800/80">
+              <div className="text-[34px] font-black leading-none text-slate-900 sm:text-[40px] tabular-nums dark:text-white">{value}</div>
+              <div className="mt-2.5 text-[10px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">{label}</div>
             </div>
           ))}
         </div>
@@ -189,8 +209,8 @@ function PipelinePhases({ categoryScores, archetype, completedPhases, onOpenComi
               statusText = "IN PROGRESS";
               statusTagClass = "bg-gradient-to-r from-blue-600 via-sky-500 to-cyan-400 text-white font-black shadow-md shadow-cyan-500/25 animate-pulse border-transparent";
             } else if (phase.status === "coming-soon") {
-              statusText = "COMING SOON";
-              statusTagClass = "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50 font-black";
+              statusText = "UNDER MAINTENANCE";
+              statusTagClass = "bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50 font-black";
             }
 
             function handleClick() {

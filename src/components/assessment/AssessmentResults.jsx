@@ -122,6 +122,12 @@ function ComingSoonModal({ tool, onClose }) {
     { label: "Seconds", value: formatCountdownUnit(countdown.seconds) },
   ];
 
+  const isResume = tool?.title?.toLowerCase().includes("resume");
+  const resolutionDateFormatted = isResume ? "September 10, 2026" : "September 25, 2026";
+  const maintenanceMessage = isResume
+    ? "We are upgrading the AI Resume Builder workspace to serve you better."
+    : "We are enhancing our AI Interview Simulator with advanced feedback models.";
+
   return (
     <div
       className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
@@ -130,53 +136,52 @@ function ComingSoonModal({ tool, onClose }) {
       aria-labelledby="assessment-launch-title"
       onClick={onClose}
     >
-      {/* ENTERPRISE STYLING: Flat solid backdrop, no heavy glassmorphism */}
-      <div className="absolute inset-0 bg-slate-900/80" />
+      <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" />
       <div
-        className="relative z-10 w-full max-w-[820px] overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8"
+        className="relative z-10 w-full max-w-[760px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-8"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
-            <div>
-              <span className="inline-flex rounded-full bg-cyan-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-cyan-800">
-                Coming Soon
+            <div className="max-w-[580px]">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 border border-amber-300/80 px-3.5 py-1 text-xs font-black uppercase tracking-widest text-amber-900 shadow-2xs">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                Under Maintenance
               </span>
               <h3
                 id="assessment-launch-title"
-                className="mt-3 text-2xl font-bold text-slate-900"
+                className="mt-3 text-2xl font-black leading-tight text-slate-900 sm:text-3xl tracking-tight"
               >
-                {tool.title}
+                {tool.title} Under Maintenance
               </h3>
-              <p className="mt-2 text-sm text-slate-600">
-                Launching on{" "}
-                <span className="font-semibold text-slate-900">
-                  {formatLaunchDate(launchTargetDate)}
-                </span>
-                . The countdown below shows exactly how long is left.
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                {maintenanceMessage}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-500">
+                Expected Resolution Date: <span className="font-bold text-slate-900">{resolutionDateFormatted}</span>. Expected resolution in:
               </p>
             </div>
 
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-900"
-              aria-label="Close coming soon dialog"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:border-amber-300 hover:text-slate-900"
+              aria-label="Close maintenance dialog"
             >
-              <X size={20} strokeWidth={2} />
+              <X size={20} strokeWidth={2.5} />
             </button>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-4 sm:gap-4">
+          <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
             {countdownBlocks.map((block) => (
               <div
                 key={block.label}
-                className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-6 text-center"
+                className="rounded-2xl border border-amber-200/80 bg-gradient-to-b from-amber-50/70 to-white px-4 py-5 text-center shadow-xs"
               >
-                <div className="text-3xl font-bold text-slate-900 sm:text-4xl">
+                <div className="text-[34px] font-black leading-none text-slate-900 sm:text-[40px] tabular-nums">
                   {block.value}
                 </div>
-                <div className="mt-2 text-xs font-bold uppercase tracking-widest text-slate-500">
+                <div className="mt-2.5 text-[10px] font-black uppercase tracking-[0.25em] text-slate-500">
                   {block.label}
                 </div>
               </div>
