@@ -1,19 +1,49 @@
 import { useState } from "react";
 import { Navigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Download, FileText, Loader2 } from "lucide-react";
+import { useUser } from "@clerk/clerk-react";
 import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import useHeroTheme from "../hooks/useHeroTheme";
 import { ebookBySlug } from "../data/ebooks";
+import DownloadGateModal from "../components/common/DownloadGateModal";
+import { checkDownloadPass } from "../services/downloadGateService";
 
 export default function EbookReaderPage() {
   const { slug } = useParams();
+  const { user } = useUser();
   const { heroTheme, toggleHeroTheme } = useHeroTheme();
   const [isPdfLoading, setIsPdfLoading] = useState(true);
+  const [isDownloadGateOpen, setIsDownloadGateOpen] = useState(false);
 
   const item = ebookBySlug[slug];
   if (!item) return <Navigate to="/dashboard?tab=E-Learning" replace />;
   const isLight = heroTheme === "light";
+
+  const triggerDirectDownload = () => {
+    const link = document.createElement("a");
+    link.href = item.pdf;
+    link.download = `${item.title.replace(/[^a-zA-Z0-9_-]/g, "_")}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleDownloadClick = async (e) => {
+    e.preventDefault();
+    if (user?.id) {
+      try {
+        const passCheck = await checkDownloadPass(user.id, "ebook_pdf", slug || "default");
+        if (!passCheck.canDownload) {
+          setIsDownloadGateOpen(true);
+          return;
+        }
+      } catch (err) {
+        console.warn("Download pass verification error:", err);
+      }
+    }
+    triggerDirectDownload();
+  };
 
   return (
     <main className={`min-h-screen ${isLight ? "bg-slate-50 text-slate-900" : "bg-slate-950 text-white"}`}>
@@ -30,9 +60,13 @@ export default function EbookReaderPage() {
             <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">{item.title}</h1>
             <p className={`mt-2 max-w-2xl text-sm leading-6 ${isLight ? "text-slate-600" : "text-slate-300"}`}>{item.description}</p>
           </div>
-          <a href={item.pdf} download className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-6 text-sm font-bold text-white shadow-lg shadow-blue-500/20">
+          <button
+            type="button"
+            onClick={handleDownloadClick}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-6 text-sm font-bold text-white shadow-lg shadow-blue-500/20 cursor-pointer transition hover:brightness-110"
+          >
             <Download size={17} />Download PDF
-          </a>
+          </button>
         </div>
         <div className={`relative mt-8 overflow-hidden rounded-2xl border ${isLight ? "border-slate-200 bg-white" : "border-slate-700 bg-slate-900"}`}>
           {isPdfLoading && (
@@ -51,7 +85,17 @@ export default function EbookReaderPage() {
         </div>
       </section>
       <Footer heroTheme={heroTheme} />
+
+      <DownloadGateModal
+        isOpen={isDownloadGateOpen}
+        onClose={() => setIsDownloadGateOpen(false)}
+        resourceType="ebook_pdf"
+        resourceId={slug || "default"}
+        resourceName={`${item.title} (e-Book)`}
+        onSuccessDownload={triggerDirectDownload}
+      />
     </main>
   );
 }
+
 
