@@ -1,12 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { X, Download, ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
+import { loadRazorpaySdk, createPassOrder, verifyPassPayment } from "../../services/downloadGateService";
 
 export default function DownloadGateModal({
   isOpen,
   onClose,
-  resourceType = "resume_pdf",
+  resourceType = "document_pdf",
   resourceId = "default",
   resourceName = "PDF Report / Document",
   onSuccessDownload,
@@ -23,38 +24,82 @@ export default function DownloadGateModal({
     setError(null);
 
     try {
-      const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
-
-      // Verify pass directly or trigger Razorpay
-      const res = await fetch(`${backendUrl}/careersense/download/verify-pass`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          clerkId: user.id,
-          resourceType,
-          resourceId,
-          paymentId: `pay_sim_${Date.now()}`,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.success) {
+      const sdkLoaded = await loadRazorpaySdk();
+      if (!sdkLoaded) {
+        setError("Failed to load payment gateway. Please check your internet connection.");
         setLoading(false);
-        onSuccessDownload?.();
-        onClose();
-      } else {
-        setError(data.message || "Payment verification failed.");
-        setLoading(false);
+        return;
       }
+
+      const orderData = await createPassOrder(user.id, resourceType, resourceId);
+      if (!orderData.success || !orderData.orderId) {
+        setError(orderData.message || "Failed to initialize ₹1 download pass order.");
+        setLoading(false);
+        return;
+      }
+
+      const options = {
+        key: orderData.keyId || import.meta.env.VITE_CAREERSENSE_RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency || "INR",
+        name: "CareerSense AI",
+        description: `₹1 Download Pass - ${resourceName}`,
+        order_id: orderData.orderId,
+        prefill: {
+          name: user.fullName || user.firstName || "CareerSense User",
+          email: user.primaryEmailAddress?.emailAddress || "",
+        },
+        theme: {
+          color: "#0EA8B9",
+        },
+        handler: async function (response) {
+          try {
+            setLoading(true);
+            const verifyRes = await verifyPassPayment({
+              clerkId: user.id,
+              resourceType,
+              resourceId,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            if (verifyRes.success) {
+              setLoading(false);
+              onSuccessDownload?.();
+              onClose();
+            } else {
+              setError(verifyRes.message || "Payment verification failed.");
+              setLoading(false);
+            }
+          } catch (vErr) {
+            console.error("[Download Pass Verification Error]:", vErr);
+            setError("Error verifying ₹1 download pass.");
+            setLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setLoading(false);
+          },
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
     } catch (err) {
-      console.error("Download pass error:", err);
-      setError("Failed to process ₹1 download pass.");
+      console.error("[Download pass error]:", err);
+      setError("Failed to initiate ₹1 download pass.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs animate-in fade-in duration-200">
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs animate-in fade-in duration-200"
+      role="dialog"
+      aria-modal="true"
+    >
       <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-[#081634] p-6 text-white shadow-2xl">
         <button
           type="button"
@@ -76,7 +121,7 @@ export default function DownloadGateModal({
             Unlock {resourceName}
           </h3>
           <p className="mt-2 text-xs font-medium leading-relaxed text-slate-300">
-            Free tier users get 10,000 one-time AI tokens. Downloading official PDFs, reports, or certificates requires a nominal fee of <strong className="text-amber-400">₹1</strong> per document.
+            Free tier users get 10,000 one-time AI tokens. Downloading official PDFs, reports, or letters requires a nominal fee of <strong className="text-amber-400">₹1</strong> per document.
           </p>
         </div>
 
@@ -91,7 +136,7 @@ export default function DownloadGateModal({
             type="button"
             onClick={handlePayRupee}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:brightness-110 active:translate-y-0.5"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:brightness-110 active:translate-y-0.5 disabled:opacity-60"
           >
             <ShieldCheck className="h-4 w-4" />
             <span>{loading ? "Processing..." : "Pay ₹1 & Download Instantly"}</span>

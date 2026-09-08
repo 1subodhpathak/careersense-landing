@@ -30,15 +30,75 @@ import {
   X,
 } from "lucide-react";
 
-function getAssignmentUnlockStatus(id, recordsMap) {
-  if (id === 1) {
-    return { isUnlocked: true, lockReason: null };
+export function getJoiningDate(subscription, profile, user) {
+  if (profile?.dateOfJoining) {
+    const d = new Date(`${profile.dateOfJoining.slice(0, 10)}T00:00:00`);
+    if (!isNaN(d.getTime())) return d;
+  }
+  
+  const now = new Date();
+  let offerDate = now;
+
+  if (subscription?.activatedAt) {
+    try {
+      const d = new Date(subscription.activatedAt);
+      if (!isNaN(d.getTime())) offerDate = d;
+    } catch (_) {}
+  } else if (subscription?.planExpiresAt && subscription?.plan && subscription.plan !== "free") {
+    try {
+      const expiry = new Date(subscription.planExpiresAt);
+      if (!isNaN(expiry.getTime())) {
+        const planKey = subscription.plan;
+        const d6 = new Date(expiry);
+        d6.setMonth(d6.getMonth() - 6);
+        const d3 = new Date(expiry);
+        d3.setMonth(d3.getMonth() - 3);
+        const d1 = new Date(expiry);
+        d1.setMonth(d1.getMonth() - 1);
+        if (planKey === "partner") offerDate = d6;
+        else if (planKey === "intern") offerDate = d3;
+        else offerDate = d1;
+      }
+    } catch (_) {}
   }
 
+  const joining = new Date(offerDate);
+  joining.setDate(joining.getDate() + 7);
+  joining.setHours(0, 0, 0, 0);
+  return joining;
+}
+
+export function getAssignmentUnlockStatus(id, recordsMap = {}, joiningDateInput, itemLabel = "Assignment") {
+  const now = Date.now();
+
+  let joiningTime = now;
+  if (joiningDateInput) {
+    const d = new Date(joiningDateInput);
+    if (!isNaN(d.getTime())) {
+      joiningTime = d.getTime();
+    }
+  }
+
+  // 1. Assignment / Project 1: Unlocks on Joining Date (1 week after offer/activation)
+  if (id === 1) {
+    if (now >= joiningTime) {
+      return { isUnlocked: true, lockReason: null };
+    }
+    const diffMs = joiningTime - now;
+    const daysLeft = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+    const unlockDateStr = new Date(joiningTime).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return {
+      isUnlocked: false,
+      lockReason: `Unlocks on Joining Date: ${unlockDateStr} (${daysLeft} day${daysLeft > 1 ? "s" : ""} left)`,
+    };
+  }
+
+  // 2. Assignment / Project 2 onwards:
   const prevId = id - 1;
   const prevRecord = recordsMap[prevId];
   const isPrevCompleted = prevRecord && (
     prevRecord.status === "submitted" ||
+    prevRecord.status === "under_review" ||
     prevRecord.status === "reviewed" ||
     prevRecord.status === "passed" ||
     prevRecord.status === "skipped" ||
@@ -48,14 +108,13 @@ function getAssignmentUnlockStatus(id, recordsMap) {
   if (!isPrevCompleted) {
     return {
       isUnlocked: false,
-      lockReason: `Complete Assignment ${prevId} first`,
+      lockReason: `Complete ${itemLabel} ${prevId} first`,
     };
   }
 
   const prevCompletedDate = prevRecord.submittedAt || prevRecord.updatedAt || prevRecord.createdAt;
-  const prevTime = prevCompletedDate ? new Date(prevCompletedDate).getTime() : Date.now();
+  const prevTime = prevCompletedDate ? new Date(prevCompletedDate).getTime() : joiningTime;
   const unlockTime = prevTime + (7 * 24 * 60 * 60 * 1000);
-  const now = Date.now();
 
   if (now >= unlockTime) {
     return { isUnlocked: true, lockReason: null };
@@ -67,7 +126,7 @@ function getAssignmentUnlockStatus(id, recordsMap) {
 
   return {
     isUnlocked: false,
-    lockReason: `Unlocks on ${unlockDateStr} (${daysLeft} day${daysLeft > 1 ? "s" : ""} after Assignment ${prevId})`,
+    lockReason: `Unlocks on ${unlockDateStr} (7 days after ${itemLabel} ${prevId})`,
   };
 }
 import { partnerAssignments, partnerPhases } from "../../data/partnerAssignments";
@@ -151,7 +210,45 @@ function StatusPill({ status }) {
   );
 }
 
-export default function PartnerAssignments({ onViewIdCard }) {
+export default function PartnerAssignments({
+  onViewIdCard,
+  onNavigateTab,
+  totalUserPoints,
+  onPointsChange,
+  subscription,
+  profile,
+  user,
+}) {
+  const effectiveJoiningDate = useMemo(() => {
+    return getJoiningDate(subscription, profile, user);
+  }, [subscription, profile, user]);
+
+  const [showActivePreview, setShowActivePreview] = useState(false);
+  const isBeforeJoining = Date.now() < effectiveJoiningDate.getTime();
+
+  const durationMonths = useMemo(() => {
+    if (subscription?.plan === "partner") return 6;
+    if (subscription?.plan === "intern") return 3;
+    if (subscription?.planExpiresAt && subscription?.activatedAt) {
+      const start = new Date(subscription.activatedAt);
+      const end = new Date(subscription.planExpiresAt);
+      const diffMonths = Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30.4375));
+      if (diffMonths >= 5) return 6;
+      if (diffMonths >= 2) return 3;
+      return 1;
+    }
+    return 6;
+  }, [subscription]);
+
+  const isMonthly = durationMonths === 1;
+  const maxAllowedAssignments = isMonthly ? 4 : 20;
+  const weeksElapsed = Math.max(1, Math.floor((Date.now() - effectiveJoiningDate.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1);
+  const maxVisibleAssignment = Math.min(maxAllowedAssignments, weeksElapsed);
+
+  const visiblePhases = partnerPhases.filter((phase) =>
+    phase.assignmentIds.some((id) => id <= maxVisibleAssignment)
+  );
+
   const [records, setRecords] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
@@ -477,6 +574,73 @@ export default function PartnerAssignments({ onViewIdCard }) {
     </section>
   );
 
+  if (isBeforeJoining && !showActivePreview) {
+    const remaining = Math.max(0, Math.ceil((effectiveJoiningDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+    const joiningDateFormatted = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(effectiveJoiningDate);
+
+    return (
+      <div className="space-y-6">
+        <section className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_15px_36px_rgba(3,25,47,0.06)]">
+          <div className="grid lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="p-6 sm:p-9">
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-700">
+                <Check size={12} className="mr-1" /> Partner Program Active
+              </span>
+              <p className="mt-6 text-[11px] font-black uppercase tracking-[0.18em] text-cyan-600">CareerSense Partner Journey</p>
+              <h2 className="mt-2 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+                Your first assignment will appear on {joiningDateFormatted}.
+              </h2>
+              <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-600">
+                Welcome to the Partner Program! Your 20-assignment startup mission roadmap officially begins on your Joining Date (<strong>{joiningDateFormatted}</strong>). Use this orientation window to download your official Partner Offer Letter and Partner ID Card.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => onNavigateTab ? onNavigateTab("Offer Letter Workspace") : window.location.href = "/dashboard?tab=Offer+Letter+Workspace"}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#0b2a4a] px-5 text-sm font-black text-white transition hover:bg-[#123b63] cursor-pointer"
+                >
+                  <Award size={16} /> View offer letter
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onViewIdCard ? onViewIdCard() : onNavigateTab ? onNavigateTab("ID Card Studio") : window.location.href = "/dashboard?tab=ID+Card+Studio"}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50 cursor-pointer"
+                >
+                  <CheckCircle2 size={16} /> View digital ID
+                </button>
+              </div>
+            </div>
+            <div className="flex min-h-64 items-center justify-center bg-[#091f39] p-8 text-center text-white">
+              <div>
+                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-cyan-300/30 bg-white/5 text-4xl font-black text-cyan-300 shadow-inner">
+                  {remaining}
+                </div>
+                <p className="mt-5 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+                  {remaining === 1 ? "Day" : "Days"} until Day 1
+                </p>
+                <p className="mt-1 text-sm font-black text-cyan-200">{joiningDateFormatted}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="grid gap-4 md:grid-cols-3">
+          {[
+            [Award, "Partner Admissions", "Confirmed", "Your Partner enrollment is verified and recorded."],
+            [Rocket, "Assignment 1", `Releases ${joiningDateFormatted}`, "Phase 1: Understand the Startup begins on Day 1."],
+            [CalendarDays, "Plan Validity", subscription?.planExpiresAt ? `${durationMonths} Months (Till ${new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric" }).format(new Date(subscription.planExpiresAt))})` : `${durationMonths} Months Validity`, "Full access to roadmap, assignments & credentials."]
+          ].map(([Icon, label, value, copy]) => (
+            <article key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+              <Icon size={20} className="text-cyan-600" />
+              <p className="mt-4 text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">{label}</p>
+              <h3 className="mt-1 text-base font-black text-slate-900">{value}</h3>
+              <p className="mt-2 text-xs leading-5 text-slate-500">{copy}</p>
+            </article>
+          ))}
+        </section>
+      </div>
+    );
+  }
+
   if (view === "roadmap") {
     return (
       <div className="space-y-6">
@@ -560,9 +724,10 @@ export default function PartnerAssignments({ onViewIdCard }) {
           </div>
 
           <div className="space-y-8 bg-[#fbfdff] p-4 sm:p-6 lg:p-7">
-            {partnerPhases.map((phase, phaseIndex) => {
-              const theme = phaseThemes[phaseIndex];
+            {visiblePhases.map((phase) => {
+              const theme = phaseThemes[phase.id - 1] || phaseThemes[0];
               const Icon = theme.icon;
+              const visibleIds = phase.assignmentIds.filter((id) => id <= maxVisibleAssignment);
 
               return (
                 <div key={phase.id}>
@@ -592,17 +757,36 @@ export default function PartnerAssignments({ onViewIdCard }) {
                   </div>
 
                   <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                    {phase.assignmentIds.map((id) => {
+                    {visibleIds.map((id, assignmentIndex) => {
                       const item = partnerAssignments[id - 1];
                       const itemRecord = {
                         ...emptyRecord,
                         ...(records[id] || {}),
                       };
 
-                      const assignmentIndex = phase.assignmentIds.indexOf(id);
-                      const hasNext = assignmentIndex < phase.assignmentIds.length - 1;
+                      const hasNext = assignmentIndex < visibleIds.length - 1;
                       const completedNode = itemRecord.status === "submitted";
-                      const unlockStatus = getAssignmentUnlockStatus(id, records);
+                      
+                      let unlockStatus = { isUnlocked: true, lockReason: null };
+                      if (id > 1) {
+                        const prevRecord = records[id - 1];
+                        const isPrevComplete = Boolean(
+                          prevRecord && (
+                            prevRecord.status === "submitted" ||
+                            prevRecord.status === "under_review" ||
+                            prevRecord.status === "reviewed" ||
+                            prevRecord.status === "passed" ||
+                            prevRecord.status === "skipped" ||
+                            Boolean(prevRecord.submittedAt)
+                          )
+                        );
+                        if (!isPrevComplete) {
+                          unlockStatus = {
+                            isUnlocked: false,
+                            lockReason: `Complete Assignment ${id - 1} first`,
+                          };
+                        }
+                      }
 
                       return (
                         <div key={id} className="relative">
@@ -688,8 +872,7 @@ export default function PartnerAssignments({ onViewIdCard }) {
                           <div className="mt-auto pt-4">
                             <div className="flex items-center justify-between border-t border-[#edf2f6] pt-3 text-[9px] font-bold">
                               <span className="inline-flex items-center gap-1 text-amber-700">
-                                <Coins size={11} />
-                                1,000 points
+                                <Coins size={11} /> 5,000 points
                               </span>
                               <span className="text-slate-400">
                                 Score {itemRecord.score ?? "--"}/100
@@ -698,16 +881,16 @@ export default function PartnerAssignments({ onViewIdCard }) {
 
                             <div className="mt-3 grid grid-cols-2 gap-2">
                               <button
+                                type="button"
                                 onClick={() => unlockStatus.isUnlocked && showDetails(id)}
                                 disabled={!unlockStatus.isUnlocked}
                                 className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl border border-[#dbe7ef] bg-white text-[10px] font-black text-[#30455c] transition hover:bg-[#f6fbfe] disabled:opacity-50"
                               >
-                                <Eye size={13} />
-                                Details
+                                <Eye size={13} /> Details
                               </button>
-
                               <button
-                                onClick={() => unlockStatus.isUnlocked && begin(id)}
+                                type="button"
+                                onClick={() => unlockStatus.isUnlocked && openWorkspace(id)}
                                 disabled={!unlockStatus.isUnlocked}
                                 className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl text-[10px] font-black text-white shadow-sm transition hover:brightness-105 disabled:opacity-50"
                                 style={{
@@ -715,7 +898,7 @@ export default function PartnerAssignments({ onViewIdCard }) {
                                   boxShadow: `0 8px 18px ${theme.color}2e`,
                                 }}
                               >
-                                <Rocket size={13} />
+                                <Rocket size={13} />{" "}
                                 {itemRecord.status === "in_progress"
                                   ? "Continue"
                                   : itemRecord.status === "submitted"

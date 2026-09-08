@@ -258,6 +258,7 @@ export default function DashboardPage() {
   const [communityStats, setCommunityStats] = useState(null);
   const [communityLoading, setCommunityLoading] = useState(false);
   const [userSub, setUserSub] = useState({ plan: "free", tokensRemaining: 10000, purchasedFellowships: [] });
+  const [subLoaded, setSubLoaded] = useState(false);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -271,6 +272,8 @@ export default function DashboardPage() {
         }
       } catch (err) {
         console.error("Error fetching CareerSense subscription:", err);
+      } finally {
+        setSubLoaded(true);
       }
     };
     fetchUserSub();
@@ -756,19 +759,25 @@ export default function DashboardPage() {
   const purchasedFellowships = userSub?.purchasedFellowships || [];
 
   useEffect(() => {
-    if (!userSub) return;
+    if (!subLoaded || !userSub) return;
     const plan = userSub.plan || "free";
-    if ((activeTab === "Partner Journey" || activeTab === "ID Card Studio" || activeTab === "Offer Letter Workspace") && plan !== "partner") {
+    if (activeTab === "ID Card Studio" && (plan === "free" || !["student", "intern", "partner"].includes(plan))) {
+      setSearchParams({ tab: "Dashboard" });
+    }
+    if (activeTab === "Partner Journey" && plan !== "partner") {
+      setSearchParams({ tab: "Dashboard" });
+    }
+    if (activeTab === "Offer Letter Workspace" && !["partner", "intern"].includes(plan)) {
       setSearchParams({ tab: "Dashboard" });
     }
     if (activeTab === "Fellowship Program" && plan !== "intern") {
       setSearchParams({ tab: "Dashboard" });
     }
-  }, [userSub, activeTab]);
+  }, [userSub, activeTab, subLoaded]);
 
   const filteredSidebarItems = sidebarItems.filter(item => {
-    if (item.label === "ID Card Studio" && userPlan !== "partner") return false;
-    if (item.label === "Offer Letter Workspace" && userPlan !== "partner") return false;
+    if (item.label === "ID Card Studio" && (userPlan === "free" || !["student", "intern", "partner"].includes(userPlan))) return false;
+    if (item.label === "Offer Letter Workspace" && !["partner", "intern"].includes(userPlan)) return false;
     if (item.label === "Partner Journey" && userPlan !== "partner") return false;
     if (item.label === "Fellowship Program" && userPlan !== "intern") return false;
     return true;
@@ -976,7 +985,7 @@ export default function DashboardPage() {
           title: "Fellowship Program",
           subtitle: "Choose one professional track and complete a three-month, mentor-reviewed project journey.",
           stats: [],
-          renderExtra: () => <FellowshipProgram profile={profileForm} user={user} initialProgramId={fellowshipFromUrl} />
+          renderExtra: () => <FellowshipProgram profile={profileForm} user={user} initialProgramId={fellowshipFromUrl} subscription={userSub} onNavigateTab={handleTabChange} />
         };
       case "Dashboard":
         const careerScore = dashboardData?.assessment?.results?.overallScore;
@@ -1057,7 +1066,16 @@ export default function DashboardPage() {
           title: "Partner Assignment Roadmap",
           subtitle: "Complete real startup missions, build your portfolio, and grow your CareerSense Partner Score.",
           stats: [],
-          renderExtra: () => <PartnerAssignments onViewIdCard={() => handleTabChange("ID Card Studio")} totalUserPoints={totalPoints} onPointsChange={setPartnerPointsDelta} />
+          renderExtra: () => (
+            <PartnerAssignments
+              onViewIdCard={() => handleTabChange("ID Card Studio")}
+              totalUserPoints={totalPoints}
+              onPointsChange={setPartnerPointsDelta}
+              subscription={userSub}
+              profile={profileForm}
+              user={user}
+            />
+          )
         };
 
       case "Career GPS":
@@ -1375,9 +1393,9 @@ export default function DashboardPage() {
               icon: <Sparkles size={16} />
             },
             {
-              label: "Skill Points Earned",
-              value: `${atsPoints}`,
-              status: "Earned from resume scans",
+              label: "Lifetime Tokens Spent",
+              value: `${atsPoints.toLocaleString()}`,
+              status: "AI tokens consumed on scans",
               color: "text-amber-600",
               bg: "bg-amber-50",
               icon: <Zap size={16} />
@@ -1465,9 +1483,9 @@ export default function DashboardPage() {
               icon: <FileText size={16} />
             },
             {
-              label: "Skill Points Earned",
-              value: `${coverLetterPoints}`,
-              status: "Earned from cover letters",
+              label: "Lifetime Tokens Spent",
+              value: `${coverLetterPoints.toLocaleString()}`,
+              status: "AI tokens consumed on letters",
               color: "text-amber-600",
               bg: "bg-amber-50",
               icon: <Zap size={16} />
@@ -1565,9 +1583,9 @@ export default function DashboardPage() {
               icon: <GraduationCap size={16} />
             },
             {
-              label: "Skill Points Earned",
-              value: `${certifiPoints}`,
-              status: "Earned from assessments",
+              label: "Lifetime Tokens Spent",
+              value: `${certifiPoints.toLocaleString()}`,
+              status: "AI tokens consumed on assessments",
               color: "text-amber-600",
               bg: "bg-amber-50",
               icon: <Zap size={16} />
@@ -1770,21 +1788,37 @@ export default function DashboardPage() {
         };
       }
 
-      case "ID Card Studio":
+      case "ID Card Studio": {
+        const isPartner = userPlan === "partner";
         return {
-          title: "Partner ID Card Studio",
-          subtitle: "Generate and download your official CareerSense Partner ID from your master profile.",
+          title: isPartner ? "Partner ID Card Studio" : "Student ID Card Studio",
+          subtitle: isPartner
+            ? "Generate and download your official CareerSense Partner ID from your master profile."
+            : "Generate and download your official CareerSense Student ID from your master profile.",
           stats: [],
-          renderExtra: () => <IdCardStudio profile={profileForm} user={user} />
+          renderExtra: () => <IdCardStudio profile={profileForm} user={user} plan={userPlan} />
         };
+      }
 
-      case "Offer Letter Workspace":
+      case "Offer Letter Workspace": {
+        const isPartner = userPlan === "partner";
         return {
-          title: "Offer Letter Workspace",
-          subtitle: "Review, personalize, download and share your CareerSense Offer letter.",
+          title: isPartner ? "Partner Offer Letter Workspace" : "Fellowship Offer Letter Workspace",
+          subtitle: isPartner
+            ? "Review, personalize, download and share your official CareerSense Partner Offer Letter."
+            : "Review, personalize, download and share your official CareerSense Fellowship Offer Letter.",
           stats: [],
-          renderExtra: () => <OfferLetterStudio profile={profileForm} user={user} />
+          renderExtra: () => (
+            <OfferLetterStudio
+              profile={profileForm}
+              user={user}
+              subscription={userSub}
+              plan={userPlan}
+              initialFellowshipId={fellowshipFromUrl || purchasedFellowships[0] || "data-analyst"}
+            />
+          )
         };
+      }
 
       case "E-Learning":
         return {
@@ -2471,9 +2505,9 @@ export default function DashboardPage() {
               {/* Site Sumup Breakdown */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
-                  { name: "ATS Checker", subdomain: "ats.careersenseai.com", usage: `${resumesCount} / 10 runs`, points: summaryBySite["ATS Checker"].points, cost: summaryBySite["ATS Checker"].cost, badgeColor: "bg-blue-100 text-blue-800" },
-                  { name: "Certifi Platform", subdomain: "certifi.careersenseai.com", usage: `${certsCount} / 5 certs`, points: summaryBySite["Certifi"].points, cost: summaryBySite["Certifi"].cost, badgeColor: "bg-teal-100 text-teal-800" },
-                  { name: "Cover Letter Builder", subdomain: "coverletter.careersenseai.com", usage: `${letterCount} / 20 letters`, points: summaryBySite["Cover Letter Builder"].points, cost: summaryBySite["Cover Letter Builder"].cost, badgeColor: "bg-amber-100 text-amber-800" }
+                  { name: "ATS Checker", subdomain: "ats.careersenseai.com", points: summaryBySite["ATS Checker"].points, cost: summaryBySite["ATS Checker"].cost, badgeColor: "bg-blue-100 text-blue-800" },
+                  { name: "Certifi Platform", subdomain: "certifi.careersenseai.com", points: summaryBySite["Certifi"].points, cost: summaryBySite["Certifi"].cost, badgeColor: "bg-teal-100 text-teal-800" },
+                  { name: "Cover Letter Builder", subdomain: "coverletter.careersenseai.com", points: summaryBySite["Cover Letter Builder"].points, cost: summaryBySite["Cover Letter Builder"].cost, badgeColor: "bg-amber-100 text-amber-800" }
                 ].map((site, i) => (
                   <div key={i} className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs flex flex-col justify-between">
                     <div>
@@ -2481,12 +2515,9 @@ export default function DashboardPage() {
                         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${site.badgeColor}`}>{site.name}</span>
                         <span className="text-[10px] font-semibold text-slate-400">{site.subdomain}</span>
                       </div>
-                      <div className="mt-4 text-sm font-semibold text-slate-500">
-                        Usage Quota: <span className="text-slate-800 font-bold">{site.usage}</span>
-                      </div>
                     </div>
-                    <div className="mt-4 border-t border-slate-100 pt-3 flex justify-between text-xs font-bold text-slate-500">
-                      <div>Points: <span className="text-slate-800">{site.points}</span></div>
+                    <div className="mt-5 border-t border-slate-100 pt-3.5 flex justify-between text-xs font-bold text-slate-500">
+                      <div>Tokens: <span className="text-slate-800">{site.points.toLocaleString()}</span></div>
                       <div>Cost: <span className="text-slate-800">${site.cost.toFixed(4)}</span></div>
                     </div>
                   </div>
@@ -2530,7 +2561,7 @@ export default function DashboardPage() {
                             <th className="pb-2">Action</th>
                             <th className="pb-2">App Node</th>
                             <th className="pb-2">Date</th>
-                            <th className="pb-2 text-right">Points Used</th>
+                            <th className="pb-2 text-right">Tokens Used</th>
                             <th className="pb-2 text-right">Cost (USD)</th>
                           </tr>
                         </thead>
@@ -2548,7 +2579,7 @@ export default function DashboardPage() {
                                 <td className="py-3 font-semibold text-slate-800">{log.action}</td>
                                 <td className="py-3"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${appBadge}`}>{log.app}</span></td>
                                 <td className="py-3 text-slate-400">{log.createdAt.toLocaleDateString()}</td>
-                                <td className="py-3 text-right font-bold text-slate-800">{log.points}</td>
+                                <td className="py-3 text-right font-bold text-slate-800">{log.points.toLocaleString()}</td>
                                 <td className="py-3 text-right font-bold text-slate-800">${log.cost.toFixed(4)}</td>
                               </tr>
                             );
@@ -2594,7 +2625,7 @@ export default function DashboardPage() {
     "E-Learning": pathsCount ? `${pathsCount} active` : null,
     "Partner Journey": `${partnerCompleted}/20`,
     "Community": communityStats?.unreadCount ? String(communityStats.unreadCount) : null,
-    "Usage & Billing": totalPoints ? `${totalPoints.toLocaleString()} pts` : null,
+    "Usage & Billing": totalPoints ? `${totalPoints.toLocaleString()} tokens` : null,
   }[label]);
 
   const getToolBadge = (label) => ({
