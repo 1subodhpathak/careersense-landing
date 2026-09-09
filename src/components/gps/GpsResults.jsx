@@ -35,12 +35,12 @@ function ComingSoonModal({ phase, onClose }) {
   const launchTargetDate = useMemo(() => {
     const d = new Date(phase.launchAt);
     if (!isNaN(d.getTime()) && d > now) return d;
-    if (isResume) return new Date(2026, 8, 10, 0, 0, 0);
+    if (isResume) return new Date(2026, 8, 14, 0, 0, 0);
     return new Date(2026, 8, 25, 0, 0, 0);
   }, [phase?.launchAt, isResume, now]);
 
   const t = getTimeLeft(launchTargetDate, now);
-  const resolutionDateFormatted = isResume ? "September 10, 2026" : "September 25, 2026";
+  const resolutionDateFormatted = isResume ? "September 14, 2026" : "September 25, 2026";
   const maintenanceMessage = isResume
     ? "We are upgrading the AI Resume Builder workspace to serve you better."
     : "We are enhancing our AI Interview Simulator with advanced feedback models.";

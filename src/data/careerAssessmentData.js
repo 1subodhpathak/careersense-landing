@@ -247,7 +247,7 @@ export const toolRecommendations = {
     cta: "Build My Resume",
     href: "/resume-builder",
     status: "coming-soon",
-    launchAt: new Date(2026, 8, 10, 0, 0, 0).toISOString(),
+    launchAt: new Date(2026, 8, 14, 0, 0, 0).toISOString(),
   },
   ats: {
     title: "Improve your ATS score",

@@ -101,14 +101,14 @@ function ComingSoonModal({ tool, onClose }) {
     };
   }, [onClose]);
 
+  const isResume = tool?.title?.toLowerCase().includes("resume");
+
   const launchTargetDate = useMemo(() => {
-    const d = new Date(tool.launchAt);
+    const d = new Date(tool?.launchAt);
     if (!isNaN(d.getTime()) && d > now) return d;
-    const fallback = new Date();
-    fallback.setUTCHours(0, 0, 0, 0);
-    fallback.setUTCDate(fallback.getUTCDate() + 28);
-    return fallback;
-  }, [tool?.launchAt]);
+    if (isResume) return new Date(2026, 8, 14, 0, 0, 0);
+    return new Date(2026, 8, 25, 0, 0, 0);
+  }, [tool?.launchAt, isResume, now]);
 
   const countdown = useMemo(
     () => getTimeLeftParts(launchTargetDate, now),
@@ -122,8 +122,7 @@ function ComingSoonModal({ tool, onClose }) {
     { label: "Seconds", value: formatCountdownUnit(countdown.seconds) },
   ];
 
-  const isResume = tool?.title?.toLowerCase().includes("resume");
-  const resolutionDateFormatted = isResume ? "September 10, 2026" : "September 25, 2026";
+  const resolutionDateFormatted = isResume ? "September 14, 2026" : "September 25, 2026";
   const maintenanceMessage = isResume
     ? "We are upgrading the AI Resume Builder workspace to serve you better."
     : "We are enhancing our AI Interview Simulator with advanced feedback models.";
