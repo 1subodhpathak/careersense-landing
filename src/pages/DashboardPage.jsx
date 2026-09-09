@@ -3065,10 +3065,10 @@ export default function DashboardPage() {
 
         {(activeTab === "Resume Builder" || activeTab === "Interview Practice") && (() => {
           // Resolution dates:
-          // Resume Builder: 10th September 2026
+          // Resume Builder: 14th September 2026
           // Interview Practice: 25th September 2026
           const TARGET_DATES = {
-            "Resume Builder": new Date(2026, 8, 10, 0, 0, 0),
+            "Resume Builder": new Date(2026, 8, 14, 0, 0, 0),
             "Interview Practice": new Date(2026, 8, 25, 0, 0, 0)
           };
           const launchDate = TARGET_DATES[activeTab];
@@ -3126,7 +3126,7 @@ export default function DashboardPage() {
 
                 {/* Resolution date */}
                 <p className="text-[11.5px] text-slate-400 font-semibold">
-                  Expected Resolution Date: <span className="text-slate-800 font-bold">{isResume ? "September 10, 2026" : "September 25, 2026"}</span>
+                  Expected Resolution Date: <span className="text-slate-800 font-bold">{isResume ? "September 14, 2026" : "September 25, 2026"}</span>
                 </p>
               </div>
             </div>

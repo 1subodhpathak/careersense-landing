@@ -106,7 +106,7 @@ export const toolCards = [
     featured: false,
     href: "/resume-builder",
     status: "coming-soon",
-    launchAt: new Date(2026, 8, 10, 0, 0, 0).toISOString(),
+    launchAt: new Date(2026, 8, 14, 0, 0, 0).toISOString(),
   },
   {
     icon: MessagesSquare,

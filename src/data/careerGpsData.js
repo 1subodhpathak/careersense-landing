@@ -276,7 +276,7 @@ export const pipelinePhases = [
     tool: "Resume Builder",
     href: null, // coming-soon
     status: "coming-soon",
-    launchAt: new Date(2026, 8, 10, 0, 0, 0).toISOString(),
+    launchAt: new Date(2026, 8, 14, 0, 0, 0).toISOString(),
     color: "violet",
     tip: "Your resume is your first impression. A targeted, ATS-ready resume is the foundation of everything.",
   },
