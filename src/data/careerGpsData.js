@@ -274,9 +274,8 @@ export const pipelinePhases = [
     phase: 1,
     label: "Resume",
     tool: "Resume Builder",
-    href: null, // coming-soon
-    status: "coming-soon",
-    launchAt: new Date(2026, 8, 14, 0, 0, 0).toISOString(),
+    href: "https://resume.careersenseai.com/",
+    status: "live",
     color: "violet",
     tip: "Your resume is your first impression. A targeted, ATS-ready resume is the foundation of everything.",
   },

@@ -4,7 +4,7 @@ import PassportBooklet from "./PassportBooklet";
 import { pipelinePhases } from "../../../data/careerGpsData";
 import "./skill-passport.css";
 
-export default function SkillPassport({ dashboardData, profile, user, atsResumes = [], coverLetters = [] }) {
+export default function SkillPassport({ dashboardData, profile, user, atsResumes = [], coverLetters = [], builderResumes = [] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [spreadIndex, setSpreadIndex] = useState(0);
   const journey = useMemo(() => {
@@ -14,6 +14,7 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
     const events = [
       ...certificates.map((item) => ({ title: item.title || "Certificate earned", date: item.issuedAt || item.date || item.createdAt })),
       ...(assessment ? [{ title: "Career GPS completed", date: assessment.takenAt || assessment.createdAt }] : []),
+      ...builderResumes.map((item) => ({ title: `Resume crafted - ${item.title || item.role || 'Resume'}`, date: item.updatedAt || item.createdAt })),
       ...atsResumes.map((item) => ({ title: "ATS route checked", date: item.createdAt })),
       ...coverLetters.map((item) => ({ title: "Application prepared", date: item.createdAt })),
     ].filter((item) => item.date).sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -37,7 +38,7 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
     const profileFields = [profile?.fullName, profile?.email, profile?.phone, profile?.location, profile?.bio, profile?.currentJobTitle, profile?.targetJobTitle, profile?.avatar, profile?.linkedinPortfolio || profile?.githubUrl || profile?.websiteUrl, profile?.skills?.length];
     const profileCompleteness = Math.round((profileFields.filter(Boolean).length / profileFields.length) * 100);
     const readinessScore = assessment?.results?.overallScore || 0;
-    const achievementTotal = certificates.length + atsResumes.length + coverLetters.length + partnerCompleted;
+    const achievementTotal = certificates.length + atsResumes.length + coverLetters.length + builderResumes.length + partnerCompleted;
     const explorerLevel = readinessScore >= 80 || achievementTotal >= 15 ? "Advanced Explorer" : readinessScore >= 50 || achievementTotal >= 6 ? "Skilled Explorer" : "Rising Explorer";
     return {
       ownerName, initials, certificates, learningPaths, atsResumes, coverLetters, events,

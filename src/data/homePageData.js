@@ -57,7 +57,7 @@ export const platformFeatures = [
     title: "AI Resume Builder",
     description: "Build ATS-friendly resumes with strong bullet points and clean formatting.",
     color: "text-teal-600 bg-teal-500",
-    href: "/resume-builder",
+    href: "https://resume.careersenseai.com/",
   },
   {
     icon: PenLine,
@@ -102,11 +102,10 @@ export const toolCards = [
     title: "AI Resume Builder",
     description: "Build ATS-friendly resumes with strong bullet points, cleaner structure, and role-fit suggestions.",
     bullets: ["ATS-friendly formatting", "Role-based suggestions", "AI bullet improvements", "PDF export"],
-    button: "Coming Soon",
+    button: "Build Your Resume",
     featured: false,
-    href: "/resume-builder",
-    status: "coming-soon",
-    launchAt: new Date(2026, 8, 14, 0, 0, 0).toISOString(),
+    href: "https://resume.careersenseai.com/",
+    status: "live",
   },
   {
     icon: MessagesSquare,
@@ -226,7 +225,7 @@ export const footerColumns = [
     links: [
       { label: "Career Score Check", href: "/career-gps" },
       { label: "LinkedIn Optimizer", href: "/linkedin-optimizer" },
-      { label: "AI Resume Builder", href: "/resume-builder" },
+      { label: "AI Resume Builder", href: "https://resume.careersenseai.com/", external: true },
       { label: "ATS Score Checker", href: "https://ats.careersenseai.com/", external: true },
       { label: "Cover Letter Builder", href: "https://coverletter.careersenseai.com/", external: true },
     ],
