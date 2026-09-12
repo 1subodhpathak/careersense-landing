@@ -30,20 +30,15 @@ function ComingSoonModal({ phase, onClose }) {
     return () => { clearInterval(id); document.body.style.overflow = ""; };
   }, []);
 
-  const isResume = phase?.id === "resume" || phase?.tool?.toLowerCase().includes("resume");
-
   const launchTargetDate = useMemo(() => {
     const d = new Date(phase.launchAt);
     if (!isNaN(d.getTime()) && d > now) return d;
-    if (isResume) return new Date(2026, 8, 14, 0, 0, 0);
     return new Date(2026, 8, 25, 0, 0, 0);
-  }, [phase?.launchAt, isResume, now]);
+  }, [phase?.launchAt, now]);
 
   const t = getTimeLeft(launchTargetDate, now);
-  const resolutionDateFormatted = isResume ? "September 14, 2026" : "September 25, 2026";
-  const maintenanceMessage = isResume
-    ? "We are upgrading the AI Resume Builder workspace to serve you better."
-    : "We are enhancing our AI Interview Simulator with advanced feedback models.";
+  const resolutionDateFormatted = "September 25, 2026";
+  const maintenanceMessage = "We are enhancing our AI Interview Simulator with advanced feedback models.";
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" onClick={onClose}>

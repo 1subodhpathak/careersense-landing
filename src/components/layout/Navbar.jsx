@@ -25,7 +25,7 @@ const moreItems = [
 ];
 
 const careerTools = [
-  { href: "/resume-builder", label: "AI Resume Builder", description: "Create an ATS-ready resume", icon: FilePenLine, tone: "text-blue-700 bg-blue-100" },
+  { href: "https://resume.careersenseai.com/", label: "AI Resume Builder", description: "Create an ATS-ready resume", icon: FilePenLine, tone: "text-blue-700 bg-blue-100", external: true },
   { href: "https://ats.careersenseai.com/", label: "ATS Score Checker", description: "Review keywords and job fit", icon: FileCheck2, tone: "text-emerald-700 bg-emerald-100", external: true },
   { href: "https://coverletter.careersenseai.com/", label: "Cover Letter Builder", description: "Write a tailored introduction", icon: ScrollText, tone: "text-violet-700 bg-violet-100", external: true },
   { href: "/interview-simulator", label: "Interview Simulator", description: "Practise role-specific interviews", icon: MessagesSquare, tone: "text-amber-700 bg-amber-100" },

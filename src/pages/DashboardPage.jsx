@@ -834,6 +834,113 @@ export default function DashboardPage() {
     ?.filter(p => p.issue_found)
     ?.map(p => p.title) || [];
 
+  const rawBuilderResumes = dashboardData?.resumeBuilder?.resumes || [];
+  const builderResumes = [...rawBuilderResumes].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+  const builderUploads = dashboardData?.resumeBuilder?.uploads?.resumes || [];
+  const builderJds = dashboardData?.resumeBuilder?.uploads?.jobDescriptions || [];
+  const latestBuilderResume = builderResumes[0];
+
+  const isResumeBuilderService = (serviceId = '') => {
+    if (!serviceId) return false;
+    const s = String(serviceId).toLowerCase().trim();
+    if (
+      s.startsWith('ats_') ||
+      s.startsWith('cover_letter') ||
+      s.startsWith('coverletter') ||
+      s === 'cover letter' ||
+      s.startsWith('certifi') ||
+      s.startsWith('razorpay') ||
+      s.startsWith('upgrade') ||
+      s === 'onboarding' ||
+      s === 'monthly_renewal'
+    ) {
+      return false;
+    }
+    return (
+      s.includes('resume') ||
+      s.includes('tailor') ||
+      s.includes('extract') ||
+      s.includes('enhanc') ||
+      s.includes('analysis') ||
+      s.includes('prep') ||
+      s.includes('interview') ||
+      s.includes('rewrite') ||
+      s.includes('bullet') ||
+      s.includes('summary') ||
+      s.includes('builder') ||
+      s.includes('job description') ||
+      s.includes('cora') ||
+      s === 'calculate_ats_score' ||
+      s === 'generate_interview_prep' ||
+      s === 'ats score analysis' ||
+      s === 'job description analysis' ||
+      s === 'cora career assistant' ||
+      s === 'interview prep generation'
+    );
+  };
+
+  const getAppNodeInfo = (serviceId = '') => {
+    if (!serviceId) return { app: "Certifi", action: "Tool Usage" };
+    const s = String(serviceId).trim();
+    const lower = s.toLowerCase();
+
+    if (isResumeBuilderService(s)) {
+      const formatResumeAction = (name) => {
+        if (name === "generate_interview_prep" || name === "interview_prep") return "Interview Prep Generation";
+        if (name === "calculate_ats_score" || name === "ats_score_analysis") return "ATS Score Analysis";
+        if (name === "job_description_analysis") return "Job Description Analysis";
+        if (name === "cora_career_assistant") return "Cora Career Assistant";
+        if (name === "tailor_resume") return "Resume + JD Tailoring";
+        if (name === "extract_resume") return "Resume Extraction";
+        if (name === "generate_resume") return "Resume Generation";
+        return name;
+      };
+      return {
+        app: "Resume Builder",
+        action: formatResumeAction(s)
+      };
+    }
+
+    if (lower.startsWith("ats_") || lower.includes("ats checker") || lower === "ats scan" || lower === "ats report") {
+      return {
+        app: "ATS Checker",
+        action: s.replace(/^ats_/i, "ATS ").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "ATS Analysis"
+      };
+    }
+
+    if (lower.startsWith("cover_letter") || lower.startsWith("coverletter") || lower === "cover letter" || lower.includes("cover letter")) {
+      return {
+        app: "Cover Letter",
+        action: s.replace(/^cover_letter_/i, "Cover Letter ").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "Cover Letter Generation"
+      };
+    }
+
+    if (lower.startsWith("certifi") || lower.includes("assessment") || lower.includes("certificate") || lower.includes("exam")) {
+      return {
+        app: "Certifi",
+        action: s.replace(/^certifi_/i, "").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "Skill Assessment"
+      };
+    }
+
+    return {
+      app: "Certifi",
+      action: s.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+    };
+  };
+
+  const builderTokens = (() => {
+    const serverTokens = (serverLedgerLogs || [])
+      .filter(log => log.amount < 0 && isResumeBuilderService(log.serviceId))
+      .reduce((sum, log) => sum + Math.abs(log.amount || 0), 0);
+    if (serverTokens > 0) return serverTokens;
+
+    const rawTokens = (dashboardData?.resumeBuilder?.tokenUsage || []).reduce((sum, t) => sum + (t.careerPoints || 0), 0);
+    if (rawTokens > 0) return rawTokens;
+
+    return (builderResumes.length * 450) + (builderUploads.length * 150) + (builderJds.length * 90);
+  })();
+  const builderCost = builderTokens / 100000;
+
   const coverLetters = dashboardData?.coverLetter?.savedLetters || [];
   const coverLetterPoints = coverLetters.reduce((sum, letter) => {
     const resumeLen = letter.resumeTextLen ?? (letter.resumeText || "").length;
@@ -850,10 +957,10 @@ export default function DashboardPage() {
 
   const usageLedger = dashboardData?.certifi?.usageLedger || [];
   const certifiPoints = usageLedger.reduce((sum, item) => sum + (item.careerPoints || item.points || 0), 0);
-  const certifiCost = usageLedger.reduce((sum, item) => sum + (item.costUsd || item.cost || 0), 0);
+  const certifiCost = certifiPoints / 100000;
 
-  const totalPoints = Math.max(0, atsPoints + coverLetterPoints + certifiPoints + partnerPointsDelta);
-  const totalCost = atsCost + coverLetterCost + certifiCost;
+  const totalPoints = Math.max(0, atsPoints + coverLetterPoints + certifiPoints + builderTokens + partnerPointsDelta);
+  const totalCost = atsCost + coverLetterCost + certifiCost + builderCost;
   const certsCount = dashboardData?.certifi?.certificates?.length || 0;
   const pathsCount = dashboardData?.certifi?.learningPaths?.length || 0;
 
@@ -884,6 +991,15 @@ export default function DashboardPage() {
         badgeColor: "bg-teal-50 text-teal-700"
       });
     }
+
+    builderResumes.forEach((res) => {
+      acts.push({
+        event: `Resume Created - ${res.title || res.role || 'Resume'}`,
+        time: new Date(res.updatedAt || res.createdAt || Date.now()),
+        metric: res.atsScore ? `ATS: ${res.atsScore}%` : `Template: ${res.selectedTemplate || 'Professional'}`,
+        badgeColor: "bg-purple-50 text-purple-700"
+      });
+    });
 
     atsResumes.forEach((res) => {
       acts.push({
@@ -918,6 +1034,7 @@ export default function DashboardPage() {
   })();
 
   const summaryBySite = {
+    "Resume Builder": { points: builderTokens, cost: builderCost, count: builderResumes.length + builderUploads.length },
     "ATS Checker": { points: atsPoints, cost: atsCost, count: atsResumes.length + atsJds.length },
     "Certifi": { points: certifiPoints, cost: certifiCost, count: usageLedger.length },
     "Cover Letter Builder": { points: coverLetterPoints, cost: coverLetterCost, count: coverLetters.length }
@@ -931,11 +1048,10 @@ export default function DashboardPage() {
         .map(log => {
           const pts = Math.abs(log.amount);
           const service = log.serviceId || "tool_usage";
-          const isAts = service.includes("ats");
-          const isCover = service.includes("Cover") || service.includes("cover");
+          const nodeInfo = getAppNodeInfo(service);
           return {
-            action: isAts ? "ATS Report" : isCover ? "Executive Analysis" : service === "certifi_assessment" ? "Assessment Generation" : service,
-            app: isAts ? "ATS Checker" : isCover ? "Cover Letter" : "Certifi",
+            action: nodeInfo.action,
+            app: nodeInfo.app,
             createdAt: new Date(log.createdAt),
             points: pts,
             cost: pts / 100000
@@ -976,6 +1092,7 @@ export default function DashboardPage() {
               user={user}
               atsResumes={atsResumes}
               coverLetters={coverLetters}
+              builderResumes={builderResumes}
             />
           )
         };
@@ -1314,52 +1431,151 @@ export default function DashboardPage() {
         };
 
       case "Resume Builder":
+        const latestBuilderTitle = latestBuilderResume
+          ? (latestBuilderResume.title || latestBuilderResume.role || "Target Role")
+          : "No resumes built yet";
+        const latestAtsScoreDisplay = latestBuilderResume?.atsScore != null
+          ? `${latestBuilderResume.atsScore}%`
+          : (builderResumes.length > 0 ? "Ready" : "N/A");
+
         return {
-          title: "AI Resume Builder Workspace",
-          subtitle: "Compile, optimize syntax structuring, and export parsing-compliant master profiles.",
+          title: "AI Resume Builder Overview",
+          subtitle: "Build ATS-compliant resumes, craft achievement-driven bullet points, and manage job-ready profiles.",
           stats: [
-            { label: "Active Profiles", value: "2 Live", status: "Validated", color: "text-blue-600", bg: "bg-blue-50", icon: <FileText size={16} /> },
-            { label: "Average Syntax Score", value: "88/100", status: "Excellent", color: "text-emerald-600", bg: "bg-emerald-50", icon: <Award size={16} /> },
-            { label: "Tailored Bullet Verbs", value: "24 Used", status: "Active", color: "text-purple-600", bg: "bg-purple-50", icon: <Sparkles size={16} /> },
-            { label: "Compliant Export File", value: "PDF format", status: "Ready", color: "text-indigo-600", bg: "bg-indigo-50", icon: <CheckCircle2 size={16} /> }
+            {
+              label: "Resumes Built",
+              value: `${builderResumes.length}`,
+              status: builderResumes.length > 0 ? "Active resume workspace" : "No resumes built yet",
+              color: "text-blue-600",
+              bg: "bg-blue-50",
+              icon: <FileText size={16} />
+            },
+            {
+              label: "Latest ATS Score",
+              value: latestAtsScoreDisplay,
+              status: latestBuilderResume ? `Target: ${latestBuilderTitle}` : "Build a resume to see score",
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+              icon: <Sparkles size={16} />
+            },
+            {
+              label: "Lifetime Tokens Spent",
+              value: `${builderTokens.toLocaleString()}`,
+              status: "AI tokens consumed on resumes",
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+              icon: <Zap size={16} />
+            },
+            {
+              label: "Resume Builder Bill",
+              value: `$${builderCost.toFixed(4)}`,
+              status: "Resume Builder platform cost",
+              color: "text-purple-600",
+              bg: "bg-purple-50",
+              icon: <CreditCard size={16} />
+            }
           ],
           renderExtra: () => (
-            <div className="bg-white border border-slate-200/60 rounded-xl p-5 mt-6 shadow-xs">
-              <div className="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                <h3 className="text-sm font-bold text-slate-800">Your Generated Resumes</h3>
-                <button className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all"><Plus size={14} /> Build New Layout</button>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-0">
+              <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs lg:col-span-2">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4 mt-6">
+                  <h3 className="text-sm font-bold text-slate-800">Your Generated Resumes</h3>
+                  <a
+                    href="https://resume.careersenseai.com/select"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-all active:scale-95"
+                  >
+                    <Plus size={13} /> Build New Resume
+                  </a>
+                </div>
+                {builderResumes.length === 0 ? (
+                  <div className="text-center py-10">
+                    <FileText className="mx-auto h-10 w-10 text-slate-300 mb-2" />
+                    <p className="text-xs text-slate-400 font-semibold mb-3">No resumes created yet in your Resume Builder workspace.</p>
+                    <a
+                      href="https://resume.careersenseai.com/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-lg transition-all"
+                    >
+                      <Sparkles size={13} /> Launch Resume Builder ↗
+                    </a>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="text-slate-400 font-bold border-b border-slate-100">
+                          <th className="pb-2">Resume Title / Role</th>
+                          <th className="pb-2">Template & Mode</th>
+                          <th className="pb-2">ATS Index</th>
+                          <th className="pb-2">Date Modified</th>
+                          <th className="pb-2 text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                        {builderResumes.map((res) => (
+                          <tr key={res.id}>
+                            <td className="py-3 font-semibold text-slate-900 truncate max-w-[200px] flex items-center gap-2">
+                              <FileText size={14} className="text-teal-600 shrink-0" />
+                              <span className="truncate">{res.title || res.role || "My Resume"}</span>
+                            </td>
+                            <td className="py-3 capitalize text-slate-500">{res.selectedTemplate || 'Professional'} • {res.mode || 'AI'}</td>
+                            <td className="py-3">
+                              <span className={`px-2 py-0.5 rounded font-bold ${res.atsScore && res.atsScore >= 75 ? 'bg-emerald-50 text-emerald-700' : res.atsScore ? 'bg-amber-50 text-amber-700' : 'bg-blue-50 text-blue-700'}`}>
+                                {res.atsScore ? `${res.atsScore}%` : 'Ready'}
+                              </span>
+                            </td>
+                            <td className="py-3 text-slate-400">{new Date(res.updatedAt || res.createdAt).toLocaleDateString()}</td>
+                            <td className="py-3 text-right">
+                              <a
+                                href="https://resume.careersenseai.com/dashboard?tab=resumes"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-blue-600 hover:underline font-bold"
+                              >
+                                Open resume ↗
+                              </a>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="bg-slate-50 text-slate-400 font-bold border-b border-slate-100">
-                      <th className="p-3">Profile Designation Name</th>
-                      <th className="p-3">ATS Match Target</th>
-                      <th className="p-3">Last Modified Timestamp</th>
-                      <th className="p-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                    <tr>
-                      <td className="p-3 font-semibold text-slate-900 flex items-center gap-2"><FileText size={14} className="text-blue-500" /> Master Profile _ Analytics Engineer_2026</td>
-                      <td className="p-3"><span className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded font-bold">86% Index</span></td>
-                      <td className="p-3 text-slate-400">Jul 8, 2026 • 02:14</td>
-                      <td className="p-3 text-right space-x-2">
-                        <button className="text-blue-600 hover:underline">Edit</button>
-                        <button className="text-slate-400 hover:text-slate-600 inline-flex items-center gap-0.5"><FileDown size={12} /> Download</button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-semibold text-slate-900 flex items-center gap-2"><FileText size={14} className="text-slate-400" /> Generic_General Startup Operations Copy</td>
-                      <td className="p-3"><span className="bg-amber-50 text-amber-700 px-2 py-0.5 rounded font-bold">71% Index</span></td>
-                      <td className="p-3 text-slate-400">Jun 28, 2026 • 14:45</td>
-                      <td className="p-3 text-right space-x-2">
-                        <button className="text-blue-600 hover:underline">Edit</button>
-                        <button className="text-slate-400 hover:text-slate-600 inline-flex items-center gap-0.5"><FileDown size={12} /> Download</button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs flex flex-col justify-between">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800 mb-1.5">AI Resume Builder</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed mb-4">
+                    Create ATS-optimized resumes with strong action verbs, clean typography, and role-aligned skills in minutes.
+                  </p>
+                  <div className="space-y-3 border-t border-slate-100 pt-4 text-xs font-semibold text-slate-600">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400">Total Uploaded Files:</span>
+                      <span className="font-bold text-slate-800">{builderUploads.length} Resumes</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400">Target JDs Uploaded:</span>
+                      <span className="font-bold text-slate-800">{builderJds.length} JDs</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-400">Export Readiness:</span>
+                      <span className="font-bold text-emerald-600">PDF & ATS Clean</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-6 pt-4 border-t border-slate-100">
+                  <a
+                    href="https://resume.careersenseai.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-cyan-600 px-4 py-2.5 text-xs font-black text-white shadow-md shadow-teal-500/20 hover:brightness-110 active:scale-95 transition-all"
+                  >
+                    <Sparkles size={14} /> Open Resume Builder ↗
+                  </a>
+                </div>
               </div>
             </div>
           )
@@ -1561,7 +1777,7 @@ export default function DashboardPage() {
       case "Skill Certification":
       case "Certificates":
         const certList = dashboardData?.certifi?.certificates || [];
-        const certifiBill = dashboardData?.certifi?.usageSummary?.totalCostUsd ?? certifiCost;
+        const certifiBill = certifiCost;
         return {
           title: "Skill Certification Overview",
           subtitle: "View your earned certificates, verified skill badges, and active learning progress.",
@@ -2458,10 +2674,10 @@ export default function DashboardPage() {
         const subEndDateFormatted = userPlan === "free"
           ? "Lifetime Free Access"
           : userSub.planExpiresAt
-          ? `End Date: ${new Date(userSub.planExpiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
-          : userSub.tokenRenewalDate
-          ? `End Date: ${new Date(userSub.tokenRenewalDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
-          : "Active Subscription";
+            ? `End Date: ${new Date(userSub.planExpiresAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+            : userSub.tokenRenewalDate
+              ? `End Date: ${new Date(userSub.tokenRenewalDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+              : "Active Subscription";
 
         return {
           title: "Infrastructure Tokens & Billing Ledger",
@@ -2503,8 +2719,9 @@ export default function DashboardPage() {
               </div>
 
               {/* Site Sumup Breakdown */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
+                  { name: "Resume Builder", subdomain: "resume.careersenseai.com", points: summaryBySite["Resume Builder"].points, cost: summaryBySite["Resume Builder"].cost, badgeColor: "bg-purple-100 text-purple-800" },
                   { name: "ATS Checker", subdomain: "ats.careersenseai.com", points: summaryBySite["ATS Checker"].points, cost: summaryBySite["ATS Checker"].cost, badgeColor: "bg-blue-100 text-blue-800" },
                   { name: "Certifi Platform", subdomain: "certifi.careersenseai.com", points: summaryBySite["Certifi"].points, cost: summaryBySite["Certifi"].cost, badgeColor: "bg-teal-100 text-teal-800" },
                   { name: "Cover Letter Builder", subdomain: "coverletter.careersenseai.com", points: summaryBySite["Cover Letter Builder"].points, cost: summaryBySite["Cover Letter Builder"].cost, badgeColor: "bg-amber-100 text-amber-800" }
@@ -2539,6 +2756,7 @@ export default function DashboardPage() {
                       className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-700 outline-none cursor-pointer focus:border-teal-500"
                     >
                       <option value="all">All Operations</option>
+                      <option value="Resume Builder">Resume Builder</option>
                       <option value="ATS Checker">ATS Checker</option>
                       <option value="Cover Letter">Cover Letters</option>
                       <option value="Certifi">Certifi Platform</option>
@@ -2572,6 +2790,8 @@ export default function DashboardPage() {
                               appBadge = "bg-blue-50 text-blue-800";
                             } else if (log.app === "Cover Letter") {
                               appBadge = "bg-amber-50 text-amber-800";
+                            } else if (log.app === "Resume Builder") {
+                              appBadge = "bg-purple-50 text-purple-800";
                             }
 
                             return (
@@ -2629,10 +2849,11 @@ export default function DashboardPage() {
   }[label]);
 
   const getToolBadge = (label) => ({
-    "Resume Builder": atsResumes.length ? `${atsResumes.length} saved` : null,
+    "Resume Builder": builderResumes.length ? `${builderResumes.length} saved` : null,
     "ATS Checker": avgAts ? `${avgAts}%` : null,
     "Cover Letters": coverLetters.length ? `${coverLetters.length} made` : null,
     "Interview Practice": "Start",
+    "Skill Certification": certificateCount ? `${certificateCount} earned` : null,
     "Certificates": certificateCount ? `${certificateCount} earned` : null,
   }[label]);
 
@@ -2882,7 +3103,7 @@ export default function DashboardPage() {
 
       {/* --- CENTRAL INTERFACE CONTAINER --- */}
       <section className="relative flex flex-1 flex-col overflow-y-auto p-4 sm:p-6 md:p-8">
-        <div className={`flex flex-col justify-between min-h-full flex-1 ${(activeTab === "Resume Builder" || activeTab === "Interview Practice") ? "blur-[6px] pointer-events-none select-none" : ""}`}>
+        <div className={`flex flex-col justify-between min-h-full flex-1 ${activeTab === "Interview Practice" ? "blur-[6px] pointer-events-none select-none" : ""}`}>
           <div>
             <div className="mb-4 flex items-center justify-between gap-3 lg:hidden">
               <button
@@ -2978,6 +3199,16 @@ export default function DashboardPage() {
                         </div>
                       );
                     })()}
+                    {activeTab === "Resume Builder" && (
+                      <div className="flex items-center gap-2.5 shrink-0">
+                        <a href="https://resume.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                          <Sparkles size={13} /> Build Resume
+                        </a>
+                        <a href="https://resume.careersenseai.com/dashboard" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#0b132b] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
+                          <ExternalLink size={13} /> Detailed Dashboard ↗
+                        </a>
+                      </div>
+                    )}
                     {(activeTab === "Skill Certification" || activeTab === "Certificates") && (
                       <div className="flex items-center gap-2.5 shrink-0">
                         <a href="https://certifi.careersenseai.com/" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-4 py-2 bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95">
@@ -3063,27 +3294,21 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {(activeTab === "Resume Builder" || activeTab === "Interview Practice") && (() => {
-          // Resolution dates:
-          // Resume Builder: 14th September 2026
+        {activeTab === "Interview Practice" && (() => {
+          // Resolution date:
           // Interview Practice: 25th September 2026
-          const TARGET_DATES = {
-            "Resume Builder": new Date(2026, 8, 14, 0, 0, 0),
-            "Interview Practice": new Date(2026, 8, 25, 0, 0, 0)
-          };
-          const launchDate = TARGET_DATES[activeTab];
+          const launchDate = new Date(2026, 8, 25, 0, 0, 0);
           const diff = Math.max(0, launchDate - currentTime);
           const days = Math.floor(diff / (1000 * 60 * 60 * 24));
           const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
           const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-          const isResume = activeTab === "Resume Builder";
-          const accentColor = isResume ? "from-amber-600 to-orange-600" : "from-violet-600 to-purple-600";
-          const accentBg = isResume ? "bg-amber-50" : "bg-violet-50";
-          const accentText = isResume ? "text-amber-600" : "text-violet-600";
-          const accentBorder = isResume ? "border-amber-200" : "border-violet-200";
-          const Icon = isResume ? AlertTriangle : MessageSquareText;
+          const accentColor = "from-violet-600 to-purple-600";
+          const accentBg = "bg-violet-50";
+          const accentText = "text-violet-600";
+          const accentBorder = "border-violet-200";
+          const Icon = MessageSquareText;
 
           return (
             <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-900/30 backdrop-blur-[4px]">
@@ -3100,12 +3325,10 @@ export default function DashboardPage() {
                 </span>
 
                 <h3 className="text-xl font-black text-slate-900 tracking-tight">
-                  {activeTab} Under Maintenance
+                  Interview Practice Under Maintenance
                 </h3>
                 <p className="text-slate-500 text-xs mt-2 mb-6 leading-relaxed max-w-xs mx-auto">
-                  {isResume 
-                    ? "We are upgrading the AI Resume Builder workspace to serve you better."
-                    : "We are enhancing our AI Interview Simulator with advanced feedback models."}
+                  We are enhancing our AI Interview Simulator with advanced feedback models.
                   <br />Expected resolution in:
                 </p>
 
@@ -3126,7 +3349,7 @@ export default function DashboardPage() {
 
                 {/* Resolution date */}
                 <p className="text-[11.5px] text-slate-400 font-semibold">
-                  Expected Resolution Date: <span className="text-slate-800 font-bold">{isResume ? "September 14, 2026" : "September 25, 2026"}</span>
+                  Expected Resolution Date: <span className="text-slate-800 font-bold">September 25, 2026</span>
                 </p>
               </div>
             </div>

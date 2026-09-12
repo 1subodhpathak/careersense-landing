@@ -245,9 +245,8 @@ export const toolRecommendations = {
     description:
       "Build a focused, achievement-driven resume aligned with your target role.",
     cta: "Build My Resume",
-    href: "/resume-builder",
-    status: "coming-soon",
-    launchAt: new Date(2026, 8, 14, 0, 0, 0).toISOString(),
+    href: "https://resume.careersenseai.com/",
+    status: "live",
   },
   ats: {
     title: "Improve your ATS score",

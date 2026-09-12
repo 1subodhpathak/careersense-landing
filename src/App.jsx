@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import HomePage from "./pages/HomePage";
@@ -22,6 +23,13 @@ function ProtectedRoute({ children }) {
       </SignedOut>
     </>
   );
+}
+
+function ExternalRedirect({ url }) {
+  useEffect(() => {
+    window.location.replace(url);
+  }, [url]);
+  return null;
 }
 
 export default function App() {
@@ -54,7 +62,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/resume-builder" element={<ServicePlaceholderPage />} />
+        <Route path="/resume-builder" element={<ExternalRedirect url="https://resume.careersenseai.com/" />} />
         <Route path="/cover-letter-builder" element={<ServicePlaceholderPage />} />
         <Route path="/ats-checker" element={<ServicePlaceholderPage />} />
         <Route path="/interview-simulator" element={<ServicePlaceholderPage />} />
