@@ -52,7 +52,8 @@ import {
   Bot,
   Code2,
   Smartphone,
-  Palette
+  Palette,
+  ArrowUpRight
 } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useUser, useAuth } from "@clerk/clerk-react";
@@ -257,7 +258,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [communityStats, setCommunityStats] = useState(null);
   const [communityLoading, setCommunityLoading] = useState(false);
-  const [userSub, setUserSub] = useState({ plan: "free", tokensRemaining: 10000, purchasedFellowships: [] });
+  const [userSub, setUserSub] = useState({ plan: "free", tokensRemaining: 30000, purchasedFellowships: [] });
   const [subLoaded, setSubLoaded] = useState(false);
 
   useEffect(() => {
@@ -571,15 +572,16 @@ export default function DashboardPage() {
     { label: "Professional bio", points: 10, complete: Boolean(profileForm.bio?.trim()) },
     { label: "Current job title", points: 10, complete: Boolean(profileForm.currentJobTitle?.trim()) },
     { label: "Target job title", points: 10, complete: Boolean(profileForm.targetJobTitle?.trim()) },
-    { label: "Profile status", points: 5, complete: Boolean(profileForm.profileStatus?.trim()) },
-    { label: "Profile photo", points: 5, complete: Boolean(profileForm.avatar?.trim()) },
-    { label: "Custom cover image", points: 5, complete: Boolean(profileForm.bannerImage?.trim()) },
+    { label: "Education background", points: 10, complete: Array.isArray(profileForm.education) && profileForm.education.length > 0 },
+    { label: "At least one skill", points: 10, complete: profileForm.skills?.length > 0 },
+    { label: "Profile status", points: 2, complete: Boolean(profileForm.profileStatus?.trim()) },
+    { label: "Profile photo", points: 3, complete: Boolean(profileForm.avatar?.trim()) },
+    { label: "Custom cover image", points: 2, complete: Boolean(profileForm.bannerImage?.trim()) },
     {
       label: "Professional link",
-      points: 5,
+      points: 3,
       complete: Boolean(profileForm.linkedinPortfolio?.trim() || profileForm.githubUrl?.trim() || profileForm.websiteUrl?.trim())
     },
-    { label: "At least one skill", points: 10, complete: profileForm.skills?.length > 0 }
   ];
 
   const calculateProfileCompleteness = () =>
@@ -815,36 +817,15 @@ export default function DashboardPage() {
       (res.resume_id ? `Resume_${res.resume_id.substring(0, 6)}.pdf` : "Scanned Resume.pdf")
     );
   };
-  const atsPoints = (() => {
-    let pts = atsResumes.length * 180 + atsJds.length * 95;
-    atsResumes.forEach((resume) => {
-      if (resume.latestAnalysis && resume.latestAnalysis.overall_score) {
-        const report = resume.latestAnalysis;
-        const base = report.jdText ? 1825 : 1350;
-        const scoreBonus = Math.round((report.overall_score || 0) * 4.75);
-        pts += base + scoreBonus;
-      }
-    });
-    return pts;
-  })();
-  const atsCost = atsPoints / 100000;
-
-  const latestAtsResume = atsResumes[0];
-  const missingKeywords = latestAtsResume?.latestAnalysis?.analysis_points
-    ?.filter(p => p.issue_found)
-    ?.map(p => p.title) || [];
-
-  const rawBuilderResumes = dashboardData?.resumeBuilder?.resumes || [];
-  const builderResumes = [...rawBuilderResumes].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
-  const builderUploads = dashboardData?.resumeBuilder?.uploads?.resumes || [];
-  const builderJds = dashboardData?.resumeBuilder?.uploads?.jobDescriptions || [];
-  const latestBuilderResume = builderResumes[0];
-
   const isResumeBuilderService = (serviceId = '') => {
     if (!serviceId) return false;
     const s = String(serviceId).toLowerCase().trim();
     if (
-      s.startsWith('ats_') ||
+      s.startsWith('ats_resume_scan') ||
+      s.startsWith('ats_scan') ||
+      s.startsWith('ats_report') ||
+      s.startsWith('ats_analysis') ||
+      s.startsWith('ats_job_match') ||
       s.startsWith('cover_letter') ||
       s.startsWith('coverletter') ||
       s === 'cover letter' ||
@@ -873,11 +854,77 @@ export default function DashboardPage() {
       s === 'calculate_ats_score' ||
       s === 'generate_interview_prep' ||
       s === 'ats score analysis' ||
+      s === 'ats_score_analysis' ||
       s === 'job description analysis' ||
+      s === 'job_description_analysis' ||
       s === 'cora career assistant' ||
-      s === 'interview prep generation'
+      s === 'cora_career_assistant' ||
+      s === 'interview prep generation' ||
+      s === 'interview_prep_generation'
     );
   };
+
+  const isAtsCheckerService = (serviceId = '') => {
+    if (!serviceId) return false;
+    const s = String(serviceId).toLowerCase().trim();
+    if (isResumeBuilderService(s)) return false;
+    if (
+      s.startsWith('cover_letter') ||
+      s.startsWith('coverletter') ||
+      s === 'cover letter' ||
+      s.startsWith('certifi') ||
+      s.startsWith('razorpay') ||
+      s.startsWith('upgrade') ||
+      s === 'onboarding' ||
+      s === 'monthly_renewal'
+    ) {
+      return false;
+    }
+    return (
+      s.startsWith('ats_') ||
+      s.includes('ats checker') ||
+      s === 'ats scan' ||
+      s === 'ats report' ||
+      s === 'ats analysis' ||
+      s === 'ats job match' ||
+      s === 'career_tool'
+    );
+  };
+
+  const atsPoints = (() => {
+    const serverTokens = (serverLedgerLogs || [])
+      .filter(log => log.amount < 0 && isAtsCheckerService(log.serviceId))
+      .reduce((sum, log) => sum + Math.abs(log.amount || 0), 0);
+    if (serverTokens > 0) return serverTokens;
+
+    let pts = atsResumes.length * 180 + atsJds.length * 95;
+    atsResumes.forEach((resume) => {
+      if (resume.latestAnalysis && resume.latestAnalysis.overall_score) {
+        const report = resume.latestAnalysis;
+        const actualTokens = report.tokens_cost || report.careerPoints || report.total_tokens || report.tokensCost;
+        if (actualTokens) {
+          pts += Number(actualTokens) || 0;
+        } else {
+          const base = report.jdText ? 1825 : 1350;
+          const scoreBonus = Math.round((report.overall_score || 0) * 4.75);
+          pts += base + scoreBonus;
+        }
+      }
+    });
+    return pts;
+  })();
+  const atsCost = atsPoints / 20000;
+
+  const latestAtsResume = atsResumes[0];
+  const missingKeywords = latestAtsResume?.latestAnalysis?.analysis_points
+    ?.filter(p => p.issue_found)
+    ?.map(p => p.title) || [];
+
+  const rawBuilderResumes = dashboardData?.resumeBuilder?.resumes || [];
+  const builderResumes = [...rawBuilderResumes].sort((a, b) => new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0));
+  const builderUploads = dashboardData?.resumeBuilder?.uploads?.resumes || [];
+  const builderJds = dashboardData?.resumeBuilder?.uploads?.jobDescriptions || [];
+  const latestBuilderResume = builderResumes[0];
 
   const getAppNodeInfo = (serviceId = '') => {
     if (!serviceId) return { app: "Certifi", action: "Tool Usage" };
@@ -886,13 +933,13 @@ export default function DashboardPage() {
 
     if (isResumeBuilderService(s)) {
       const formatResumeAction = (name) => {
-        if (name === "generate_interview_prep" || name === "interview_prep") return "Interview Prep Generation";
+        if (name === "generate_interview_prep" || name === "interview_prep" || name === "interview_prep_generation") return "Interview Prep Generation";
         if (name === "calculate_ats_score" || name === "ats_score_analysis") return "ATS Score Analysis";
         if (name === "job_description_analysis") return "Job Description Analysis";
         if (name === "cora_career_assistant") return "Cora Career Assistant";
-        if (name === "tailor_resume") return "Resume + JD Tailoring";
-        if (name === "extract_resume") return "Resume Extraction";
-        if (name === "generate_resume") return "Resume Generation";
+        if (name === "tailor_resume" || name === "resume + jd tailoring") return "Resume + JD Tailoring";
+        if (name === "extract_resume" || name === "resume extraction") return "Resume Extraction";
+        if (name === "generate_resume" || name === "resume generation") return "Resume Generation";
         return name;
       };
       return {
@@ -901,7 +948,7 @@ export default function DashboardPage() {
       };
     }
 
-    if (lower.startsWith("ats_") || lower.includes("ats checker") || lower === "ats scan" || lower === "ats report") {
+    if (isAtsCheckerService(s)) {
       return {
         app: "ATS Checker",
         action: s.replace(/^ats_/i, "ATS ").replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()) || "ATS Analysis"
@@ -939,7 +986,7 @@ export default function DashboardPage() {
 
     return (builderResumes.length * 450) + (builderUploads.length * 150) + (builderJds.length * 90);
   })();
-  const builderCost = builderTokens / 100000;
+  const builderCost = builderTokens / 20000;
 
   const coverLetters = dashboardData?.coverLetter?.savedLetters || [];
   const coverLetterPoints = coverLetters.reduce((sum, letter) => {
@@ -953,11 +1000,11 @@ export default function DashboardPage() {
     const outputPoints = genLen > 0 ? Math.round(genLen / 4) : 600;
     return sum + inputPoints + outputPoints;
   }, 0);
-  const coverLetterCost = coverLetterPoints / 100000;
+  const coverLetterCost = coverLetterPoints / 20000;
 
   const usageLedger = dashboardData?.certifi?.usageLedger || [];
   const certifiPoints = usageLedger.reduce((sum, item) => sum + (item.careerPoints || item.points || 0), 0);
-  const certifiCost = certifiPoints / 100000;
+  const certifiCost = certifiPoints / 20000;
 
   const totalPoints = Math.max(0, atsPoints + coverLetterPoints + certifiPoints + builderTokens + partnerPointsDelta);
   const totalCost = atsCost + coverLetterCost + certifiCost + builderCost;
@@ -1054,7 +1101,7 @@ export default function DashboardPage() {
             app: nodeInfo.app,
             createdAt: new Date(log.createdAt),
             points: pts,
-            cost: pts / 100000
+            cost: pts / 20000
           };
         });
     }
@@ -1071,7 +1118,7 @@ export default function DashboardPage() {
       <div className="flex min-h-screen w-full items-center justify-center bg-[#f8fafc]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-teal-600" />
-          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Loading Workspace...</p>
+          {/* <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Loading Workspace...</p> */}
         </div>
       </div>
     );
@@ -1105,72 +1152,89 @@ export default function DashboardPage() {
           renderExtra: () => <FellowshipProgram profile={profileForm} user={user} initialProgramId={fellowshipFromUrl} subscription={userSub} onNavigateTab={handleTabChange} />
         };
       case "Dashboard":
-        const careerScore = dashboardData?.assessment?.results?.overallScore;
+        const dashAssessment = dashboardData?.assessment;
+        const dashCompPhases = dashAssessment?.aiDiagnosis?.completedPhases || {};
+        const dashBaseCatScores = dashAssessment?.results?.categoryScores || {};
+        const dashEffectivePhases = pipelinePhases.map((phase) => ({
+          ...phase,
+          score: dashCompPhases[phase.id] ? 100 : Math.round(dashBaseCatScores[phase.id] || 0),
+          completed: Boolean(dashCompPhases[phase.id])
+        }));
+        const dynamicCareerScore = dashEffectivePhases.length > 0 && dashAssessment
+          ? Math.round(dashEffectivePhases.reduce((sum, p) => sum + (Number(p.score) || 0), 0) / dashEffectivePhases.length)
+          : (dashAssessment?.results?.overallScore);
+        const careerScore = dynamicCareerScore !== undefined ? dynamicCareerScore : dashAssessment?.results?.overallScore;
         const targetAtsVal = atsResumes.length > 0 ? `${avgAts}%` : "0%";
         const targetAtsStatus = atsResumes.length > 0 ? "Latest Match Average" : "No resume scans run";
         const certificatesCount = dashboardData?.certifi?.certificates?.length || 0;
-
-        const assessmentTaken = !!dashboardData?.assessment;
-        const weakestCategory = assessmentTaken ? dashboardData.assessment.results.weakestCategories[0] : "skills";
-
-        const categoryMapNames = {
-          resume: "Resume Optimization",
-          ats: "ATS Readability check",
-          interview: "Mock Interview simulations",
-          skills: "Skill Certifications",
-          direction: "Action roadmap planning"
-        };
-
-        const roadmapText = assessmentTaken
-          ? `Your career readiness assessment indicates an opportunity for improvement in ${categoryMapNames[weakestCategory] || weakestCategory}. Focus on completing related modules to optimize your score.`
-          : "Complete your free Career Assessment to analyze your skill gaps, identify critical core deficits, and generate a customized AI-guided roadmap action plan.";
-
-        const missingTag = missingKeywords.length > 0 ? missingKeywords[0] : "Relational Cloud Schema";
-
         const coverLettersCount = dashboardData?.coverLetter?.savedLetters?.length || 0;
 
         return {
           title: "Platform Overview",
           subtitle: "Central control node for platform certifications, infrastructure usage tracking, and system tokens.",
           stats: [
-            { label: "Career Readiness Score", value: careerScore ? `${careerScore}%` : "N/A", status: assessmentTaken ? dashboardData.assessment.results.readinessLevel.label : "No assessment taken", color: "text-blue-600", bg: "bg-blue-50", icon: <TrendingUp size={16} /> },
-            { label: "ATS Matching Average", value: targetAtsVal, status: targetAtsStatus, color: "text-emerald-600", bg: "bg-emerald-50", icon: <Sparkles size={16} /> },
-            { label: "Verified Credentials", value: `${certificatesCount} Issued`, status: certificatesCount > 0 ? "Verified Credentials Sync" : "No certificates issued", color: "text-indigo-600", bg: "bg-indigo-50", icon: <ShieldCheck size={16} /> },
-            { label: "Total Cover Letters", value: `${coverLettersCount} Saved`, status: coverLettersCount > 0 ? "Total Asset Documents" : "No cover letters created", color: "text-amber-600", bg: "bg-amber-50", icon: <BookOpen size={16} /> }
+            {
+              label: "Resumes Built",
+              value: `${builderResumes.length} Saved`,
+              status: builderResumes.length > 0 ? "Active resume workspace" : "No resumes built yet",
+              color: "text-blue-600",
+              bg: "bg-blue-50",
+              icon: <FileText size={16} />,
+              href: "https://resume.careersenseai.com/"
+            },
+            {
+              label: "ATS Matching Average",
+              value: targetAtsVal,
+              status: targetAtsStatus,
+              color: "text-emerald-600",
+              bg: "bg-emerald-50",
+              icon: <Sparkles size={16} />,
+              href: "https://ats.careersenseai.com/"
+            },
+            {
+              label: "Verified Certificates",
+              value: `${certificatesCount} Issued`,
+              status: certificatesCount > 0 ? "Verified Credentials Sync" : "No certificates issued",
+              color: "text-indigo-600",
+              bg: "bg-indigo-50",
+              icon: <ShieldCheck size={16} />,
+              href: "https://certifi.careersenseai.com/"
+            },
+            {
+              label: "Total Cover Letters",
+              value: `${coverLettersCount} Saved`,
+              status: coverLettersCount > 0 ? "Total Asset Documents" : "No cover letters created",
+              color: "text-amber-600",
+              bg: "bg-amber-50",
+              icon: <BookOpen size={16} />,
+              href: "https://coverletter.careersenseai.com/"
+            }
           ],
           renderExtra: () => (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-              <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><History size={16} className="text-slate-400" /> Recent Activity Log</h3>
+            <div className="mt-6 w-full">
+              <div className="bg-white border border-slate-200/60 rounded-xl p-5 sm:p-6 shadow-xs w-full">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3.5 mb-4">
+                  <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <History size={16} className="text-slate-400" /> Recent Activity Log
+                  </h3>
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    {recentActivities.length} {recentActivities.length === 1 ? 'Event' : 'Events'} Recorded
+                  </span>
                 </div>
-                <div className="space-y-3.5">
+                <div className="space-y-3.5 divide-y divide-slate-50">
                   {recentActivities.length === 0 ? (
-                    <p className="text-xs text-slate-400 py-6 text-center">No recent activities recorded.</p>
+                    <p className="text-xs text-slate-400 py-8 text-center font-medium">No recent activities recorded across your workspace.</p>
                   ) : (
                     recentActivities.map((item, idx) => (
-                      <div key={idx} className="flex items-center justify-between text-xs border-b border-slate-50 last:border-0 pb-3 last:pb-0">
+                      <div key={idx} className="flex items-center justify-between text-xs pt-3.5 first:pt-0">
                         <div>
-                          <div className="font-semibold text-slate-800">{item.event}</div>
+                          <div className="font-semibold text-slate-800 text-sm">{item.event}</div>
                           <div className="text-[11px] text-slate-400 mt-0.5">{timeAgo(item.time)}</div>
                         </div>
-                        <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] ${item.badgeColor}`}>{item.metric}</span>
+                        <span className={`px-2.5 py-1 rounded-md font-bold text-[11px] ${item.badgeColor}`}>{item.metric}</span>
                       </div>
                     ))
                   )}
-                </div>
-              </div>
-              <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs flex flex-col justify-between">
-                <div>
-                  <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-3 mb-3 flex items-center gap-2"><GraduationCap size={16} className="text-slate-400" /> Contextual AI Roadmap Action</h3>
-                  <p className="text-xs text-slate-500 leading-relaxed">{roadmapText}</p>
-                </div>
-                <div className="bg-slate-50 border border-slate-200/60 rounded-xl p-3 mt-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="bg-amber-100 text-amber-700 text-xs font-bold p-2 rounded-lg">!</div>
-                    <div className="text-xs font-bold text-slate-700 truncate max-w-[200px]">Missing Tag: {missingTag}</div>
-                  </div>
-                  <a href="https://ats.careersenseai.com/" target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1">Resolve <ChevronRight size={14} /></a>
                 </div>
               </div>
             </div>
@@ -1197,11 +1261,27 @@ export default function DashboardPage() {
 
       case "Career GPS":
         const latestGps = dashboardData?.assessment;
-        const gpsScore = latestGps?.results?.overallScore;
-        const gpsReadiness = latestGps?.results?.readinessLevel?.label || "Not Taken";
-        const gpsTargetRole = latestGps?.profile?.targetRole || "N/A";
         const aiDiag = latestGps?.aiDiagnosis;
         const catScores = latestGps?.results?.categoryScores || {};
+        const gpsCompPhases = aiDiag?.completedPhases || {};
+        const gpsEffectivePhases = pipelinePhases.map((phase) => ({
+          ...phase,
+          score: gpsCompPhases[phase.id] ? 100 : Math.round(catScores[phase.id] || 0),
+          completed: Boolean(gpsCompPhases[phase.id])
+        }));
+        const dynamicGpsScore = gpsEffectivePhases.length > 0 && latestGps
+          ? Math.round(gpsEffectivePhases.reduce((sum, p) => sum + (Number(p.score) || 0), 0) / gpsEffectivePhases.length)
+          : (latestGps?.results?.overallScore);
+        const gpsScore = dynamicGpsScore !== undefined ? dynamicGpsScore : latestGps?.results?.overallScore;
+        let dynamicGpsReadiness = latestGps?.results?.readinessLevel?.label || "Not Taken";
+        if (gpsScore !== undefined && latestGps) {
+          if (gpsScore >= 80) dynamicGpsReadiness = "Top Contender";
+          else if (gpsScore >= 60) dynamicGpsReadiness = "Market Ready";
+          else if (gpsScore >= 40) dynamicGpsReadiness = "Emerging Professional";
+          else dynamicGpsReadiness = "Career Launch Pad";
+        }
+        const gpsReadiness = dynamicGpsReadiness;
+        const gpsTargetRole = latestGps?.profile?.targetRole || "N/A";
 
         return {
           title: "Career GPS AI Workspace",
@@ -1469,7 +1549,7 @@ export default function DashboardPage() {
             {
               label: "Resume Builder Bill",
               value: `$${builderCost.toFixed(4)}`,
-              status: "Resume Builder platform cost",
+              status: "Bills are managed by careersenseAi, you dont need to pay",
               color: "text-purple-600",
               bg: "bg-purple-50",
               icon: <CreditCard size={16} />
@@ -1619,7 +1699,7 @@ export default function DashboardPage() {
             {
               label: "ATS Bill",
               value: `$${atsCost.toFixed(4)}`,
-              status: "ATS Checker platform cost",
+              status: "Bills are managed by careersenseAi, you dont need to pay",
               color: "text-emerald-600",
               bg: "bg-emerald-50",
               icon: <CreditCard size={16} />
@@ -1709,7 +1789,7 @@ export default function DashboardPage() {
             {
               label: "Cover Letter Bill",
               value: `$${coverLetterCost.toFixed(4)}`,
-              status: "Cover Letter Builder cost",
+              status: "Bills are managed by careersenseAi, you dont need to pay",
               color: "text-purple-600",
               bg: "bg-purple-50",
               icon: <CreditCard size={16} />
@@ -1809,7 +1889,7 @@ export default function DashboardPage() {
             {
               label: "Certifi Bill",
               value: `$${(certifiBill || 0).toFixed(4)}`,
-              status: "Certifi platform cost",
+              status: "Bills are managed by careersenseAi, you dont need to pay",
               color: "text-emerald-600",
               bg: "bg-emerald-50",
               icon: <CreditCard size={16} />
@@ -2400,17 +2480,23 @@ export default function DashboardPage() {
                       className="w-full rounded-xl border border-slate-300 bg-[#f8fafc] p-3.5 text-sm sm:text-base font-semibold text-slate-900 shadow-2xs outline-none transition-all placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20"
                       value={profileForm.fullName}
                       onChange={(e) => setProfileForm({ ...profileForm, fullName: e.target.value })}
-                      placeholder="e.g. Subodh Pathak"
+                      placeholder="e.g. Pooja Bansal"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Primary Email Address</label>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">Primary Email Address</label>
+                      {/* <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500">
+                        <Lock size={10} /> Managed by Clerk
+                      </span> */}
+                    </div>
                     <input
                       type="email"
-                      className="w-full rounded-xl border border-slate-300 bg-[#f8fafc] p-3.5 text-sm sm:text-base font-semibold text-slate-900 shadow-2xs outline-none transition-all placeholder:text-slate-400 focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20"
-                      value={profileForm.email}
-                      onChange={(e) => setProfileForm({ ...profileForm, email: e.target.value })}
-                      placeholder="e.g. subodh@example.com"
+                      readOnly
+                      disabled
+                      className="w-full rounded-xl border border-slate-200 bg-slate-100/90 p-3.5 text-sm sm:text-base font-semibold text-slate-500 shadow-2xs outline-none cursor-not-allowed select-none"
+                      value={profileForm.email || user?.primaryEmailAddress?.emailAddress || ""}
+                      placeholder="e.g. user@example.com"
                     />
                   </div>
                   <div>
@@ -2670,7 +2756,7 @@ export default function DashboardPage() {
         const resumesCount = atsResumes.length;
         const letterCount = dashboardData?.coverLetter?.savedLetters?.length || 0;
 
-        const tokenAllowanceMap = { free: "10,000 One-Time", student: "100,000 / Mo", intern: "500,000 / Mo", partner: "1,000,000 / Mo" };
+        const tokenAllowanceMap = { free: "30,000 One-Time", student: "100,000 / Mo", intern: "500,000 / Mo", partner: "1,000,000 / Mo" };
         const subEndDateFormatted = userPlan === "free"
           ? "Lifetime Free Access"
           : userSub.planExpiresAt
@@ -2683,9 +2769,9 @@ export default function DashboardPage() {
           title: "Infrastructure Tokens & Billing Ledger",
           subtitle: "Verify computational quota allocations and clear transaction operational history.",
           stats: [
-            { label: "AI Tokens Remaining", value: `${(userSub.tokensRemaining || 10000).toLocaleString()}`, status: "Reverse countdown balance", color: "text-amber-600", bg: "bg-amber-50", icon: <Zap size={16} fill="currentColor" /> },
+            { label: "AI Tokens Remaining", value: `${(userSub.tokensRemaining || 30000).toLocaleString()}`, status: "Reverse countdown balance", color: "text-amber-600", bg: "bg-amber-50", icon: <Zap size={16} fill="currentColor" /> },
             { label: "Active Operational Tier", value: `${userPlan.toUpperCase()} Plan`, status: subEndDateFormatted, color: "text-cyan-600", bg: "bg-cyan-50", icon: <CreditCard size={16} /> },
-            { label: "Monthly Token Allowance", value: tokenAllowanceMap[userPlan] || "10,000", status: userPlan === "free" ? "One-Time Allocation" : "Monthly Auto-Renewal", color: "text-emerald-600", bg: "bg-emerald-50", icon: <ShieldCheck size={16} /> }
+            { label: "Monthly Token Allowance", value: tokenAllowanceMap[userPlan] || "30,000", status: userPlan === "free" ? "One-Time Allocation" : "Monthly Auto-Renewal", color: "text-emerald-600", bg: "bg-emerald-50", icon: <ShieldCheck size={16} /> }
           ],
           renderExtra: () => (
             <div className="space-y-6 mt-6">
@@ -2784,26 +2870,85 @@ export default function DashboardPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 font-medium text-slate-700">
-                          {displayedLedger.map((log, i) => {
-                            let appBadge = "bg-teal-50 text-teal-800";
-                            if (log.app === "ATS Checker") {
-                              appBadge = "bg-blue-50 text-blue-800";
-                            } else if (log.app === "Cover Letter") {
-                              appBadge = "bg-amber-50 text-amber-800";
-                            } else if (log.app === "Resume Builder") {
-                              appBadge = "bg-purple-50 text-purple-800";
-                            }
+                          {(() => {
+                            const todayStart = new Date();
+                            todayStart.setHours(0, 0, 0, 0);
 
-                            return (
-                              <tr key={i} className="last:border-0">
-                                <td className="py-3 font-semibold text-slate-800">{log.action}</td>
-                                <td className="py-3"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${appBadge}`}>{log.app}</span></td>
-                                <td className="py-3 text-slate-400">{log.createdAt.toLocaleDateString()}</td>
-                                <td className="py-3 text-right font-bold text-slate-800">{log.points.toLocaleString()}</td>
-                                <td className="py-3 text-right font-bold text-slate-800">${log.cost.toFixed(4)}</td>
-                              </tr>
-                            );
-                          })}
+                            // Group displayed logs by localized calendar date
+                            const dateGroups = displayedLedger.reduce((acc, log) => {
+                              const d = new Date(log.createdAt);
+                              const dateKey = d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                              const rawDateStart = new Date(d);
+                              rawDateStart.setHours(0, 0, 0, 0);
+                              const isPast = rawDateStart.getTime() < todayStart.getTime();
+
+                              if (!acc[dateKey]) {
+                                acc[dateKey] = {
+                                  dateLabel: dateKey,
+                                  isPast,
+                                  items: [],
+                                  totalTokens: 0,
+                                  totalCost: 0
+                                };
+                              }
+                              acc[dateKey].items.push(log);
+                              acc[dateKey].totalTokens += (log.points || 0);
+                              acc[dateKey].totalCost += (log.cost || 0);
+                              return acc;
+                            }, {});
+
+                            return Object.values(dateGroups).map((group, groupIdx) => (
+                              <React.Fragment key={group.dateLabel}>
+                                {/* Date-wise settled daily total row at TOP of date logs (only appears for past completed days when tokens > 0) */}
+                                {group.isPast && group.totalTokens > 0 && (
+                                  <tr className="bg-slate-100/95 border-y-2 border-slate-300 font-bold text-slate-800 shadow-2xs">
+                                    <td colSpan={2} className="py-2.5 px-3">
+                                      <div className="flex items-center gap-2">
+                                        <span className="inline-flex items-center justify-center h-5 w-5 rounded bg-teal-600 text-white text-[10px] font-black shadow-xs">∑</span>
+                                        <span className="text-[11px] font-black text-slate-900 uppercase tracking-wide">
+                                          Date Total · {group.dateLabel}
+                                        </span>
+                                        <span className="hidden sm:inline-block text-[10px] font-semibold text-slate-500">
+                                          (Settled Combined Usage)
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="py-2.5 text-xs text-slate-500 font-semibold">
+                                      {group.items.length} {group.items.length === 1 ? 'log entry' : 'log entries'}
+                                    </td>
+                                    <td className="py-2.5 text-right font-black text-teal-700 text-xs">
+                                      {group.totalTokens.toLocaleString()} tokens
+                                    </td>
+                                    <td className="py-2.5 text-right font-black text-slate-900 text-xs">
+                                      ${group.totalCost.toFixed(4)}
+                                    </td>
+                                  </tr>
+                                )}
+
+                                {/* Individual operation logs for this date */}
+                                {group.items.map((log, i) => {
+                                  let appBadge = "bg-teal-50 text-teal-800 border border-teal-200/50";
+                                  if (log.app === "ATS Checker") {
+                                    appBadge = "bg-blue-50 text-blue-800 border border-blue-200/50";
+                                  } else if (log.app === "Cover Letter") {
+                                    appBadge = "bg-amber-50 text-amber-800 border border-amber-200/50";
+                                  } else if (log.app === "Resume Builder") {
+                                    appBadge = "bg-purple-50 text-purple-800 border border-purple-200/50";
+                                  }
+
+                                  return (
+                                    <tr key={`${groupIdx}-${i}`} className="hover:bg-slate-50/60 transition-colors">
+                                      <td className="py-3 font-semibold text-slate-800">{log.action}</td>
+                                      <td className="py-3"><span className={`px-2 py-0.5 rounded text-[10px] font-bold ${appBadge}`}>{log.app}</span></td>
+                                      <td className="py-3 text-slate-400">{log.createdAt.toLocaleDateString()}</td>
+                                      <td className="py-3 text-right font-bold text-slate-800">{log.points.toLocaleString()}</td>
+                                      <td className="py-3 text-right font-bold text-slate-800">${log.cost.toFixed(4)}</td>
+                                    </tr>
+                                  );
+                                })}
+                              </React.Fragment>
+                            ));
+                          })()}
                         </tbody>
                       </table>
                     </div>
@@ -2832,7 +2977,20 @@ export default function DashboardPage() {
   const detailedData = getTabDetailedData();
   const profileCompleteness = calculateProfileCompleteness();
 
-  const readinessScore = dashboardData?.assessment?.results?.overallScore;
+  const dashAssessment = dashboardData?.assessment;
+  const dashCompPhases = dashAssessment?.aiDiagnosis?.completedPhases || {};
+  const dashBaseCatScores = dashAssessment?.results?.categoryScores || {};
+  const dashEffectivePhases = pipelinePhases.map((phase) => ({
+    ...phase,
+    score: dashCompPhases[phase.id] ? 100 : Math.round(dashBaseCatScores[phase.id] || 0),
+    completed: Boolean(dashCompPhases[phase.id])
+  }));
+  const dynamicCareerScore = dashEffectivePhases.length > 0 && dashAssessment
+    ? Math.round(dashEffectivePhases.reduce((sum, p) => sum + (Number(p.score) || 0), 0) / dashEffectivePhases.length)
+    : (dashAssessment?.results?.overallScore);
+  const readinessScore = dynamicCareerScore !== undefined ? dynamicCareerScore : dashAssessment?.results?.overallScore;
+  const readinessLabel = readinessScore >= 80 ? "Top Contender" : readinessScore >= 60 ? "Market Ready" : readinessScore >= 40 ? "Emerging Professional" : (dashAssessment?.results?.readinessLevel?.label || "Nearly Job-Ready");
+
   let partnerCompleted = 0;
   try {
     const partnerRecords = JSON.parse(localStorage.getItem("careersense-partner-assignments-v1")) || {};
@@ -2991,7 +3149,7 @@ export default function DashboardPage() {
                     {userInitials}
                   </div>
                 )}
-                {!sidebarCollapsed && <div className="leading-tight min-w-0"><div className="text-xs font-bold text-white truncate">{username}</div><div className="text-[10px] text-[#0EA8B9] font-bold uppercase truncate">{userPlan} Plan · {(userSub.tokensRemaining || 10000).toLocaleString()} tokens</div></div>}
+                {!sidebarCollapsed && <div className="leading-tight min-w-0"><div className="text-xs font-bold text-white truncate">{username}</div><div className="text-[10px] text-[#0EA8B9] font-bold uppercase truncate">{userPlan} Plan · {(userSub.tokensRemaining || 30000).toLocaleString()} tokens</div></div>}
               </div>
               {!sidebarCollapsed && <button onClick={() => setAccountMenuOpen((open) => !open)} className="ml-2 flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-white/5 hover:text-white" aria-expanded={accountMenuOpen}><ChevronDown size={15} className={`transition-transform ${accountMenuOpen ? "rotate-180" : ""}`} /></button>}
               {accountMenuOpen && !sidebarCollapsed && <div className="absolute bottom-12 left-0 right-0 rounded-xl border border-slate-700 bg-[#111c36] p-2 shadow-2xl"><button onClick={() => handleTabChange("My Profile")} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-slate-300 hover:bg-white/5"><UserRound size={14} /> Manage profile</button><button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold text-rose-300 hover:bg-rose-500/10"><LogOut size={14} /> Sign out</button></div>}
@@ -3096,7 +3254,7 @@ export default function DashboardPage() {
               </nav>
               <button onClick={() => { handleTabChange(nextAction.tab); setSidebarOpen(false); }} className="mt-5 w-full rounded-xl border border-teal-500/15 bg-teal-500/[0.06] p-3 text-left"><div className="flex items-center justify-between"><span className="text-[9px] font-black uppercase tracking-[0.16em] text-teal-400">Your next move</span><Target size={13} className="text-teal-400" /></div><div className="mt-1.5 text-xs font-bold text-white">{nextAction.label}</div><div className="mt-1 text-[10px] text-slate-500">{nextAction.detail}</div></button>
             </div>
-            <div className="mt-4 flex items-center gap-3 border-t border-slate-800 px-2 pt-4">{user?.imageUrl ? <img src={user.imageUrl} alt={username} className="h-9 w-9 rounded-full object-cover" /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">{userInitials}</div>}<div className="min-w-0 flex-1"><div className="truncate text-xs font-bold text-white">{username}</div><div className="truncate text-[10px] text-[#0EA8B9] font-bold uppercase">{userPlan} Plan · {(userSub.tokensRemaining || 10000).toLocaleString()} tokens</div></div><LogOut size={15} className="text-slate-500" /></div>
+            <div className="mt-4 flex items-center gap-3 border-t border-slate-800 px-2 pt-4">{user?.imageUrl ? <img src={user.imageUrl} alt={username} className="h-9 w-9 rounded-full object-cover" /> : <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-600 text-xs font-black text-white">{userInitials}</div>}<div className="min-w-0 flex-1"><div className="truncate text-xs font-bold text-white">{username}</div><div className="truncate text-[10px] text-[#0EA8B9] font-bold uppercase">{userPlan} Plan · {(userSub.tokensRemaining || 30000).toLocaleString()} tokens</div></div><LogOut size={15} className="text-slate-500" /></div>
           </aside>
         </div>
       )}
@@ -3133,7 +3291,7 @@ export default function DashboardPage() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="bg-white border border-slate-200/60 rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs">
                   <div className="h-7 w-7 rounded-md bg-amber-50 text-amber-500 flex items-center justify-center"><Zap size={14} fill="currentColor" /></div>
-                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">AI Tokens Remaining</div><div className="text-sm font-black text-slate-800 mt-1">{(userSub.tokensRemaining || 10000).toLocaleString()}</div></div>
+                  <div className="leading-none"><div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">AI Tokens Remaining</div><div className="text-sm font-black text-slate-800 mt-1">{(userSub.tokensRemaining || 30000).toLocaleString()}</div></div>
                 </div>
                 <Link to="/pricing" className="bg-white border border-slate-200/60 hover:border-[#0EA8B9] rounded-lg px-3 py-2 flex items-center gap-2.5 shadow-xs transition">
                   <div className="h-7 w-7 rounded-md bg-cyan-50 text-cyan-600 flex items-center justify-center font-black text-xs uppercase">{(userPlan || "f")[0]}</div>
@@ -3242,12 +3400,54 @@ export default function DashboardPage() {
                   </div>
 
                   {activeTab === "Dashboard" && (
-                    <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                      <div>
-                        <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Welcome back, {user?.firstName || username}</h2>
-                        <p className="text-slate-400 text-sm mt-1.5 max-w-[65ch] leading-relaxed">
-                          Track your certification progress, analyze assessment performance, and monitor active learning paths across your organization's workspace.
-                        </p>
+                    <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-4">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">Welcome back, {user?.firstName || username}</h2>
+                          <p className="text-slate-400 text-sm mt-1 max-w-[65ch] leading-relaxed">
+                            Track your certification progress, analyze assessment performance, and monitor active learning paths across your organization's workspace.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Career Readiness Score - Sleek One-Line Banner */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-blue-100/90 bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-cyan-50/80 p-4 sm:px-5 sm:py-3.5 shadow-2xs">
+                        <div className="flex flex-wrap items-center gap-3 sm:gap-5">
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-500/25">
+                              <TrendingUp size={18} />
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-[0.16em] text-blue-600/90">
+                                Career Readiness Score
+                              </div>
+                              <div className="flex items-baseline gap-2 mt-0.5">
+                                <span className="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                                  {readinessScore != null ? `${readinessScore}%` : "N/A"}
+                                </span>
+                                <span className="inline-flex items-center rounded-full bg-blue-100/80 px-2.5 py-0.5 text-xs font-black text-blue-700">
+                                  {readinessLabel}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="hidden lg:block h-7 w-px bg-blue-200/70" />
+                          <p className="hidden lg:block text-xs font-medium text-slate-600 max-w-md leading-relaxed">
+                            {dashAssessment
+                              ? "Real-time readiness aggregate benchmarked across Resume Builder, ATS Checker, Certifi, and Cover Letters."
+                              : "Complete your free Career GPS Assessment to unlock tailored diagnostics and live benchmark scores."}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                          <Link
+                            to="/career-gps"
+                            className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 text-xs font-bold shadow-sm shadow-blue-500/20 transition-all hover:scale-105 active:scale-95"
+                          >
+                            <span>Open Career GPS</span>
+                            <ArrowUpRight size={14} />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -3268,9 +3468,30 @@ export default function DashboardPage() {
                           </div>
                         </div>
 
-                        <div className="mt-4">
-                          <div className={`text-3xl font-black tracking-tight ${card.color}`}>{card.value}</div>
-                          <p className="text-[11.5px] text-slate-400 leading-normal font-medium mt-1.5">{card.status}</p>
+                        <div className="mt-4 flex items-end justify-between gap-2">
+                          <div>
+                            <div className={`text-3xl font-black tracking-tight ${card.color}`}>{card.value}</div>
+                            <p className="text-[11.5px] text-slate-400 leading-normal font-medium mt-1.5">{card.status}</p>
+                          </div>
+                          {card.label === "Active Operational Tier" ? (
+                            <Link
+                              to="/pricing"
+                              title="Upgrade Plan"
+                              className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-cyan-200/80 bg-cyan-50 text-[#0EA8B9] hover:bg-[#0EA8B9] hover:text-white transition-all shadow-2xs hover:scale-105 shrink-0"
+                            >
+                              <ArrowUpRight size={16} />
+                            </Link>
+                          ) : card.href ? (
+                            <a
+                              href={card.href}
+                              target={card.href.startsWith("http") ? "_blank" : undefined}
+                              rel={card.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                              title={`Open ${card.label}`}
+                              className="inline-flex items-center justify-center h-8 w-8 rounded-lg border border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all shadow-2xs hover:scale-105 shrink-0"
+                            >
+                              <ArrowUpRight size={15} />
+                            </a>
+                          ) : null}
                         </div>
                       </div>
                     ))}

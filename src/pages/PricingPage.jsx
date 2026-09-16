@@ -14,7 +14,7 @@ export default function PricingPage() {
   const [searchParams] = useSearchParams();
 
   const [currentPlan, setCurrentPlan] = useState("free");
-  const [tokensRemaining, setTokensRemaining] = useState(10000);
+  const [tokensRemaining, setTokensRemaining] = useState(30000);
   const [loadingPlan, setLoadingPlan] = useState(false);
   const [selectedFellowship, setSelectedFellowship] = useState("data-analyst");
   const [partnerBillingCycle, setPartnerBillingCycle] = useState("monthly");
@@ -222,7 +222,7 @@ export default function PricingPage() {
       priceDisplayUsd: "$0",
       periodInr: "Forever Free",
       periodUsd: "Forever Free",
-      tokens: "10,000 One-Time Tokens",
+      tokens: "30,000 One-Time Tokens",
       tokenDetail: "Initial allowance on signup",
       badge: "Getting Started",
       badgeColor: "bg-slate-500/10 text-slate-400 border-slate-500/30",
@@ -231,7 +231,7 @@ export default function PricingPage() {
       buttonStyle: "bg-slate-700/50 text-slate-300 cursor-default",
       features: [
         { text: "All AI Career Tools Active", included: true },
-        { text: "10,000 AI Tokens (One-Time)", included: true },
+        { text: "30,000 AI Tokens (One-Time)", included: true },
         { text: "Report / PDF Downloads", included: true, note: "₹1 per download pass" },
         { text: "Public Career Profile", included: true },
         { text: "Fellowship Program Access", included: false },

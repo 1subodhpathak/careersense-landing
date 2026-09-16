@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowRight, ExternalLink, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import ScoreRing from "./ScoreRing";
@@ -122,9 +123,9 @@ function ComingSoonModal({ tool, onClose }) {
   const resolutionDateFormatted = "September 25, 2026";
   const maintenanceMessage = "We are enhancing our AI Interview Simulator with advanced feedback models.";
 
-  return (
+  const modalNode = (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="assessment-launch-title"
@@ -185,6 +186,11 @@ function ComingSoonModal({ tool, onClose }) {
       </div>
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalNode, document.body);
+  }
+  return modalNode;
 }
 
 export default function AssessmentResults({

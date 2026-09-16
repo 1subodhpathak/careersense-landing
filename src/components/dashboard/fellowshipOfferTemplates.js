@@ -3,205 +3,193 @@ export const FELLOWSHIP_OFFER_TEMPLATES = {
   "data-analyst": {
     id: "data-analyst",
     trackName: "Data Analyst",
-    headerTag: "DATA ANALYST FELLOWSHIP",
-    title: "CAREERSENSE DATA ANALYST FELLOWSHIP OFFER LETTER",
-    position: "Data Analyst Fellow",
-    subject: "Offer to Join the CareerSense Data Analyst Fellowship",
-    intro1: (firstName) => `We are pleased to offer you a place in the CareerSense Data Analyst Fellowship, a 3-month (12-week) hands-on learning program designed to build practical capability in data analysis, business intelligence, reporting and data storytelling. The Fellowship combines structured assignments, guided projects, mentor feedback, portfolio development and a final capstone experience.`,
-    intro2: `As a Data Analyst Fellow, you will learn by doing. You will collect, clean, analyse and visualize data to answer practical business questions and communicate useful insights. You are expected to document your work professionally, reflect on feedback, and build credible evidence of your skills through projects and presentations.`,
+    headerTag: "DATA ANALYST PROGRAM",
+    title: "CAREERSENSE DATA ANALYST OFFER LETTER",
+    position: "Data Analyst",
+    subject: "Offer to Join CareerSense as Data Analyst",
     details: {
-      position: "Data Analyst Fellow",
-      engagementType: "Experiential Learning Fellowship",
-      initialTerm: "3 months (12 weeks)",
-      workingMode: "Remote / Online, with cohort sessions as applicable",
-      timeCommitment: "Flexible and project-based; cohort milestones and sessions as communicated",
-      benefits: "Learning resources, projects, mentor feedback, Fellow ID and completion recognition as applicable",
+      position: "Data Analyst",
+      engagementType: "Experiential Learning & Project Engagement",
+      initialTerm: "3 months (12 weeks), renewable by mutual agreement",
+      workingMode: "Remote / Online, with scheduled reviews",
+      timeCommitment: "Flexible and milestone-based; agreed with mentor leads",
+      benefits: "Learning resources, real-world project portfolios, mentor evaluations, Digital ID and completion certification",
     },
-    footerDisclaimer: "This offer is issued for the CareerSense Data Analyst Fellowship. Cohort dates, project briefs, tools, mentor availability, learning resources, completion requirements, or other program terms may be updated by CareerSense and communicated in writing.",
+    footerDisclaimer: "This offer is issued for the CareerSense Data Analyst track. Project briefs, analytical tooling, mentor allocations, milestone criteria, and completion requirements are administered by CareerSense and communicated in writing.",
     responsibilities: [
-      "Work with structured datasets and clearly document data sources, assumptions, definitions and limitations.",
-      "Use Excel or Google Sheets and SQL to clean, transform, join, aggregate and validate data for analysis.",
-      "Perform exploratory data analysis to identify patterns, trends, anomalies and meaningful business questions.",
-      "Create clear KPIs, charts and dashboards using Power BI, Tableau or other approved visualization tools.",
-      "Translate analysis into concise business insights, recommendations and stakeholder-ready summaries.",
-      "Apply basic statistics and analytical reasoning appropriately, and explain methods in simple language.",
-      "Maintain organized project files, queries, dashboards, documentation and versioned portfolio evidence.",
-      "Complete a capstone or final analysis project that demonstrates an end-to-end data-to-insight workflow."
+      "Work with structured enterprise datasets and rigorously document data sources, assumptions, schemas, and analytical limitations.",
+      "Utilize advanced SQL, Python (Pandas), and spreadsheet models to clean, transform, aggregate, and validate data pipelines.",
+      "Perform thorough exploratory data analysis to surface patterns, anomalies, predictive indicators, and high-impact business opportunities.",
+      "Design executive-grade dashboards and actionable KPI scorecards using Power BI, Tableau, and modern visual analytics tools.",
+      "Synthesize complex quantitative findings into clear strategic recommendations and present stakeholder-ready deliverables.",
+      "Apply statistical methodologies with mathematical rigor, ensuring clear explanations and defensible business rationale.",
+      "Maintain version-controlled analysis repositories, queries, documentation, and verified proof-of-work project portfolios.",
+      "Deliver an end-to-end capstone initiative demonstrating a complete business problem-to-insight analytical lifecycle."
     ],
-    intent: "Our intent is simple: help Data Analyst Fellows build practical capability, complete credible projects, strengthen their portfolio, and leave the program with clearer evidence of what they can do.",
-    acceptanceRole: "CareerSense Data Analyst Fellow",
-    acceptancePolicy: "CareerSense Data Analyst Fellowship",
-    welcomeTagline: "Learn by doing. Turn data into decisions. Build proof of work."
+    intent: "Our objective is straightforward: provide high-caliber practitioners with practical technical execution, real project exposure, mentor guidance, and verified proof-of-work credentials that substantiate industry readiness.",
+    acceptanceRole: "CareerSense Data Analyst",
+    acceptancePolicy: "CareerSense Data Analyst Program",
+    welcomeTagline: "Learn by doing. Transform data into strategy. Build verified proof of work."
   },
 
   "data-science": {
     id: "data-science",
     trackName: "Data Science",
-    headerTag: "DATA SCIENCE FELLOWSHIP",
-    title: "CAREERSENSE DATA SCIENCE FELLOWSHIP OFFER LETTER",
-    position: "Data Science Fellow",
-    subject: "Offer to Join the CareerSense Data Science Fellowship",
-    intro1: (firstName) => `We are pleased to offer you a place in the CareerSense Data Science Fellowship, a 3-month (12-week) hands-on learning program designed to build practical capability in data science, statistics, machine learning and applied predictive analytics. The Fellowship combines structured assignments, guided projects, mentor feedback, portfolio development and a final capstone experience.`,
-    intro2: `As a Data Science Fellow, you will learn by doing. You will prepare data, explore patterns, build and evaluate machine-learning models, and communicate model results responsibly. You are expected to document your work professionally, reflect on feedback, and build credible evidence of your skills through projects and presentations.`,
+    headerTag: "DATA SCIENCE PROGRAM",
+    title: "CAREERSENSE DATA SCIENCE OFFER LETTER",
+    position: "Data Scientist",
+    subject: "Offer to Join CareerSense as Data Scientist",
     details: {
-      position: "Data Science Fellow",
-      engagementType: "Experiential Learning Fellowship",
-      initialTerm: "3 months (12 weeks)",
-      workingMode: "Remote / Online, with cohort sessions as applicable",
-      timeCommitment: "Flexible and project-based; cohort milestones and sessions as communicated",
-      benefits: "Learning resources, projects, mentor feedback, Fellow ID and completion recognition as applicable",
+      position: "Data Scientist",
+      engagementType: "Experiential Learning & Project Engagement",
+      initialTerm: "3 months (12 weeks), renewable by mutual agreement",
+      workingMode: "Remote / Online, with scheduled reviews",
+      timeCommitment: "Flexible and milestone-based; agreed with mentor leads",
+      benefits: "Learning resources, real-world project portfolios, mentor evaluations, Digital ID and completion certification",
     },
-    footerDisclaimer: "This offer is issued for the CareerSense Data Science Fellowship. Cohort dates, project briefs, tools, mentor availability, learning resources, completion requirements, or other program terms may be updated by CareerSense and communicated in writing.",
+    footerDisclaimer: "This offer is issued for the CareerSense Data Science track. Project briefs, computing environments, mentor allocations, milestone criteria, and completion requirements are administered by CareerSense and communicated in writing.",
     responsibilities: [
-      "Use Python, Pandas, NumPy and related tools to prepare, clean and explore structured datasets.",
-      "Apply statistical reasoning and exploratory analysis to understand relationships, distributions and data quality.",
-      "Create suitable features and prepare training, validation and test data while avoiding data leakage.",
-      "Build baseline and machine-learning models using appropriate algorithms and documented assumptions.",
-      "Evaluate models using suitable metrics and compare results against meaningful baselines.",
-      "Interpret feature importance, errors, limitations, fairness considerations and practical business implications.",
-      "Create reproducible notebooks, visualizations, documentation and portfolio-ready project summaries.",
-      "Complete an end-to-end capstone that frames a problem, builds a model, evaluates it and presents actionable conclusions."
+      "Leverage Python, NumPy, Pandas, and Scikit-Learn to engineer scalable data processing pipelines and exploratory frameworks.",
+      "Formulate statistical hypotheses, conduct exploratory data analysis, and validate data integrity across complex multidimensional datasets.",
+      "Engineer robust features, design leakage-free validation splits, and implement reproducible data preparation workflows.",
+      "Construct, optimize, and cross-validate predictive and classification models with well-documented mathematical rationale.",
+      "Benchmark model performance using rigorous evaluation metrics (ROC-AUC, F1-Score, RMSE) against defined baseline standards.",
+      "Analyze model explainability, feature attribution, error distributions, and production constraints to ensure reliable deployment.",
+      "Maintain modular, reproducible Jupyter/Python codebases, technical documentation, and portfolio-grade technical reports.",
+      "Deliver an end-to-end machine learning capstone solving a real-world predictive challenge with production-grade rigor."
     ],
-    intent: "Our intent is simple: help Data Science Fellows build practical capability, complete credible projects, strengthen their portfolio, and leave the program with clearer evidence of what they can do.",
-    acceptanceRole: "CareerSense Data Science Fellow",
-    acceptancePolicy: "CareerSense Data Science Fellowship",
-    welcomeTagline: "Learn by doing. Build models. Solve real problems."
+    intent: "Our objective is straightforward: provide high-caliber practitioners with practical technical execution, real project exposure, mentor guidance, and verified proof-of-work credentials that substantiate industry readiness.",
+    acceptanceRole: "CareerSense Data Scientist",
+    acceptancePolicy: "CareerSense Data Science Program",
+    welcomeTagline: "Learn by doing. Build predictive intelligence. Solve mission-critical problems."
   },
 
   "artificial-intelligence": {
     id: "artificial-intelligence",
     trackName: "Artificial Intelligence",
-    headerTag: "ARTIFICIAL INTELLIGENCE FELLOWSHIP",
-    title: "CAREERSENSE ARTIFICIAL INTELLIGENCE FELLOWSHIP OFFER LETTER",
-    position: "Artificial Intelligence Fellow",
-    subject: "Offer to Join the CareerSense Artificial Intelligence Fellowship",
-    intro1: (firstName) => `We are pleased to offer you a place in the CareerSense Artificial Intelligence Fellowship, a 3-month (12-week) hands-on learning program designed to build practical capability in applied AI, large language models, intelligent applications, agents and model evaluation. The Fellowship combines structured assignments, guided projects, mentor feedback, portfolio development and a final capstone experience.`,
-    intro2: `As a Artificial Intelligence Fellow, you will learn by doing. You will design and prototype practical AI capabilities using prompts, models, APIs, retrieval, agents and evaluation techniques. You are expected to document your work professionally, reflect on feedback, and build credible evidence of your skills through projects and presentations.`,
+    headerTag: "ARTIFICIAL INTELLIGENCE PROGRAM",
+    title: "CAREERSENSE ARTIFICIAL INTELLIGENCE OFFER LETTER",
+    position: "AI Engineer",
+    subject: "Offer to Join CareerSense as AI Engineer",
     details: {
-      position: "Artificial Intelligence Fellow",
-      engagementType: "Experiential Learning Fellowship",
-      initialTerm: "3 months (12 weeks)",
-      workingMode: "Remote / Online, with cohort sessions as applicable",
-      timeCommitment: "Flexible and project-based; cohort milestones and sessions as communicated",
-      benefits: "Learning resources, projects, mentor feedback, Fellow ID and completion recognition as applicable",
+      position: "AI Engineer",
+      engagementType: "Experiential Learning & Project Engagement",
+      initialTerm: "3 months (12 weeks), renewable by mutual agreement",
+      workingMode: "Remote / Online, with scheduled reviews",
+      timeCommitment: "Flexible and milestone-based; agreed with mentor leads",
+      benefits: "Learning resources, real-world project portfolios, mentor evaluations, Digital ID and completion certification",
     },
-    footerDisclaimer: "This offer is issued for the CareerSense Artificial Intelligence Fellowship. Cohort dates, project briefs, tools, mentor availability, learning resources, completion requirements, or other program terms may be updated by CareerSense and communicated in writing.",
+    footerDisclaimer: "This offer is issued for the CareerSense Artificial Intelligence track. Project briefs, model APIs, mentor allocations, milestone criteria, and completion requirements are administered by CareerSense and communicated in writing.",
     responsibilities: [
-      "Build a practical foundation in AI, machine-learning concepts, modern language models and responsible AI principles.",
-      "Design and test prompts, structured outputs and model interactions for clear, repeatable AI behavior.",
-      "Prototype LLM-powered applications using approved model APIs, Python and suitable application frameworks.",
-      "Explore retrieval-augmented generation, embeddings and vector databases where relevant to project requirements.",
-      "Design AI agent or automation workflows that use tools safely and keep human review where appropriate.",
-      "Evaluate output quality, reliability, failure cases, latency, cost and safety rather than relying on demos alone.",
-      "Document prompts, architecture, test cases, limitations and responsible-use considerations for each project.",
-      "Complete a capstone AI project that solves a real problem and demonstrates an end-to-end build, evaluation and demo."
+      "Architect and evaluate applied AI systems leveraging modern Foundation Models, LLM APIs, and open-source generative architectures.",
+      "Design advanced prompt engineering protocols, structured output parsers, and deterministic validation guardrails for robust model responses.",
+      "Develop end-to-end Retrieval-Augmented Generation (RAG) pipelines utilizing vector embeddings, indexing, and reranking strategies.",
+      "Prototype autonomous agentic workflows, function-calling integrations, and tool-augmented AI assistants with safety boundaries.",
+      "Conduct systematic benchmark evaluations analyzing response accuracy, hallucination rates, latency, token costs, and safety metrics.",
+      "Implement responsible AI governance, data privacy standards, content safety filters, and enterprise security practices across all builds.",
+      "Document system architecture, evaluation benchmarks, API schemas, and deployment topologies in clear technical specifications.",
+      "Deliver a comprehensive capstone AI application demonstrating intelligent automation, measurable accuracy, and real-world utility."
     ],
-    intent: "Our intent is simple: help Artificial Intelligence Fellows build practical capability, complete credible projects, strengthen their portfolio, and leave the program with clearer evidence of what they can do.",
-    acceptanceRole: "CareerSense Artificial Intelligence Fellow",
-    acceptancePolicy: "CareerSense Artificial Intelligence Fellowship",
-    welcomeTagline: "Learn by doing. Build intelligent systems. Create real impact."
+    intent: "Our objective is straightforward: provide high-caliber practitioners with practical technical execution, real project exposure, mentor guidance, and verified proof-of-work credentials that substantiate industry readiness.",
+    acceptanceRole: "CareerSense AI Engineer",
+    acceptancePolicy: "CareerSense Artificial Intelligence Program",
+    welcomeTagline: "Learn by doing. Engineer intelligent architectures. Build next-generation AI."
   },
 
   "full-stack-development": {
     id: "full-stack-development",
     trackName: "Full Stack Development",
-    headerTag: "FULL STACK DEVELOPER FELLOWSHIP",
-    title: "CAREERSENSE FULL STACK DEVELOPER FELLOWSHIP OFFER LETTER",
-    position: "Full Stack Developer Fellow",
-    subject: "Offer to Join the CareerSense Full Stack Developer Fellowship",
-    intro1: (firstName) => `We are pleased to offer you a place in the CareerSense Full Stack Developer Fellowship, a 3-month (12-week) hands-on learning program designed to build practical capability in frontend development, backend services, APIs, databases, testing and deployment. The Fellowship combines structured assignments, guided projects, mentor feedback, portfolio development and a final capstone experience.`,
-    intro2: `As a Full Stack Developer Fellow, you will learn by doing. You will design, build, test and deploy end-to-end web applications using modern frontend and backend technologies. You are expected to document your work professionally, reflect on feedback, and build credible evidence of your skills through projects and presentations.`,
+    headerTag: "FULL STACK DEVELOPER PROGRAM",
+    title: "CAREERSENSE FULL STACK DEVELOPER OFFER LETTER",
+    position: "Full Stack Developer",
+    subject: "Offer to Join CareerSense as Full Stack Developer",
     details: {
-      position: "Full Stack Developer Fellow",
-      engagementType: "Experiential Learning Fellowship",
-      initialTerm: "3 months (12 weeks)",
-      workingMode: "Remote / Online, with cohort sessions as applicable",
-      timeCommitment: "Flexible and project-based; cohort milestones and sessions as communicated",
-      benefits: "Learning resources, projects, mentor feedback, Fellow ID and completion recognition as applicable",
+      position: "Full Stack Developer",
+      engagementType: "Experiential Learning & Project Engagement",
+      initialTerm: "3 months (12 weeks), renewable by mutual agreement",
+      workingMode: "Remote / Online, with scheduled reviews",
+      timeCommitment: "Flexible and milestone-based; agreed with mentor leads",
+      benefits: "Learning resources, real-world project portfolios, mentor evaluations, Digital ID and completion certification",
     },
-    footerDisclaimer: "This offer is issued for the CareerSense Full Stack Developer Fellowship. Cohort dates, project briefs, tools, mentor availability, learning resources, completion requirements, or other program terms may be updated by CareerSense and communicated in writing.",
+    footerDisclaimer: "This offer is issued for the CareerSense Full Stack Development track. Project briefs, repositories, mentor allocations, milestone criteria, and completion requirements are administered by CareerSense and communicated in writing.",
     responsibilities: [
-      "Build responsive, accessible frontend interfaces using React, Next.js or another approved modern framework.",
-      "Develop backend services and business logic using Node.js, Express or another suitable server-side stack.",
-      "Design and use REST APIs with clear request/response contracts, validation, error handling and documentation.",
-      "Work with SQL and/or NoSQL databases, including data modelling, queries, CRUD operations and safe migrations.",
-      "Implement common application concerns such as authentication, authorization, forms and secure data handling where relevant.",
-      "Use Git and GitHub professionally through branches, meaningful commits, pull requests and code reviews.",
-      "Test, debug and deploy applications using suitable cloud or hosting platforms and document environment/setup requirements.",
-      "Complete and demonstrate a production-style capstone application covering frontend, backend, database and deployment."
+      "Develop modern, responsive, and accessible client-side interfaces using React, Next.js, TypeScript, and contemporary CSS design systems.",
+      "Engineer performant, modular backend microservices and API gateways using Node.js, Express, and modern server runtimes.",
+      "Design and document secure RESTful and GraphQL API contracts with strict schema validation, rate limiting, and error handling.",
+      "Model relational (PostgreSQL/MySQL) and non-relational (MongoDB) database architectures with optimized indexing and transactional integrity.",
+      "Implement enterprise security standards including JWT authentication, OAuth2, role-based access control (RBAC), and sanitization.",
+      "Maintain rigorous Git workflows, structured branching strategies, meaningful commit conventions, and peer pull request reviews.",
+      "Automate testing, containerization with Docker, and continuous integration/continuous deployment (CI/CD) pipelines to cloud platforms.",
+      "Deliver a full-scale capstone web application demonstrating end-to-end architecture, secure data persistence, and live cloud deployment."
     ],
-    intent: "Our intent is simple: help Full Stack Developer Fellows build practical capability, complete credible projects, strengthen their portfolio, and leave the program with clearer evidence of what they can do.",
-    acceptanceRole: "CareerSense Full Stack Developer Fellow",
-    acceptancePolicy: "CareerSense Full Stack Developer Fellowship",
-    welcomeTagline: "Learn by doing. Build end-to-end products. Ship with confidence."
+    intent: "Our objective is straightforward: provide high-caliber practitioners with practical technical execution, real project exposure, mentor guidance, and verified proof-of-work credentials that substantiate industry readiness.",
+    acceptanceRole: "CareerSense Full Stack Developer",
+    acceptancePolicy: "CareerSense Full Stack Development Program",
+    welcomeTagline: "Learn by doing. Build full-stack solutions. Ship production-ready software."
   },
 
   "app-development": {
     id: "app-development",
     trackName: "App Development",
-    headerTag: "APP DEVELOPER FELLOWSHIP",
-    title: "CAREERSENSE APP DEVELOPER FELLOWSHIP OFFER LETTER",
-    position: "App Developer Fellow",
-    subject: "Offer to Join the CareerSense App Developer Fellowship",
-    intro1: (firstName) => `We are pleased to offer you a place in the CareerSense App Developer Fellowship, a 3-month (12-week) hands-on learning program designed to build practical capability in mobile application development, user interfaces, APIs, backend integration, testing and deployment. The Fellowship combines structured assignments, guided projects, mentor feedback, portfolio development and a final capstone experience.`,
-    intro2: `As a App Developer Fellow, you will learn by doing. You will design, build, test and demonstrate practical mobile applications using modern cross-platform or native development approaches. You are expected to document your work professionally, reflect on feedback, and build credible evidence of your skills through projects and presentations.`,
+    headerTag: "APP DEVELOPER PROGRAM",
+    title: "CAREERSENSE APP DEVELOPER OFFER LETTER",
+    position: "App Developer",
+    subject: "Offer to Join CareerSense as App Developer",
     details: {
-      position: "App Developer Fellow",
-      engagementType: "Experiential Learning Fellowship",
-      initialTerm: "3 months (12 weeks)",
-      workingMode: "Remote / Online, with cohort sessions as applicable",
-      timeCommitment: "Flexible and project-based; cohort milestones and sessions as communicated",
-      benefits: "Learning resources, projects, mentor feedback, Fellow ID and completion recognition as applicable",
+      position: "App Developer",
+      engagementType: "Experiential Learning & Project Engagement",
+      initialTerm: "3 months (12 weeks), renewable by mutual agreement",
+      workingMode: "Remote / Online, with scheduled reviews",
+      timeCommitment: "Flexible and milestone-based; agreed with mentor leads",
+      benefits: "Learning resources, real-world project portfolios, mentor evaluations, Digital ID and completion certification",
     },
-    footerDisclaimer: "This offer is issued for the CareerSense App Developer Fellowship. Cohort dates, project briefs, tools, mentor availability, learning resources, completion requirements, or other program terms may be updated by CareerSense and communicated in writing.",
+    footerDisclaimer: "This offer is issued for the CareerSense App Development track. Project briefs, repositories, mentor allocations, milestone criteria, and completion requirements are administered by CareerSense and communicated in writing.",
     responsibilities: [
-      "Build mobile application screens and reusable components using React Native, Flutter or another approved framework.",
-      "Translate product requirements and UI designs into clear, responsive and user-friendly mobile experiences.",
-      "Integrate APIs, backend services, authentication and data persistence where required by project scope.",
-      "Work with local storage and suitable databases while handling loading, offline and error states responsibly.",
-      "Test applications across representative devices or screen sizes and resolve usability, performance and reliability issues.",
-      "Use Git and GitHub to maintain source code, branches, commits and project documentation professionally.",
-      "Understand build, release, security and app-store deployment concepts even when publishing is not required.",
-      "Complete a capstone mobile application with a working demo, technical documentation and portfolio-ready presentation."
+      "Architect and build cross-platform mobile applications using React Native or Flutter with high-performance native-feel UX.",
+      "Translate Figma product blueprints and user flow diagrams into responsive, pixel-perfect mobile interfaces with smooth animations.",
+      "Integrate asynchronous REST APIs, real-time WebSocket communication, and third-party SDKs with resilient error boundaries.",
+      "Manage persistent client-side state, offline data synchronization, local caching mechanisms, and secure biometric credentials.",
+      "Optimize application lifecycle performance, memory allocation, render speeds, and battery consumption across iOS and Android.",
+      "Maintain professional Git version control, structured milestone commits, and automated build artifact generation.",
+      "Establish deep understanding of mobile app security, certificate signing, push notification infrastructures, and store deployment.",
+      "Deliver a complete capstone mobile application featuring clean architecture, production-grade state management, and a live working demo."
     ],
-    intent: "Our intent is simple: help App Developer Fellows build practical capability, complete credible projects, strengthen their portfolio, and leave the program with clearer evidence of what they can do.",
-    acceptanceRole: "CareerSense App Developer Fellow",
-    acceptancePolicy: "CareerSense App Developer Fellowship",
-    welcomeTagline: "Learn by doing. Build working apps. Create real impact."
+    intent: "Our objective is straightforward: provide high-caliber practitioners with practical technical execution, real project exposure, mentor guidance, and verified proof-of-work credentials that substantiate industry readiness.",
+    acceptanceRole: "CareerSense App Developer",
+    acceptancePolicy: "CareerSense App Development Program",
+    welcomeTagline: "Learn by doing. Build powerful mobile apps. Create impactful user experiences."
   },
 
   "ui-ux-design": {
     id: "ui-ux-design",
     trackName: "UI/UX Design",
-    headerTag: "UI/UX DESIGN FELLOWSHIP",
-    title: "CAREERSENSE UI/UX DESIGN FELLOWSHIP OFFER LETTER",
-    position: "UI/UX Design Fellow",
-    subject: "Offer to Join the CareerSense UI/UX Design Fellowship",
-    intro1: (firstName) => `We are pleased to offer you a place in the CareerSense UI/UX Design Fellowship, a 3-month (12-week) hands-on learning program designed to build practical capability in user research, UX strategy, wireframing, interface design, prototyping, usability and design systems. The Fellowship combines structured assignments, guided projects, mentor feedback, portfolio development and a final capstone experience.`,
-    intro2: `As a UI/UX Design Fellow, you will learn by doing. You will research users, map journeys, design interfaces, create prototypes and communicate design decisions through strong case studies. You are expected to document your work professionally, reflect on feedback, and build credible evidence of your skills through projects and presentations.`,
+    headerTag: "UI/UX DESIGN PROGRAM",
+    title: "CAREERSENSE UI/UX DESIGN OFFER LETTER",
+    position: "UI/UX Designer",
+    subject: "Offer to Join CareerSense as UI/UX Designer",
     details: {
-      position: "UI/UX Design Fellow",
-      engagementType: "Experiential Learning Fellowship",
-      initialTerm: "3 months (12 weeks)",
-      workingMode: "Remote / Online, with cohort sessions as applicable",
-      timeCommitment: "Flexible and project-based; cohort milestones and sessions as communicated",
-      benefits: "Learning resources, projects, mentor feedback, Fellow ID and completion recognition as applicable",
+      position: "UI/UX Designer",
+      engagementType: "Experiential Learning & Project Engagement",
+      initialTerm: "3 months (12 weeks), renewable by mutual agreement",
+      workingMode: "Remote / Online, with scheduled reviews",
+      timeCommitment: "Flexible and milestone-based; agreed with mentor leads",
+      benefits: "Learning resources, real-world project portfolios, mentor evaluations, Digital ID and completion certification",
     },
-    footerDisclaimer: "This offer is issued for the CareerSense UI/UX Design Fellowship. Cohort dates, project briefs, tools, mentor availability, learning resources, completion requirements, or other program terms may be updated by CareerSense and communicated in writing.",
+    footerDisclaimer: "This offer is issued for the CareerSense UI/UX Design track. Project briefs, design tooling, mentor allocations, milestone criteria, and completion requirements are administered by CareerSense and communicated in writing.",
     responsibilities: [
-      "Conduct structured user and product research using appropriate interviews, observations, reviews or secondary research.",
-      "Translate findings into personas, problem statements, user journeys, flows and clearly prioritized experience opportunities.",
-      "Create low-fidelity wireframes that explore structure, navigation, interaction and information hierarchy before visual polish.",
-      "Design accessible, consistent high-fidelity interfaces in Figma using sound typography, spacing, color and component principles.",
-      "Create interactive prototypes that communicate important user flows, states and product behavior.",
-      "Build or extend reusable components, patterns and design-system documentation where relevant.",
-      "Plan and conduct usability reviews or tests, document findings and iterate designs based on evidence.",
-      "Complete a portfolio-ready UX case study showing the problem, research, process, decisions, final design and learning."
+      "Conduct rigorous user research, stakeholder interviews, competitor benchmarking, and behavioral heuristic evaluations.",
+      "Synthesize research data into evidence-based user personas, journey maps, empathy maps, and information architecture schemas.",
+      "Develop low-fidelity wireframes, interactive user flows, and rapid structural prototypes to validate conceptual usability.",
+      "Design high-fidelity, accessible (WCAG 2.1 compliant) interfaces in Figma utilizing advanced auto-layout, variables, and design tokens.",
+      "Construct interactive prototypes with realistic transitions, component states, and micro-interactions for user testing.",
+      "Maintain and expand scalable design systems with comprehensive design token documentation and developer handoff specs.",
+      "Plan and execute structured usability testing sessions, document feedback matrices, and iteratively refine product UX.",
+      "Produce a comprehensive case study documenting problem framing, research methodologies, design rationale, and validated outcomes."
     ],
-    intent: "Our intent is simple: help UI/UX Design Fellows build practical capability, complete credible projects, strengthen their portfolio, and leave the program with clearer evidence of what they can do.",
-    acceptanceRole: "CareerSense UI/UX Design Fellow",
-    acceptancePolicy: "CareerSense UI/UX Design Fellowship",
-    welcomeTagline: "Learn by doing. Design for users. Build a strong portfolio."
+    intent: "Our objective is straightforward: provide high-caliber practitioners with practical technical execution, real project exposure, mentor guidance, and verified proof-of-work credentials that substantiate industry readiness.",
+    acceptanceRole: "CareerSense UI/UX Designer",
+    acceptancePolicy: "CareerSense UI/UX Design Program",
+    welcomeTagline: "Learn by doing. Craft elegant experiences. Build a stand-out design portfolio."
   }
 };
 
@@ -209,50 +197,50 @@ export const FELLOWSHIP_OFFER_TEMPLATES = {
 export const FELLOWSHIP_COMMON_TERMS = [
   [
     "2. Learning & Project Expectations",
-    "The Fellowship is practical and outcome-oriented. You are expected to stay responsive, attend required sessions, complete assigned work within reasonable timelines, submit original work, and communicate blockers or availability changes."
+    "The Program is rigorous, practical, and outcome-oriented. You are expected to maintain active communication, attend scheduled milestone reviews, submit original, high-quality deliverables within agreed timelines, and proactively communicate technical blockers."
   ],
   [
     "3. Confidentiality",
-    "Keep non-public CareerSense information confidential, including unreleased materials, private project briefs, credentials, research, business plans and restricted data. Do not share confidential information outside CareerSense without written authorization."
+    "Maintain strict confidentiality regarding proprietary CareerSense materials, internal product specifications, private project briefs, credentials, user research, and unreleased platform systems. Confidential information must not be disclosed without prior written authorization."
   ],
   [
     "4. Intellectual Property",
-    "Pre-existing work remains with its owner. Unless separately agreed in writing, independently created portfolio work remains yours; CareerSense-owned briefs, brand assets, confidential information and proprietary materials remain CareerSense property. Any project specifically commissioned for CareerSense production use will have separate written ownership or licensing terms."
+    "Pre-existing personal intellectual property remains with you. Independent portfolio projects developed during the engagement remain your work; proprietary CareerSense frameworks, core codebase, brand assets, and internal project briefs remain the exclusive property of CareerSense."
   ],
   [
     "5. Data Protection & Security",
-    "Use CareerSense systems, datasets and learning materials responsibly. Do not copy, expose or share personal, confidential or restricted information beyond an approved task, and never share credentials or private access links. Prefer sample, synthetic, public or expressly approved data."
+    "Use CareerSense platform environments, development resources, and datasets strictly for authorized project activities. Never copy, expose, or distribute confidential data, credentials, or private API keys. Always practice secure software and data engineering standards."
   ],
   [
-    "6. Public Representation",
-    "While your participation is active, you may accurately describe yourself as an enrolled CareerSense Fellow. You may not represent yourself as a CareerSense employee, intern, contractor or official representative, or make commitments on behalf of CareerSense unless authorized in writing."
+    "6. Professional Representation",
+    "While actively enrolled, you may accurately represent yourself as a CareerSense practitioner in your designated track. You may not represent yourself as an employee or official corporate representative, nor execute commitments on behalf of CareerSense unless formally authorized."
   ],
   [
     "7. Professional Conduct",
-    "Fellows must act respectfully, inclusively and professionally. Plagiarism, misrepresentation, harassment, discrimination, data misuse, credential sharing, fraud, illegal activity or conduct that materially harms CareerSense or its community may lead to removal from the Fellowship."
+    "Practitioners must conduct themselves with integrity, professionalism, and mutual respect. Plagiarism, academic dishonesty, harassment, data mishandling, unauthorized credential sharing, or malicious behavior will result in immediate termination of engagement."
   ],
   [
-    "8. Nature of Relationship",
-    "The CareerSense Fellowship is an educational and experiential learning program. It does not create employment, internship, contractor, agency or legal partnership status and does not guarantee compensation or future employment. Any paid or employment relationship requires separate written terms."
+    "8. Nature of Engagement",
+    "This engagement is an experiential project and skills program. It does not constitute formal employment, contractor agency, or partnership status, and does not guarantee compensation or future employment. Any formal employment relationship requires separate written terms."
   ]
 ];
 
 // Page 3 Sections (9 to 12) for Fellowship offer letters
 export const FELLOWSHIP_PAGE3_SECTIONS = [
   {
-    num: "9. Learning & Mentorship Opportunities",
-    text: "During the Fellowship, CareerSense may provide structured learning resources, project briefs, mentor feedback, peer or community sessions, project reviews, portfolio guidance, workshops, events or other learning opportunities depending on the cohort and availability."
+    num: "9. Technical Mentorship & Guidance",
+    text: "CareerSense provides access to structured project briefs, industry mentor feedback, technical code reviews, portfolio coaching, collaborative workshops, and professional development sessions throughout the engagement term."
   },
   {
-    num: "10. Recognition",
-    text: "CareerSense may issue a digital Fellow ID for active participation. Fellows who successfully complete the published requirements for the Fellowship may be eligible for a Fellowship Certificate, completion recognition, project showcase, digital badge, references, public recognition or other cohort-specific benefits. Completion recognition is not automatic and is subject to program requirements, originality, conduct and CareerSense policies."
+    num: "10. Certification & Credential Recognition",
+    text: "Upon successful completion of all milestone deliverables, capstone project defense, and professional conduct requirements, practitioners receive an official CareerSense Verified Credential, track completion certificate, and verified proof-of-work portfolio endorsement."
   },
   {
-    num: "11. Termination / Exit",
-    text: "Either CareerSense or the Fellow may end participation by providing reasonable written notice. CareerSense may end access immediately in cases involving confidentiality breaches, misuse of systems or data, misconduct, plagiarism, repeated non-performance, misrepresentation or illegal activity. On exit, CareerSense access, credentials and confidential materials must be returned or deleted as instructed."
+    num: "11. Termination / Offboarding",
+    text: "Either party may conclude the engagement by providing written notification. CareerSense reserves the right to terminate access immediately in cases involving breach of confidentiality, plagiarism, misconduct, or persistent non-performance. Upon exit, all project access and internal materials must be handled in accordance with offboarding instructions."
   },
   {
-    num: "12. Future Opportunities",
-    text: "Strong performers may be considered for advanced CareerSense projects, the Partner Program, community or leadership opportunities, events, referrals, paid assignments, internships, consulting engagements or full-time roles when such opportunities exist. Participation in the Fellowship does not guarantee any future role or paid opportunity."
+    num: "12. Career Advancement & Opportunities",
+    text: "High-performing practitioners who demonstrate exceptional execution and technical rigor may be considered for leadership roles, advanced internal projects, partner initiatives, industry recommendations, or formal employment opportunities when vacancies arise."
   }
 ];

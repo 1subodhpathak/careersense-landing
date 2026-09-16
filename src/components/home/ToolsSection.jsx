@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowRight, ExternalLink, PenLine, ShieldCheck, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toolCards } from "../../data/homePageData";
@@ -164,9 +165,9 @@ function ComingSoonModal({ tool, onClose }) {
   const resolutionDateFormatted = "September 25, 2026";
   const maintenanceMessage = "We are enhancing our AI Interview Simulator with advanced feedback models.";
 
-  return (
+  const modalNode = (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="tool-launch-title"
@@ -227,6 +228,11 @@ function ComingSoonModal({ tool, onClose }) {
       </div>
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalNode, document.body);
+  }
+  return modalNode;
 }
 
 function ToolAction({ href, label, className, external, onClick, children }) {

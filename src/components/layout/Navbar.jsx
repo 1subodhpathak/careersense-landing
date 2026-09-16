@@ -58,7 +58,7 @@ function SubscriptionProfilePage() {
   const { user } = useUser();
   const [subData, setSubData] = useState({
     plan: "free",
-    tokensRemaining: 10000,
+    tokensRemaining: 30000,
     status: "active",
     tokenRenewalDate: null,
     planExpiresAt: null
@@ -94,14 +94,14 @@ function SubscriptionProfilePage() {
   };
 
   const planDescriptions = {
-    free: "Your CareerSense starter access is active with 10,000 onboarding tokens.",
+    free: "Your CareerSense starter access is active with 30,000 onboarding tokens.",
     student: "100,000 auto-refilling monthly AI tokens + unlimited free downloads.",
     intern: "500,000 tokens / month + 1 selected Fellowship Track access.",
     partner: "1,000,000 tokens / month + Partner Program, ID Card Studio & Offer Letter workspace."
   };
 
   const planList = [
-    { key: "free", name: "Free", desc: "10,000 One-time AI Tokens" },
+    { key: "free", name: "Free", desc: "30,000 One-time AI Tokens" },
     { key: "student", name: "Student", desc: "100,000 Tokens / Mo (₹250/mo)" },
     { key: "intern", name: "Intern", desc: "500,000 Tokens / Mo (₹2,000 3-Mo)" },
     { key: "partner", name: "Partner", desc: "1,000,000 Tokens / Mo (₹2,499/mo)" }
@@ -233,7 +233,7 @@ function BillingProfilePage() {
 
   const usageLogs = ledgerLogs.filter(log => log.amount < 0);
   const totalPointsConsumed = usageLogs.reduce((sum, log) => sum + Math.abs(log.amount), 0);
-  const totalBillUsd = totalPointsConsumed / 100000;
+  const totalBillUsd = totalPointsConsumed / 20000;
 
   return (
     <div className="w-full text-[#071536]">
@@ -277,7 +277,7 @@ function BillingProfilePage() {
           <div className="max-h-60 overflow-y-auto divide-y divide-slate-100 pr-1">
             {usageLogs.slice(0, 8).map((log, i) => {
               const pts = Math.abs(log.amount);
-              const cost = pts / 100000;
+              const cost = pts / 20000;
               const dateStr = new Date(log.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
               return (
                 <div key={log._id || i} className="flex items-center justify-between py-2.5 text-xs">

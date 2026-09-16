@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Navigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Download, FileText, Loader2 } from "lucide-react";
 import { useUser } from "@clerk/clerk-react";
-import Navbar from "../components/layout/Navbar";
 import Footer from "../components/layout/Footer";
 import useHeroTheme from "../hooks/useHeroTheme";
 import { ebookBySlug } from "../data/ebooks";
@@ -12,7 +11,7 @@ import { checkDownloadPass } from "../services/downloadGateService";
 export default function EbookReaderPage() {
   const { slug } = useParams();
   const { user } = useUser();
-  const { heroTheme, toggleHeroTheme } = useHeroTheme();
+  const { heroTheme } = useHeroTheme();
   const [isPdfLoading, setIsPdfLoading] = useState(true);
   const [isDownloadGateOpen, setIsDownloadGateOpen] = useState(false);
 
@@ -47,7 +46,6 @@ export default function EbookReaderPage() {
 
   return (
     <main className={`min-h-screen ${isLight ? "bg-slate-50 text-slate-900" : "bg-slate-950 text-white"}`}>
-      <Navbar heroTheme={heroTheme} onToggleHeroTheme={toggleHeroTheme} />
       <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-10">
         <Link to="/dashboard?tab=E-Learning" className={`inline-flex items-center gap-2 text-sm font-bold ${isLight ? "text-blue-700" : "text-cyan-300"}`}>
           <ArrowLeft size={16} />Back to e-Learning
