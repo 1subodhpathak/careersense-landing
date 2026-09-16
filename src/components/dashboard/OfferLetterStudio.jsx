@@ -146,8 +146,8 @@ export default function OfferLetterStudio({
     address: profile.location || profile.geographicalAlignment || "",
     offerDate: initialOfferDate,
     joiningDate: initialJoiningDate,
-    position: isPartner ? (profile.currentJobTitle || "CareerSense Partner") : fellowshipTemplate.position,
-    workingMode: isPartner ? "Remote" : "Remote / Online, with cohort sessions as applicable",
+    position: isPartner ? "Managing Partner" : fellowshipTemplate.position,
+    workingMode: isPartner ? "Remote" : "Remote",
     location: profile.location || profile.geographicalAlignment || "Delhi",
     engagementType: isPartner ? "Partner / Community Collaboration" : fellowshipTemplate.details.engagementType,
     initialTerm: isPartner ? "3 months, renewable by mutual agreement" : fellowshipTemplate.details.initialTerm,
@@ -165,7 +165,7 @@ export default function OfferLetterStudio({
       email: profile.email || user?.primaryEmailAddress?.emailAddress || current.email,
       address: profile.location || profile.geographicalAlignment || current.address,
       location: profile.location || profile.geographicalAlignment || current.location,
-      position: isPartner ? (profile.currentJobTitle || current.position) : fellowshipTemplate.position,
+      position: isPartner ? "Managing Partner" : fellowshipTemplate.position,
       engagementType: isPartner ? "Partner / Community Collaboration" : fellowshipTemplate.details.engagementType,
       initialTerm: isPartner ? "3 months, renewable by mutual agreement" : fellowshipTemplate.details.initialTerm,
       timeCommitment: isPartner ? "Flexible and task-based; agreed with the Partner Lead" : fellowshipTemplate.details.timeCommitment,
@@ -173,7 +173,7 @@ export default function OfferLetterStudio({
       offerDate: computedOfferDate,
       joiningDate: computedJoiningDate,
     }));
-  }, [profile, user, subscription, isPartner, selectedFellowshipId]);
+  }, [profile, user, subscription, isPartner, selectedFellowshipId, fellowshipTemplate]);
 
   const firstName = details.fullName.trim().split(/\s+/)[0] || (isPartner ? "Partner" : "Fellow");
   const inputClass = "h-11 w-full cursor-default rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm font-semibold text-slate-800 outline-none";
@@ -189,16 +189,16 @@ export default function OfferLetterStudio({
         if (index > 0) pdf.addPage("a4", "portrait");
         pdf.addImage(canvas.toDataURL("image/jpeg", 0.96), "JPEG", 0, 0, 210, 297, undefined, "FAST");
       }
-      const filePrefix = details.fullName.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || (isPartner ? "CareerSense-Partner" : "CareerSense-Fellow");
-      const docType = isPartner ? "Partner-Offer-Letter" : `${fellowshipTemplate.trackName.replace(/\s+/g, "-")}-Fellowship-Offer-Letter`;
+      const filePrefix = details.fullName.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || (isPartner ? "CareerSense-Partner" : "CareerSense");
+      const docType = isPartner ? "Partner-Offer-Letter" : `${fellowshipTemplate.trackName.replace(/\s+/g, "-")}-Offer-Letter`;
       pdf.save(`${filePrefix}-${docType}.pdf`);
     } finally { setExporting(false); }
   }
 
   async function shareOnLinkedIn() {
     const text = isPartner
-      ? `I am delighted to share that I have received an offer to join CareerSense as ${details.position}. I look forward to contributing, learning and creating meaningful career impact with the CareerSense Partner Program.`
-      : `I am delighted to share that I have received an offer to join the CareerSense ${fellowshipTemplate.trackName} Fellowship! Excited to build practical capability and ship real projects with CareerSense.`;
+      ? `I am delighted to share that I have received an offer to join CareerSense as Managing Partner. I look forward to contributing, collaborating and creating meaningful career impact with the CareerSense Partner Program.`
+      : `I am delighted to share that I have received an offer to join CareerSense as ${details.position}! Excited to build practical capability and ship real-world projects with CareerSense.`;
 
     try {
       await navigator.clipboard.writeText(text);
@@ -222,14 +222,14 @@ export default function OfferLetterStudio({
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base font-black text-slate-900">
-                    {isPartner ? "Partner Offer details" : "Fellowship Offer details"}
+                    {isPartner ? "Partner Offer details" : "Program Offer details"}
                   </h3>
                   <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-[9px] font-black uppercase tracking-wider text-slate-600">
                     <LockKeyhole size={11} />Profile managed
                   </span>
                 </div>
                 <p className="mt-1 max-w-md text-xs leading-5 text-slate-500">
-                  These details are securely populated from your {isPartner ? "partner" : "fellowship"} enrollment and profile.
+                  These details are securely populated from your {isPartner ? "partner" : "track"} enrollment and profile.
                 </p>
               </div>
             </div>
@@ -248,7 +248,7 @@ export default function OfferLetterStudio({
             purchasedFellowships.length > 1 ? (
               <div className="mt-5 rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/70 to-teal-50/70 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-cyan-800">Enrolled Fellowship Track</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-cyan-800">Enrolled Track</span>
                   <span className="inline-flex items-center gap-1 rounded-md bg-cyan-100/80 px-2 py-0.5 text-[9px] font-bold text-cyan-800">
                     <LockKeyhole size={10} /> Enrolled Access Only
                   </span>
@@ -263,7 +263,7 @@ export default function OfferLetterStudio({
                     if (!tmpl) return null;
                     return (
                       <option key={tmpl.id} value={tmpl.id}>
-                        {tmpl.trackName} Fellowship
+                        {tmpl.trackName}
                       </option>
                     );
                   })}
@@ -272,13 +272,13 @@ export default function OfferLetterStudio({
             ) : (
               <div className="mt-5 rounded-xl border border-cyan-100 bg-gradient-to-r from-cyan-50/70 to-teal-50/70 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-cyan-800">Enrolled Fellowship Track</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-cyan-800">Enrolled Track</span>
                   <span className="inline-flex items-center gap-1 rounded-md bg-cyan-100/80 px-2 py-0.5 text-[9px] font-bold text-cyan-800">
                     <LockKeyhole size={10} /> Enrolled Track
                   </span>
                 </div>
                 <div className="mt-2 flex h-11 w-full items-center rounded-xl border border-cyan-200 bg-white px-3.5 text-sm font-black text-slate-800 shadow-xs">
-                  {fellowshipTemplate.trackName} Fellowship
+                  {fellowshipTemplate.trackName}
                 </div>
               </div>
             )
@@ -350,7 +350,7 @@ export default function OfferLetterStudio({
             <div>
               <p className="text-xs font-black uppercase tracking-widest text-slate-400">Live A4 preview</p>
               <h3 className="mt-1 text-base font-black text-slate-900">
-                {isPartner ? "CareerSense Partner Offer Letter" : `CareerSense ${fellowshipTemplate.trackName} Fellowship Offer Letter`}
+                {isPartner ? "CareerSense Partner Offer Letter" : `CareerSense ${fellowshipTemplate.trackName} Offer Letter`}
               </h3>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -370,7 +370,7 @@ export default function OfferLetterStudio({
 
           <div ref={letterRef} className="mt-5 grid max-h-[980px] gap-7 overflow-auto rounded-2xl bg-slate-100 p-4 sm:p-7">
             {isPartner ? (
-              // ---------------- PARTNER OFFER LETTER (UNTOUCHED ORIGINAL) ----------------
+              // ---------------- PARTNER OFFER LETTER ----------------
               <>
                 <article data-offer-page className={letterPageClass}>
                   <LetterHeader section="careersenseai.com" headerTag="PARTNER PROGRAM" />
@@ -496,7 +496,7 @@ export default function OfferLetterStudio({
                 </article>
               </>
             ) : (
-              // ---------------- FELLOWSHIP OFFER LETTER (TRACK-SPECIFIC) ----------------
+              // ---------------- FELLOWSHIP / TRACK OFFER LETTER ----------------
               <>
                 <article data-offer-page className={letterPageClass}>
                   <LetterHeader section="careersenseai.com" headerTag={fellowshipTemplate.headerTag} />
@@ -508,19 +508,23 @@ export default function OfferLetterStudio({
                     {details.address || details.location}<br />
                     {details.email || "Email not provided"}
                   </div>
-                  <p className="mt-3 font-bold">Subject: {fellowshipTemplate.subject}</p>
+                  <p className="mt-3 font-bold">Subject: Offer to Join CareerSense as {details.position}</p>
                   <p className="mt-2 font-bold">Dear {firstName},</p>
-                  <p className="mt-1.5">{fellowshipTemplate.intro1(firstName)}</p>
-                  <p className="mt-1.5">{fellowshipTemplate.intro2}</p>
-                  <h2 className="mt-3 text-[13px] font-bold text-[#0097a7]">{fellowshipTemplate.trackName} Fellowship Details</h2>
+                  <p className="mt-1.5">
+                    We are pleased to invite you to join CareerSense as <strong>{details.position}</strong>. CareerSense is building an advanced career-readiness ecosystem that brings together applied project workflows, technical skill verification, industry mentorship and career development. In this role, you will work on practical, hands-on initiatives designed to develop industry-grade competencies and deliver measurable project outcomes.
+                  </p>
+                  <p className="mt-1.5">
+                    Your role involves active participation in structured deliverables, building end-to-end project portfolios, and collaborating on technical milestones under mentor guidance. Your planned joining date is <strong>{displayDate(details.joiningDate)}</strong> for an initial term of <strong>3 months (12 weeks)</strong>.
+                  </p>
+                  <h2 className="mt-3 text-[13px] font-bold text-[#0097a7]">{fellowshipTemplate.trackName} Program Details</h2>
                   <div className="mt-1.5">
                     {[
-                      ["Position", fellowshipTemplate.details.position],
-                      ["Engagement Type", fellowshipTemplate.details.engagementType],
-                      ["Initial Term", fellowshipTemplate.details.initialTerm],
-                      ["Working Mode", fellowshipTemplate.details.workingMode],
-                      ["Time Commitment", fellowshipTemplate.details.timeCommitment],
-                      ["Program Benefits / Recognition", fellowshipTemplate.details.benefits]
+                      ["Position", details.position],
+                      ["Engagement Type", details.engagementType],
+                      ["Initial Term", details.initialTerm],
+                      ["Working Mode", `${details.workingMode} - ${details.location}`],
+                      ["Time Commitment", details.timeCommitment],
+                      ["Program Benefits / Recognition", details.compensation]
                     ].map(([label, value], index) => (
                       <div key={label} className={`grid grid-cols-[190px_1fr] ${index % 2 ? "bg-slate-100" : "bg-cyan-50"}`}>
                         <strong className="px-3 py-2">{label}</strong>
@@ -533,17 +537,17 @@ export default function OfferLetterStudio({
                     <ul className="mt-1 list-disc space-y-0.5 pl-5 marker:text-teal-500">
                       <li>Basic identification and contact details</li>
                       <li>Current college / university / company / professional information, where applicable</li>
-                      <li>Portfolio, GitHub, LinkedIn, profile, or skill information relevant to the Fellowship track</li>
+                      <li>Portfolio, GitHub, LinkedIn, profile, or skill information relevant to your track</li>
                     </ul>
                   </div>
                   <p className="mt-3 italic text-slate-500">{fellowshipTemplate.footerDisclaimer}</p>
-                  <LetterFooter page="1" programLabel={`${fellowshipTemplate.trackName} Fellowship`} />
+                  <LetterFooter page="1" programLabel={`${fellowshipTemplate.trackName} Program`} />
                 </article>
 
                 <article data-offer-page className={letterPageClass}>
                   <LetterHeader section="TERMS OF PARTICIPATION" headerTag={fellowshipTemplate.headerTag} />
-                  <h2 className="mt-5 text-[13px] font-bold text-[#082d57]">1. Fellowship Responsibilities</h2>
-                  <p className="mt-2">As a CareerSense {fellowshipTemplate.position}, your responsibilities and learning activities may include the following. The exact mix may vary by cohort, project and your current skill level:</p>
+                  <h2 className="mt-5 text-[13px] font-bold text-[#082d57]">1. Program Responsibilities</h2>
+                  <p className="mt-2">As a CareerSense <strong>{details.position}</strong>, your responsibilities and project activities will include the following. The exact focus may vary based on your assigned initiatives and domain milestones:</p>
                   <ol className="mt-2 grid list-decimal gap-1 pl-5">
                     {fellowshipTemplate.responsibilities.map((resp, i) => (
                       <li key={i}>{resp}</li>
@@ -557,7 +561,7 @@ export default function OfferLetterStudio({
                       </section>
                     ))}
                   </div>
-                  <LetterFooter page="2" programLabel={`${fellowshipTemplate.trackName} Fellowship`} />
+                  <LetterFooter page="2" programLabel={`${fellowshipTemplate.trackName} Program`} />
                 </article>
 
                 <article data-offer-page className={letterPageClass}>
@@ -573,7 +577,7 @@ export default function OfferLetterStudio({
                   <p className="mt-5 italic">{fellowshipTemplate.intent}</p>
                   <h2 className="mt-5 text-[13px] font-bold text-[#082d57]">Acceptance</h2>
                   <p className="mt-2">
-                    I, <strong>{details.fullName}</strong>, accept the offer to participate as a {fellowshipTemplate.acceptanceRole} and agree to follow the terms and expectations stated in this letter and any applicable {fellowshipTemplate.acceptancePolicy} policies or cohort instructions communicated to me.
+                    I, <strong>{details.fullName}</strong>, accept the offer to join CareerSense as <strong>{details.position}</strong> and agree to follow the terms, professional standards, and guidelines stated in this letter and any applicable CareerSense policies communicated to me.
                   </p>
                   <div className="mt-6 grid grid-cols-2 gap-12">
                     <div>
@@ -588,16 +592,16 @@ export default function OfferLetterStudio({
                     <div className="pt-[91px]">
                       <div className="w-52 border-t border-[#10233f] pt-2">
                         <strong>{details.fullName}</strong><br />
-                        Fellow Signature<br />
+                        Signature<br />
                         Date: __________________
                       </div>
                     </div>
                   </div>
                   <div className="mt-7 rounded-lg bg-[#082d57] px-5 py-4 text-center text-white">
-                    <strong className="text-[14px]">WELCOME TO THE CAREERSENSE FELLOWSHIP</strong>
+                    <strong className="text-[14px]">WELCOME TO CAREERSENSE</strong>
                     <div className="mt-1 text-[9px] tracking-wide text-blue-100">{fellowshipTemplate.welcomeTagline}</div>
                   </div>
-                  <LetterFooter page="3" programLabel={`${fellowshipTemplate.trackName} Fellowship`} />
+                  <LetterFooter page="3" programLabel={`${fellowshipTemplate.trackName} Program`} />
                 </article>
               </>
             )}

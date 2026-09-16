@@ -10,6 +10,9 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
   const journey = useMemo(() => {
     const certificates = dashboardData?.certifi?.certificates || profile?.certifications || [];
     const learningPaths = dashboardData?.certifi?.learningPaths || [];
+    const badges = dashboardData?.certifi?.badges || profile?.awards || [];
+    const builderUploads = dashboardData?.resumeBuilder?.uploads?.resumes || [];
+    const builderJds = dashboardData?.resumeBuilder?.uploads?.jobDescriptions || [];
     const assessment = dashboardData?.assessment;
     const events = [
       ...certificates.map((item) => ({ title: item.title || "Certificate earned", date: item.issuedAt || item.date || item.createdAt })),
@@ -30,6 +33,19 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
       score: completedPhases[phase.id] ? 100 : Math.round(categoryScores[phase.id] || 0),
       completed: Boolean(completedPhases[phase.id]),
     }));
+    const calculatedReadinessScore = gpsPhases.length > 0
+      ? Math.round(gpsPhases.reduce((sum, p) => sum + (Number(p.score) || 0), 0) / gpsPhases.length)
+      : (assessment?.results?.overallScore || 0);
+
+    let calculatedReadinessLabel = assessment?.results?.readinessLevel?.label || "Career Launch Pad";
+    if (calculatedReadinessScore >= 80) {
+      calculatedReadinessLabel = "Top Contender";
+    } else if (calculatedReadinessScore >= 60) {
+      calculatedReadinessLabel = "Market Ready";
+    } else if (calculatedReadinessScore >= 40) {
+      calculatedReadinessLabel = "Emerging Professional";
+    }
+
     let partnerCompleted = 0;
     try {
       const partnerRecords = JSON.parse(localStorage.getItem("careersense-partner-assignments-v1")) || {};
@@ -37,11 +53,11 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
     } catch (_) {}
     const profileFields = [profile?.fullName, profile?.email, profile?.phone, profile?.location, profile?.bio, profile?.currentJobTitle, profile?.targetJobTitle, profile?.avatar, profile?.linkedinPortfolio || profile?.githubUrl || profile?.websiteUrl, profile?.skills?.length];
     const profileCompleteness = Math.round((profileFields.filter(Boolean).length / profileFields.length) * 100);
-    const readinessScore = assessment?.results?.overallScore || 0;
+    const readinessScore = calculatedReadinessScore;
     const achievementTotal = certificates.length + atsResumes.length + coverLetters.length + builderResumes.length + partnerCompleted;
     const explorerLevel = readinessScore >= 80 || achievementTotal >= 15 ? "Advanced Explorer" : readinessScore >= 50 || achievementTotal >= 6 ? "Skilled Explorer" : "Rising Explorer";
     return {
-      ownerName, initials, certificates, learningPaths, atsResumes, coverLetters, events,
+      ownerName, initials, certificates, learningPaths, badges, atsResumes, coverLetters, builderResumes, builderUploads, builderJds, events,
       avatar: profile?.avatar || user?.imageUrl,
       targetRole: profile?.targetJobTitle || assessment?.profile?.targetRole,
       currentRole: profile?.currentJobTitle,
@@ -49,8 +65,8 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
       profileStatus: profile?.profileStatus,
       bio: profile?.bio,
       skills: profile?.skills || [], awards: profile?.awards || [], education: profile?.education || [],
-      readinessScore: assessment?.results?.overallScore,
-      readinessLabel: assessment?.results?.readinessLevel?.label,
+      readinessScore: calculatedReadinessScore,
+      readinessLabel: calculatedReadinessLabel,
       gpsPhases,
       gpsDiagnosis: assessment?.aiDiagnosis?.executiveSummary || assessment?.aiDiagnosis?.summary || assessment?.aiDiagnosis?.diagnosis,
       partnerCompleted,
@@ -63,12 +79,31 @@ export default function SkillPassport({ dashboardData, profile, user, atsResumes
       documentCode,
       passportNumber: `CSP-${documentCode}`,
     };
-  }, [dashboardData, profile, user, atsResumes, coverLetters]);
+  }, [dashboardData, profile, user, atsResumes, coverLetters, builderResumes]);
 
   const achievementCount = journey.certificates.length + journey.events.length + journey.awards.length + journey.education.length;
+  const totalSpreads = 1 + 4 + journey.certificates.length + 1;
+
   return (
     <div className="skill-passport-stage">
-      {!isOpen ? <div className="passport-cover-scene"><div className="passport-intro"><span>Your living career record</span><h2>Every milestone deserves a stamp.</h2><p>Open your CareerSense Skill Passport to travel through verified certificates, readiness progress, learning routes, and the achievements shaping your professional story.</p></div><PassportCover ownerName={journey.ownerName} achievementCount={achievementCount} onOpen={() => setIsOpen(true)} /></div> : <PassportBooklet journey={journey} spreadIndex={spreadIndex} onPrevious={() => setSpreadIndex((i) => Math.max(0, i - 1))} onNext={() => setSpreadIndex((i) => Math.min(journey.certificates.length + 1, i + 1))} onClose={() => { setIsOpen(false); setSpreadIndex(0); }} />}
+      {!isOpen ? (
+        <div className="passport-cover-scene">
+          <div className="passport-intro">
+            <span>Your living career record</span>
+            <h2>Every milestone deserves a stamp.</h2>
+            <p>Open your CareerSense Skill Passport to travel through verified certificates, readiness progress, learning routes, and the achievements shaping your professional story.</p>
+          </div>
+          <PassportCover ownerName={journey.ownerName} achievementCount={achievementCount} onOpen={() => setIsOpen(true)} />
+        </div>
+      ) : (
+        <PassportBooklet
+          journey={journey}
+          spreadIndex={spreadIndex}
+          onPrevious={() => setSpreadIndex((i) => Math.max(0, i - 1))}
+          onNext={() => setSpreadIndex((i) => Math.min(totalSpreads - 1, i + 1))}
+          onClose={() => { setIsOpen(false); setSpreadIndex(0); }}
+        />
+      )}
     </div>
   );
 }

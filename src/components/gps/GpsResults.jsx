@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { ExternalLink, X, ArrowRight, RotateCcw, Share2, Download, Calendar, Sparkles, CheckCircle, AlertTriangle, Check, FileText, ShieldCheck, Award, FileEdit, Video } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -40,8 +41,8 @@ function ComingSoonModal({ phase, onClose }) {
   const resolutionDateFormatted = "September 25, 2026";
   const maintenanceMessage = "We are enhancing our AI Interview Simulator with advanced feedback models.";
 
-  return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4" onClick={onClose}>
+  const modalNode = (
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm" />
       <div className="relative z-10 w-full max-w-[760px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl sm:p-8 dark:border-slate-700 dark:bg-slate-900" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-4">
@@ -80,6 +81,11 @@ function ComingSoonModal({ phase, onClose }) {
       </div>
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalNode, document.body);
+  }
+  return modalNode;
 }
 
 // ─── Score Ring ──────────────────────────────────────────────

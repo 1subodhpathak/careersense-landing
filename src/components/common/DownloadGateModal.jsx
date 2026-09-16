@@ -121,7 +121,7 @@ export default function DownloadGateModal({
             Unlock {resourceName}
           </h3>
           <p className="mt-2 text-xs font-medium leading-relaxed text-slate-300">
-            Free tier users get 10,000 one-time AI tokens. Downloading official PDFs, reports, or letters requires a nominal fee of <strong className="text-amber-400">₹1</strong> per document.
+            Free tier users get 30,000 one-time AI tokens. Downloading official PDFs, reports, or letters requires a nominal fee of <strong className="text-amber-400">₹1</strong> per document.
           </p>
         </div>
 

@@ -1513,7 +1513,7 @@ export default function CareerGpsPage() {
                   ...prev,
                   completedPhases,
                 }
-              : prev
+              : { completedPhases }
           );
         }
       }
