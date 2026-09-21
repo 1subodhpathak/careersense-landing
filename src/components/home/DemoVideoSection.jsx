@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 
-const demoVideo = "/CareerSense.mp4";
+const demoVideo = "https://d7exlrhix3get.cloudfront.net/CareerSense.mp4";
 
 // ── Fullscreen Video Lightbox ─────────────────────────────────
 function VideoLightbox({ onClose }) {
@@ -11,16 +11,11 @@ function VideoLightbox({ onClose }) {
     document.body.style.overflow = "hidden";
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
-      if (videoRef.current.requestFullscreen) {
-        videoRef.current.requestFullscreen().catch(() => {});
-      } else if (videoRef.current.webkitRequestFullscreen) {
-        videoRef.current.webkitRequestFullscreen();
-      } else if (videoRef.current.msRequestFullscreen) {
-        videoRef.current.msRequestFullscreen();
-      }
     }
     // Close on Escape
-    const handleKey = (e) => { if (e.key === "Escape") onClose(); };
+    const handleKey = (e) => { 
+      if (e.key === "Escape") onClose(); 
+    };
     window.addEventListener("keydown", handleKey);
     return () => {
       document.body.style.overflow = "";
@@ -46,7 +41,7 @@ function VideoLightbox({ onClose }) {
 
       {/* Fullscreen Video Container */}
       <div
-        className="relative w-full h-full flex items-center justify-center p-2 sm:p-6"
+        className="relative w-full h-full max-w-6xl max-h-[90vh] flex items-center justify-center p-2 sm:p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <video
@@ -55,6 +50,7 @@ function VideoLightbox({ onClose }) {
           controls
           autoPlay
           playsInline
+          preload="auto"
           className="w-full h-full object-contain rounded-2xl bg-black shadow-2xl"
         />
       </div>
@@ -68,16 +64,31 @@ export default function DemoVideoSection() {
   const [isHovered, setIsHovered] = useState(false);
   const loopRef = useRef(null);
 
-  // Play loop preview on mount
+  // Play loop preview on mount, pause when modal is open
   useEffect(() => {
     if (loopRef.current) {
-      loopRef.current.play().catch(() => {});
+      if (lightboxOpen) {
+        loopRef.current.pause();
+      } else {
+        loopRef.current.play().catch(() => {});
+      }
     }
-  }, []);
+  }, [lightboxOpen]);
+
+  const handleOpenLightbox = () => {
+    if (loopRef.current) {
+      loopRef.current.pause();
+    }
+    setLightboxOpen(true);
+  };
+
+  const handleCloseLightbox = () => {
+    setLightboxOpen(false);
+  };
 
   return (
     <>
-      {lightboxOpen && <VideoLightbox onClose={() => setLightboxOpen(false)} />}
+      {lightboxOpen && <VideoLightbox onClose={handleCloseLightbox} />}
 
       <section className="relative w-full overflow-hidden py-20 px-4 sm:px-6">
         {/* Background glow */}
@@ -112,7 +123,7 @@ export default function DemoVideoSection() {
             }}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            onClick={() => setLightboxOpen(true)}
+            onClick={handleOpenLightbox}
           >
             {/* Looping muted preview */}
             <video

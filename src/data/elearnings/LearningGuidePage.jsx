@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 
-const dsLogoVideo = "/CareerSense.mp4";
+const dsLogoVideo = "https://d7exlrhix3get.cloudfront.net/CareerSense.mp4";
 
 function getTheme(theme, accent) {
   const value = String(theme).toLowerCase();

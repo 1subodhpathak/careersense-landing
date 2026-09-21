@@ -154,9 +154,9 @@ const LiveSimulationScene = ({ isDark }) => (
 
     <div className={`p-3 sm:p-4 ${isDark ? 'bg-[#0c162b]' : 'bg-slate-100 overflow-y-auto'}`}>
       <div className="grid h-full grid-cols-1 auto-rows-[minmax(120px,1fr)] gap-3 sm:grid-cols-2 lg:grid-rows-[1fr_1fr_76px] lg:auto-rows-auto lg:min-h-[400px]">
-        <VideoTile src="/sarah.mp4" name="Sarah Jenkins" role="AI Interviewer" badge="HD" />
-        <VideoTile src="/david.mp4" name="David Chen" role="Hiring Manager" badge="Sync" />
-        <VideoTile src="/emily.mp4" name="Emily Morris" role="HR Partner" badge="Live" />
+        <VideoTile src="https://d7exlrhix3get.cloudfront.net/sarah.mp4" name="Sarah Jenkins" role="AI Interviewer" badge="HD" />
+        <VideoTile src="https://d7exlrhix3get.cloudfront.net/david.mp4" name="David Chen" role="Hiring Manager" badge="Sync" />
+        <VideoTile src="https://d7exlrhix3get.cloudfront.net/emily.mp4" name="Emily Morris" role="HR Partner" badge="Live" />
         <div className={`relative overflow-hidden rounded-[1.55rem] ${isDark ? 'bg-[#20242d]' : 'bg-slate-200'}`}>
           <div className="grid h-full place-items-center">
             <div className="grid h-16 w-16 place-items-center rounded-full bg-white/12 text-slate-400 sm:h-24 sm:w-24">

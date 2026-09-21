@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { BadgeCheck, ShieldCheck, X } from "lucide-react";
 import heroGraduatesDarkImage from "../../Assets/Back-optimized.jpg";
 import heroGraduatesLightImage from "../../Assets/Back-2-optimized.jpg";
-import atsSampleReport from "../../Assets/ATS Resume Checker-1.pdf";
+import atsSampleReport from "../../Assets/ATS Resume Checker.pdf";
 
 const atsSampleReportViewer = `${atsSampleReport}#toolbar=0&navpanes=0&scrollbar=1&view=FitH`;
 
