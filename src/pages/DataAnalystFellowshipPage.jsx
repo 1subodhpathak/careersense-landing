@@ -171,13 +171,14 @@ import fsDashboardCtaSvg from "../Assets/full_stack_pack/illustrations/full-stac
 import ctaDotPatternSvg from "../Assets/uiux_pack/backgrounds/cta-dot-pattern.svg";
 
 // ── ORIGINAL HERO BACKGROUND IMAGES ──────────────────────────────────
-import dataAnalystHeroBg from "../Assets/DataAnalyst/DA.png";
-import dataAnalystCombinedSvg from "../Assets/DataAnalyst/combined.svg";
-import dataScienceHeroBg from "../Assets/DataAnalyst/DS.png";
-import artificialIntelligenceHeroBg from "../Assets/DataAnalyst/AI.png";
-import uiuxDesignHeroBg from "../Assets/DataAnalyst/UI.png";
-import fullStackDevelopmentHeroBg from "../Assets/DataAnalyst/FSD.png";
-import appDevelopmentHeroBg from "../Assets/DataAnalyst/AD.png";
+import dataAnalystHeroBg from "../Assets/DataAnalyst/DA1.jpg";
+// import dataAnalystCombinedSvg from "../Assets/DataAnalyst/combined.svg";
+import dataAnalystCombinedSvg from "../Assets/DataAnalyst/combined.png";
+import dataScienceHeroBg from "../Assets/DataAnalyst/DS1.png";
+import artificialIntelligenceHeroBg from "../Assets/DataAnalyst/AI1.png";
+import uiuxDesignHeroBg from "../Assets/DataAnalyst/UI1.jpg";
+import fullStackDevelopmentHeroBg from "../Assets/DataAnalyst/FSD1.png";
+import appDevelopmentHeroBg from "../Assets/DataAnalyst/AD1.png";
 
 const fellowshipTracksConfig = {
   "data-analyst": {
