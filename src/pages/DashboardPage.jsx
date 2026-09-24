@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   FileText,
   FileSearch,
@@ -468,6 +468,8 @@ export default function DashboardPage() {
     return () => clearInterval(timer);
   }, []);
 
+  const autoSyncedRef = useRef(false);
+
   useEffect(() => {
     if (dashboardData?.masterProfile) {
       const p = dashboardData.masterProfile;
@@ -505,6 +507,45 @@ export default function DashboardPage() {
       }));
     }
   }, [dashboardData, user]);
+
+  // First-time sign in auto-sync: persists Clerk name, email, and avatar to database immediately if missing
+  useEffect(() => {
+    if (!user || autoSyncedRef.current || !dashboardData) return;
+    const userEmail = user.primaryEmailAddress?.emailAddress;
+    const userName = user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    const userAvatar = user.imageUrl;
+    const currentEmail = dashboardData?.masterProfile?.email;
+    const currentName = dashboardData?.masterProfile?.fullName;
+
+    if ((userEmail && !currentEmail) || (userName && !currentName)) {
+      autoSyncedRef.current = true;
+      (async () => {
+        try {
+          const token = await getToken();
+          if (!token) return;
+          const apiBase = import.meta.env.VITE_API_URL || "https://server.datasenseai.com";
+          const res = await fetch(`${apiBase}/careersense/profile`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              email: currentEmail || userEmail,
+              fullName: currentName || userName,
+              avatar: dashboardData?.masterProfile?.avatar || userAvatar
+            })
+          });
+          if (res.ok) {
+            const updated = await res.json();
+            setDashboardData(prev => ({ ...prev, masterProfile: updated }));
+          }
+        } catch (err) {
+          console.warn("[Auto Profile Sync Warning]", err);
+        }
+      })();
+    }
+  }, [user, dashboardData, getToken]);
 
   const handleSaveProfile = async (e) => {
     if (e) e.preventDefault();
