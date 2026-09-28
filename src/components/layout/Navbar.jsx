@@ -1,5 +1,5 @@
 import { Award, BarChart3, Bell, Bot, CalendarDays, Check, ChevronDown, CircleDollarSign, CircleHelp, Clock3, Code2, CreditCard, Database, Download, ExternalLink, FileCheck2, FilePenLine, GraduationCap, LifeBuoy, Mail, MenuSquare, MessagesSquare, MoonStar, Palette, PlayCircle, ReceiptText, ScrollText, ShieldCheck, Smartphone, SunMedium, Trash2, Users, X, Zap } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { SignedIn, SignedOut, SignInButton, UserButton, useUser } from "@clerk/clerk-react";
 import CSLogo from "../../Assets/CSlogo.png";
@@ -426,6 +426,7 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
   const [fellowshipsOpen, setFellowshipsOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
+  const adminDropdownRef = useRef(null);
   const isLightTheme = heroTheme === "light";
 
   const userEmail = (
@@ -435,6 +436,23 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
   ).toLowerCase().trim();
 
   const isAdmin = ["pathaksubodh945@gmail.com", "support.careersense@gmail.com"].includes(userEmail);
+
+  // Close admin dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (adminDropdownRef.current && !adminDropdownRef.current.contains(event.target)) {
+        setAdminDropdownOpen(false);
+      }
+    }
+    if (adminDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [adminDropdownOpen]);
 
   useEffect(() => {
     if (location.pathname !== "/" || !location.hash) return;
@@ -595,12 +613,11 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
             <SignedIn>
               <div className="flex items-center gap-2 xl:gap-3">
                 {isAdmin ? (
-                  <div className="relative hidden xl:inline-block" onMouseLeave={() => setAdminDropdownOpen(false)}>
+                  <div className="relative hidden xl:inline-block" ref={adminDropdownRef}>
                     <button
                       type="button"
                       onClick={() => setAdminDropdownOpen((prev) => !prev)}
-                      onMouseEnter={() => setAdminDropdownOpen(true)}
-                      className="inline-flex min-h-[50px] items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(37,99,235,0.28)] transition-all duration-200 hover:brightness-105 cursor-pointer"
+                      className="inline-flex min-h-[50px] items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(37,99,235,0.28)] transition-all duration-200 hover:brightness-105 cursor-pointer select-none"
                     >
                       <CalendarDays className="h-4 w-4" />
                       <span>Dashboard</span>
@@ -609,7 +626,7 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
 
                     {adminDropdownOpen && (
                       <div
-                        className={`absolute right-0 top-full mt-2 w-64 rounded-2xl border p-2 shadow-2xl backdrop-blur-xl z-50 ${
+                        className={`absolute right-0 top-full mt-2 w-64 rounded-2xl border p-2 shadow-2xl backdrop-blur-xl z-50 animate-in fade-in zoom-in-95 duration-150 ${
                           isLightTheme ? "border-slate-200 bg-white/95 text-slate-900 shadow-slate-300/50" : "border-white/10 bg-[#0a1526]/95 text-white shadow-black/60"
                         }`}
                       >
