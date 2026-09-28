@@ -420,11 +420,21 @@ function CareerSenseUserButton({ compact = false }) {
 
 export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
   const location = useLocation();
+  const { user } = useUser();
   const [open, setOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [fellowshipsOpen, setFellowshipsOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [adminDropdownOpen, setAdminDropdownOpen] = useState(false);
   const isLightTheme = heroTheme === "light";
+
+  const userEmail = (
+    user?.primaryEmailAddress?.emailAddress ||
+    user?.emailAddresses?.[0]?.emailAddress ||
+    ""
+  ).toLowerCase().trim();
+
+  const isAdmin = ["pathaksubodh945@gmail.com", "support.careersense@gmail.com"].includes(userEmail);
 
   useEffect(() => {
     if (location.pathname !== "/" || !location.hash) return;
@@ -584,13 +594,68 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
 
             <SignedIn>
               <div className="flex items-center gap-2 xl:gap-3">
-                <Link
-                  to="/dashboard"
-                  className="hidden min-h-[50px] items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-6 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(37,99,235,0.28)] transition-all duration-200 hover:brightness-105 xl:inline-flex"
-                >
-                  <CalendarDays className="h-4 w-4" />
-                  Dashboard
-                </Link>
+                {isAdmin ? (
+                  <div className="relative hidden xl:inline-block" onMouseLeave={() => setAdminDropdownOpen(false)}>
+                    <button
+                      type="button"
+                      onClick={() => setAdminDropdownOpen((prev) => !prev)}
+                      onMouseEnter={() => setAdminDropdownOpen(true)}
+                      className="inline-flex min-h-[50px] items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-5 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(37,99,235,0.28)] transition-all duration-200 hover:brightness-105 cursor-pointer"
+                    >
+                      <CalendarDays className="h-4 w-4" />
+                      <span>Dashboard</span>
+                      <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${adminDropdownOpen ? "rotate-180" : ""}`} />
+                    </button>
+
+                    {adminDropdownOpen && (
+                      <div
+                        className={`absolute right-0 top-full mt-2 w-64 rounded-2xl border p-2 shadow-2xl backdrop-blur-xl z-50 ${
+                          isLightTheme ? "border-slate-200 bg-white/95 text-slate-900 shadow-slate-300/50" : "border-white/10 bg-[#0a1526]/95 text-white shadow-black/60"
+                        }`}
+                      >
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setAdminDropdownOpen(false)}
+                          className={`flex items-center gap-3 rounded-xl p-2.5 transition ${isLightTheme ? "hover:bg-slate-100" : "hover:bg-white/10"}`}
+                        >
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+                            <CalendarDays className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold">Candidate Dashboard</div>
+                            <div className={`text-[10px] ${isLightTheme ? "text-slate-500" : "text-slate-400"}`}>Career tools & tracks</div>
+                          </div>
+                        </Link>
+                        <Link
+                          to="/admin"
+                          onClick={() => setAdminDropdownOpen(false)}
+                          className={`flex items-center gap-3 rounded-xl p-2.5 transition border-t mt-1 ${
+                            isLightTheme ? "border-slate-100 hover:bg-amber-50/80 text-slate-900" : "border-white/5 hover:bg-amber-500/10 text-white"
+                          }`}
+                        >
+                          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 font-bold shadow-sm">
+                            <ShieldCheck className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <div className="text-xs font-black text-amber-500 flex items-center gap-1.5">
+                              Admin Workspace
+                              <span className="rounded-full bg-amber-400/20 px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-amber-400">Pro</span>
+                            </div>
+                            <div className={`text-[10px] ${isLightTheme ? "text-slate-500" : "text-slate-400"}`}>Directory, Tokens & CRM</div>
+                          </div>
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    to="/dashboard"
+                    className="hidden min-h-[50px] items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-6 py-3 text-sm font-bold text-white shadow-[0_12px_28px_rgba(37,99,235,0.28)] transition-all duration-200 hover:brightness-105 xl:inline-flex"
+                  >
+                    <CalendarDays className="h-4 w-4" />
+                    Dashboard
+                  </Link>
+                )}
                 <div className="flex items-center justify-center">
                   <CareerSenseUserButton compact />
                 </div>
@@ -697,8 +762,18 @@ export default function Navbar({ heroTheme = "dark", onToggleHeroTheme }) {
                       className="mt-2 inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-4 py-3 text-center text-sm font-bold text-white hover:brightness-105"
                     >
                       <CalendarDays className="h-4 w-4" />
-                      Dashboard
+                      Candidate Dashboard
                     </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        onClick={() => setOpen(false)}
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 px-4 py-3 text-center text-sm font-bold text-slate-950 shadow-md hover:brightness-105"
+                      >
+                        <ShieldCheck className="h-4 w-4" />
+                        Admin Workspace
+                      </Link>
+                    )}
                     <div className="mt-2 flex items-center justify-center gap-2 py-2 border-t border-dashed border-slate-700/20">
                       <span className={`text-xs font-semibold ${isLightTheme ? "text-slate-600" : "text-slate-400"}`}>Account:</span>
                       <CareerSenseUserButton />

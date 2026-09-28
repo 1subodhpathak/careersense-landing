@@ -13,6 +13,7 @@ import EbookReaderPage from "./pages/EbookReaderPage";
 import PartnerProgramPage from "./pages/PartnerProgramPage";
 import DataAnalystFellowshipPage from "./pages/DataAnalystFellowshipPage";
 import PricingPage from "./pages/PricingPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 function ProtectedRoute({ children }) {
   return (
@@ -59,6 +60,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminDashboardPage />
             </ProtectedRoute>
           }
         />
