@@ -542,7 +542,29 @@ export default function UserDirectoryCrm({
                   <td colSpan="6" className="py-16 text-center text-slate-400">
                     <Users className="mx-auto h-8 w-8 text-slate-300 mb-2" />
                     <p className="text-sm font-bold text-slate-700">No candidates match your current filter.</p>
-                    <p className="text-xs text-slate-400 mt-1">Try resetting the search bar or plan filters.</p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      {selectedDateFilter !== "all" 
+                        ? `A Date filter ("${selectedDateFilter}") is currently active. Try clearing or expanding your date range.`
+                        : "Try checking your spelling or resetting active plan & token filters."
+                      }
+                    </p>
+                    {(searchQuery || selectedPlan !== "all" || selectedTokenFilter !== "all" || selectedDateFilter !== "all") && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setSelectedPlan("all");
+                          setSelectedTokenFilter("all");
+                          setSelectedDateFilter("all");
+                          setCustomStartDate("");
+                          setCustomEndDate("");
+                          setCurrentPage(1);
+                        }}
+                        className="mt-3.5 inline-flex items-center gap-1.5 rounded-xl bg-[#0b132b] px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-slate-800 transition cursor-pointer"
+                      >
+                        Reset All Filters
+                      </button>
+                    )}
                   </td>
                 </tr>
               ) : (
