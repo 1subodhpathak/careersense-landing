@@ -18,6 +18,10 @@ import {
 } from "lucide-react";
 import AdminSidebar from "../components/admin/AdminSidebar";
 import UserDirectoryCrm from "../components/admin/UserDirectoryCrm";
+import FellowshipSubmissionsHub from "../components/admin/FellowshipSubmissionsHub";
+import PartnerSubmissionsHub from "../components/admin/PartnerSubmissionsHub";
+import FinancialLedgerMonetization from "../components/admin/FinancialLedgerMonetization";
+import PlatformAnalyticsHub from "../components/admin/PlatformAnalyticsHub";
 import CandidateDossierDrawer from "../components/admin/CandidateDossierDrawer";
 import TokenGrantModal from "../components/admin/TokenGrantModal";
 
@@ -161,6 +165,7 @@ export default function AdminDashboardPage() {
                 <h1 className="text-xl font-bold text-slate-900 tracking-tight">
                   {activeTab === "users-crm" && "User Directory & Candidate CRM"}
                   {activeTab === "submissions" && "Fellowship Submissions Hub"}
+                  {activeTab === "partner-submissions" && "Partner Program Submissions Hub"}
                   {activeTab === "monetization" && "Financial Ledger & Monetization"}
                   {activeTab === "analytics" && "Platform & Tool Usage Analytics"}
                 </h1>
@@ -169,7 +174,11 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-medium mt-0.5">
-                Central management node for candidate profiles, live token countdown balances, and administrative controls.
+                {activeTab === "users-crm" && "Central management node for candidate profiles, live token countdown balances, and administrative controls."}
+                {activeTab === "submissions" && "Evaluation queue for reviewing milestone capstones, assessing GitHub repos, and publishing verifiable certificate credentials."}
+                {activeTab === "partner-submissions" && "Executive grading and mentor review node for all 20 Partner Program startup milestones and attached evidence."}
+                {activeTab === "monetization" && "Executive financial audit node for tracking MRR, ₹1 instant download passes, fellowship tuition fees, and sales ledger."}
+                {activeTab === "analytics" && "Cross-platform intelligence node for ATS scan volume, AI token burn rates, top consumers, and tool metrics."}
               </p>
             </div>
           </div>
@@ -210,52 +219,24 @@ export default function AdminDashboardPage() {
             />
           )}
 
-          {/* Module 2: Fellowship Submissions (Upcoming) */}
+          {/* Module 2: Fellowship Submissions Review Hub */}
           {activeTab === "submissions" && (
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-10 text-center shadow-xs">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-2xs">
-                <GraduationCap size={28} />
-              </div>
-              <h2 className="mt-4 text-lg font-bold text-slate-900">Module 2: Fellowship Submissions Review Hub</h2>
-              <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-slate-500">
-                Rubric-based evaluation queue for reviewing capstone projects, video walkthroughs, and issuing verifiable certificates across all 6 career tracks.
-              </p>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-4 py-1.5 text-xs font-bold text-blue-700">
-                <span>Next in queue for implementation</span>
-              </div>
-            </div>
+            <FellowshipSubmissionsHub adminEmail={userEmail} />
           )}
 
-          {/* Module 3: Financial Ledger (Upcoming) */}
+          {/* Module 3: Partner Program Submissions Hub */}
+          {activeTab === "partner-submissions" && (
+            <PartnerSubmissionsHub adminEmail={userEmail} />
+          )}
+
+          {/* Module 4: Financial Ledger & Monetization */}
           {activeTab === "monetization" && (
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-10 text-center shadow-xs">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 shadow-2xs">
-                <CreditCard size={28} />
-              </div>
-              <h2 className="mt-4 text-lg font-bold text-slate-900">Module 3: Platform Monetization & Financial Ledger</h2>
-              <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-slate-500">
-                Razorpay payment audits, recurring subscription MRR metrics, ₹1 export pass ledgers, and token top-up sales analytics.
-              </p>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-bold text-amber-700">
-                <span>Coming in Step 3</span>
-              </div>
-            </div>
+            <FinancialLedgerMonetization adminEmail={userEmail} />
           )}
 
-          {/* Module 4: Platform Analytics (Upcoming) */}
+          {/* Module 5: Platform & Tool Usage Analytics */}
           {activeTab === "analytics" && (
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-10 text-center shadow-xs">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-purple-50 text-purple-600 shadow-2xs">
-                <BarChart3 size={28} />
-              </div>
-              <h2 className="mt-4 text-lg font-bold text-slate-900">Module 4: Cross-Platform & AI Tool Analytics</h2>
-              <p className="mx-auto mt-2 max-w-lg text-xs leading-relaxed text-slate-500">
-                ATS keyword mismatch trends, resume template usage rates, assessment difficulty curves, and conversion funnel cohorts.
-              </p>
-              <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-4 py-1.5 text-xs font-bold text-purple-700">
-                <span>Coming in Step 4</span>
-              </div>
-            </div>
+            <PlatformAnalyticsHub adminEmail={userEmail} />
           )}
         </div>
       </section>

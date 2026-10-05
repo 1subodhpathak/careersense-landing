@@ -13,7 +13,8 @@ import {
   Compass,
   GraduationCap,
   X,
-  ShieldCheck
+  ShieldCheck,
+  Briefcase
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CSLogo from "../../Assets/CSlogo.png";
@@ -27,33 +28,42 @@ const navItems = [
     badge: "Live",
     badgeClass: "bg-emerald-50 text-emerald-700 border border-emerald-200"
   },
-  // {
-  //   id: "submissions",
-  //   label: "Fellowship Submissions",
-  //   description: "Marking hub & rubrics",
-  //   icon: GraduationCap,
-  //   badge: "Module 2",
-  //   badgeClass: "bg-blue-50 text-blue-700 border border-blue-200",
-  //   disabled: false
-  // },
-  // {
-  //   id: "monetization",
-  //   label: "Financial Ledger",
-  //   description: "Orders, passes & MRR",
-  //   icon: CreditCard,
-  //   badge: "Module 3",
-  //   badgeClass: "bg-amber-50 text-amber-700 border border-amber-200",
-  //   disabled: false
-  // },
-  // {
-  //   id: "analytics",
-  //   label: "Platform Analytics",
-  //   description: "Tool engagement & funnel",
-  //   icon: BarChart3,
-  //   badge: "Module 4",
-  //   badgeClass: "bg-purple-50 text-purple-700 border border-purple-200",
-  //   disabled: false
-  // }
+  {
+    id: "submissions",
+    label: "Fellowship Submissions",
+    description: "6 Career Tracks Capstones",
+    icon: GraduationCap,
+    badge: "Live",
+    badgeClass: "bg-blue-50 text-blue-700 border border-blue-200",
+    disabled: false
+  },
+  {
+    id: "partner-submissions",
+    label: "Partner Submissions",
+    description: "20 Startup Milestones",
+    icon: Briefcase,
+    badge: "Live",
+    badgeClass: "bg-amber-50 text-amber-700 border border-amber-200",
+    disabled: false
+  },
+  {
+    id: "monetization",
+    label: "Financial Ledger",
+    description: "Orders, passes & MRR",
+    icon: CreditCard,
+    badge: "Live",
+    badgeClass: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    disabled: false
+  },
+  {
+    id: "analytics",
+    label: "Platform Analytics",
+    description: "Tool engagement & funnel",
+    icon: BarChart3,
+    badge: "Live",
+    badgeClass: "bg-purple-50 text-purple-700 border border-purple-200",
+    disabled: false
+  }
 ];
 
 export default function AdminSidebar({

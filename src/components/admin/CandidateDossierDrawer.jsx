@@ -109,12 +109,19 @@ export default function CandidateDossierDrawer({
                   {subscription?.plan || "Free"}
                 </span>
               </div>
-              <div className="text-xs text-slate-500 mt-0.5 flex items-center gap-2">
+              <div className="text-xs text-slate-500 mt-0.5 flex flex-wrap items-center gap-2">
                 <span>{profile?.email}</span>
+                {profile?.phone && (
+                  <>
+                    <span>•</span>
+                    <span className="font-bold text-teal-700">📞 {profile.phone}</span>
+                  </>
+                )}
                 <span>•</span>
                 <span className="text-[11px] text-slate-400 font-mono">{clerkId.slice(0, 16)}...</span>
               </div>
             </div>
+
           </div>
 
           <div className="flex items-center gap-2">
@@ -272,6 +279,19 @@ export default function CandidateDossierDrawer({
                           <span>Last updated: {r.updatedAt ? new Date(r.updatedAt).toLocaleDateString() : "Recent"}</span>
                           {r.score && <span className="font-bold text-emerald-600">Score: {r.score}/100</span>}
                         </div>
+                        {(r.url || r.s3Url) && (
+                          <div className="mt-2.5 pt-2.5 border-t border-slate-100 flex justify-end">
+                            <a
+                              href={r.url || r.s3Url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 text-[11px] font-bold text-teal-600 hover:text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200"
+                            >
+                              <ExternalLink size={12} />
+                              <span>View / Download Resume PDF</span>
+                            </a>
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
@@ -287,7 +307,10 @@ export default function CandidateDossierDrawer({
                     atsScans.map((a, i) => (
                       <div key={i} className="rounded-2xl border border-slate-200/80 bg-white p-4 space-y-3 shadow-xs">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-900">{a.file_name || `Scanned Resume #${i+1}`}</span>
+                          <div className="flex items-center gap-2">
+                            <FileText size={15} className="text-teal-600" />
+                            <span className="text-xs font-bold text-slate-900">{a.file_name || `Scanned Resume #${i+1}`}</span>
+                          </div>
                           <span className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 text-xs font-black">
                             Score: {a.current_score || a.latestAnalysis?.overall_score || 0}%
                           </span>
@@ -296,6 +319,20 @@ export default function CandidateDossierDrawer({
                           <p className="text-[11px] text-slate-600 leading-relaxed bg-[#f8fafc] p-3 rounded-xl border border-slate-200/60">
                             {a.latestAnalysis.summary}
                           </p>
+                        )}
+                        {a.s3Url && (
+                          <div className="flex items-center justify-between pt-1 border-t border-slate-100 text-[11px]">
+                            <span className="text-slate-400 font-medium">Uploaded: {a.createdAt ? new Date(a.createdAt).toLocaleDateString() : "N/A"}</span>
+                            <a
+                              href={a.s3Url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-bold text-teal-600 hover:text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200"
+                            >
+                              <ExternalLink size={12} />
+                              <span>Open Original PDF</span>
+                            </a>
+                          </div>
                         )}
                       </div>
                     ))
@@ -310,14 +347,27 @@ export default function CandidateDossierDrawer({
                     <div className="py-12 text-center text-xs text-slate-400">No cover letters generated yet.</div>
                   ) : (
                     coverLetters.map((c, i) => (
-                      <div key={i} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-slate-900">{c.jobRole || c.companyName || `Cover Letter #${i+1}`}</span>
-                          <span className="text-[10px] text-slate-400">{c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ""}</span>
+                      <div key={i} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs hover:border-purple-200 transition-colors">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <span className="text-xs font-black text-slate-900 block truncate">
+                              {c.title || c.jobRole || c.company || c.companyName || `Executive Letter #${i + 1}`}
+                            </span>
+                            {(c.company || c.companyName || c.recipient?.company) && (
+                              <div className="text-[11px] text-purple-700 font-bold mt-0.5">
+                                Target Company: {c.company || c.companyName || c.recipient?.company}
+                              </div>
+                            )}
+                            {(c.recipient?.targetRole || c.targetRole) && (
+                              <div className="text-[10px] text-slate-500 font-semibold mt-0.5">
+                                Target Role: {c.recipient?.targetRole || c.targetRole}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-[10px] font-bold text-slate-400 shrink-0 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/60">
+                            {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : "Recent"}
+                          </span>
                         </div>
-                        {c.companyName && (
-                          <div className="text-[11px] text-teal-600 font-semibold mt-1">Target Company: {c.companyName}</div>
-                        )}
                       </div>
                     ))
                   )}

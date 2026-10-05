@@ -269,6 +269,68 @@ export default function PartnerAssignments({
   );
   const selectedTheme = phaseThemes[Math.max(0, selectedPhaseIndex)];
 
+  const apiBase =
+    import.meta.env.VITE_API_URL ||
+    import.meta.env.VITE_BACKEND_URL ||
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://server.datasenseai.com";
+
+  // Fetch live partner assignment progress from MongoDB
+  useEffect(() => {
+    const userId = user?.id || profile?.clerkUserId;
+    if (!userId) return;
+
+    fetch(`${apiBase}/careersense/partner/assignments`, {
+      headers: {
+        "x-clerk-user-id": userId,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.records) {
+          setRecords((current) => {
+            const merged = { ...current, ...data.records };
+
+            // Check if any local submission needs to be pushed to backend
+            Object.entries(current).forEach(([idStr, rec]) => {
+              const id = parseInt(idStr, 10);
+              const cleanLinks = (Array.isArray(rec.links) ? rec.links : []).filter(Boolean);
+              if (rec.status === "submitted") {
+                fetch(`${apiBase}/careersense/partner/assignments/${id}/submit`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "x-clerk-user-id": userId,
+                  },
+                  body: JSON.stringify({
+                    notes: rec.notes || "",
+                    links: cleanLinks,
+                    files: rec.files || [],
+                  }),
+                }).catch(() => {});
+              } else if (rec.files?.length || rec.notes || cleanLinks.length) {
+                fetch(`${apiBase}/careersense/partner/assignments/${id}/save`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "x-clerk-user-id": userId,
+                  },
+                  body: JSON.stringify({
+                    notes: rec.notes || "",
+                    links: cleanLinks,
+                    files: rec.files || [],
+                  }),
+                }).catch(() => {});
+              }
+            });
+
+            return merged;
+          });
+        }
+      })
+      .catch((err) => console.error("Error fetching partner assignments from server:", err));
+  }, [user?.id, profile?.clerkUserId, apiBase]);
+
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
   }, [records]);
@@ -278,7 +340,7 @@ export default function PartnerAssignments({
   }, [view, selectedId]);
 
   const completed = Object.values(records).filter(
-    (r) => r.status === "submitted"
+    (r) => r.status === "submitted" || r.status === "reviewed"
   ).length;
   const skipped = Object.values(records).filter(
     (r) => r.status === "skipped"
@@ -357,7 +419,7 @@ export default function PartnerAssignments({
       [id]: {
         ...emptyRecord,
         ...(current[id] || {}),
-        status: ["submitted", "skipped"].includes(
+        status: ["submitted", "reviewed", "skipped"].includes(
           current[id]?.status
         )
           ? current[id].status
@@ -376,8 +438,11 @@ export default function PartnerAssignments({
     patchRecord({ links, status: "in_progress" });
   };
 
-  const addFiles = (event) => {
-    const incoming = [...event.target.files].map((file) => ({
+  const addFiles = async (event) => {
+    const fileList = event.target.files;
+    if (!fileList || !fileList.length) return;
+
+    const incoming = [...fileList].map((file) => ({
       name: file.name,
       size: file.size,
       type: file.type,
@@ -388,16 +453,58 @@ export default function PartnerAssignments({
       status: "in_progress",
     });
 
+    const userId = user?.id || profile?.clerkUserId;
+    if (userId) {
+      try {
+        const formData = new FormData();
+        for (const f of fileList) {
+          formData.append("files", f);
+        }
+        const res = await fetch(`${apiBase}/careersense/partner/assignments/${selectedId}/upload`, {
+          method: "POST",
+          headers: {
+            "x-clerk-user-id": userId,
+          },
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.success && data.record?.files) {
+          patchRecord({ files: data.record.files });
+        }
+      } catch (err) {
+        console.error("Failed to upload partner assignment files:", err);
+      }
+    }
+
     event.target.value = "";
   };
 
-  const saveWork = () => {
+  const saveWork = async () => {
     patchRecord({ status: "in_progress" });
     setSaved(true);
     setTimeout(() => setSaved(false), 1600);
+
+    const userId = user?.id || profile?.clerkUserId;
+    if (userId) {
+      try {
+        await fetch(`${apiBase}/careersense/partner/assignments/${selectedId}/save`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-clerk-user-id": userId,
+          },
+          body: JSON.stringify({
+            notes: record.notes || "",
+            links: record.links || [],
+          }),
+        });
+      } catch (err) {
+        console.error("Failed to save draft partner assignment:", err);
+      }
+    }
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (
       record.notes.trim() ||
       record.links.length ||
@@ -407,6 +514,25 @@ export default function PartnerAssignments({
         status: "submitted",
         submittedAt: new Date().toISOString(),
       });
+
+      const userId = user?.id || profile?.clerkUserId;
+      if (userId) {
+        try {
+          await fetch(`${apiBase}/careersense/partner/assignments/${selectedId}/submit`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-clerk-user-id": userId,
+            },
+            body: JSON.stringify({
+              notes: record.notes || "",
+              links: record.links || [],
+            }),
+          });
+        } catch (err) {
+          console.error("Failed to submit partner assignment:", err);
+        }
+      }
     }
   };
 
@@ -890,7 +1016,7 @@ export default function PartnerAssignments({
                               </button>
                               <button
                                 type="button"
-                                onClick={() => unlockStatus.isUnlocked && openWorkspace(id)}
+                                onClick={() => unlockStatus.isUnlocked && begin(id)}
                                 disabled={!unlockStatus.isUnlocked}
                                 className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-xl text-[10px] font-black text-white shadow-sm transition hover:brightness-105 disabled:opacity-50"
                                 style={{
@@ -1165,6 +1291,25 @@ export default function PartnerAssignments({
       if (next.status === "available") next.status = "open";
       if (next.status === "under_review") next.status = "submitted";
       patchRecord(next);
+
+      const userId = user?.id || profile?.clerkUserId;
+      if (userId) {
+        const mergedRecord = { ...record, ...next };
+        const cleanLinks = (Array.isArray(mergedRecord.links) ? mergedRecord.links : []).filter(Boolean);
+        const endpoint = next.status === "submitted" ? "submit" : "save";
+        fetch(`${apiBase}/careersense/partner/assignments/${selectedId}/${endpoint}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-clerk-user-id": userId,
+          },
+          body: JSON.stringify({
+            notes: mergedRecord.notes || "",
+            links: cleanLinks,
+            files: mergedRecord.files || [],
+          }),
+        }).catch((err) => console.error("Error saving partner assignment:", err));
+      }
     };
 
     return (
