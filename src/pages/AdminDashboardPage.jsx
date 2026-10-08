@@ -59,13 +59,14 @@ export default function AdminDashboardPage() {
 
   const isAdmin = ADMIN_EMAILS.includes(userEmail);
 
-  const fetchUsers = useCallback(async () => {
+  const fetchUsers = useCallback(async (forceRefresh = false) => {
     if (!isAdmin || !userEmail) return;
     setLoading(true);
     setError(null);
     try {
       const apiBase = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
-      const res = await fetch(`${apiBase}/careersense/admin/users`, {
+      const url = `${apiBase}/careersense/admin/users${forceRefresh ? '?refresh=true' : ''}`;
+      const res = await fetch(url, {
         headers: {
           "x-admin-email": userEmail
         }
@@ -79,16 +80,22 @@ export default function AdminDashboardPage() {
         setMetrics(data.metrics);
       }
     } catch (err) {
-      setError(err.message || "Failed to load admin data");
+      if (err.name !== 'AbortError') {
+        setError(err.message || "Failed to load admin data");
+      }
     } finally {
       setLoading(false);
     }
   }, [isAdmin, userEmail]);
 
   useEffect(() => {
+    let isMounted = true;
     if (isLoaded && isAdmin) {
-      fetchUsers();
+      fetchUsers(false);
     }
+    return () => {
+      isMounted = false;
+    };
   }, [isLoaded, isAdmin, fetchUsers]);
 
   // Handle non-admin or loading state
@@ -212,7 +219,7 @@ export default function AdminDashboardPage() {
               candidates={candidates}
               metrics={metrics}
               loading={loading}
-              onRefresh={fetchUsers}
+              onRefresh={() => fetchUsers(true)}
               onSelectCandidate={(clerkId) => setSelectedClerkId(clerkId)}
               onOpenTokenModal={(candidate) => setTokenModalCandidate(candidate)}
               adminEmail={userEmail}
