@@ -215,7 +215,9 @@ export default function UserDirectoryCrm({
 
     const formatPhoneForCsv = (phone) => {
       if (!phone) return '""';
-      const clean = String(phone).trim();
+      let clean = String(phone).trim();
+      // Remove any lingering parentheses, brackets, or commas
+      clean = clean.replace(/^\(\+?(\d{1,4})\)/, '+$1 ').replace(/[()[\]{}]/g, ' ').replace(/\s+/g, ' ').trim();
       // Prefixing with \t inside quotes forces Excel/Spreadsheets to treat the field strictly as Text.
       // This prevents scientific notation (9.18583E+11) and prevents Excel evaluating dashes as math formulas (-3369).
       return `"\t${clean.replace(/"/g, '""')}"`;
