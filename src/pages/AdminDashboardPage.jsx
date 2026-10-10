@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { Link } from "react-router-dom";
-import { 
-  ShieldAlert, 
-  ShieldCheck, 
-  MenuSquare, 
-  LayoutDashboard, 
-  Sparkles, 
-  RefreshCw, 
+import {
+  ShieldAlert,
+  ShieldCheck,
+  MenuSquare,
+  LayoutDashboard,
+  Sparkles,
+  RefreshCw,
   LogOut,
   GraduationCap,
   CreditCard,
@@ -196,18 +196,18 @@ export default function AdminDashboardPage() {
                 <ShieldCheck size={16} />
               </div>
               <div className="leading-none">
-                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Super Admin</div>
+                <div className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Admin</div>
                 <div className="text-xs font-bold text-slate-800 mt-0.5">{userEmail}</div>
               </div>
             </div>
 
-            <Link
+            {/* <Link
               to="/dashboard"
               className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-[#0b132b] hover:bg-slate-800 text-white text-xs font-bold rounded-lg shadow-xs transition-all active:scale-95 cursor-pointer"
             >
               <LayoutDashboard size={14} className="text-cyan-400" />
               <span>Candidate Dashboard</span>
-            </Link>
+            </Link> */}
           </div>
         </div>
 
