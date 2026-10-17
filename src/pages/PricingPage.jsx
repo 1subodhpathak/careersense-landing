@@ -11,6 +11,7 @@ import Footer from "../components/layout/Footer";
 import useHeroTheme from "../hooks/useHeroTheme";
 
 import { useUser } from "@clerk/clerk-react";
+import PlanConfirmationModal from "../components/pricing/PlanConfirmationModal";
 
 export default function PricingPage() {
 
@@ -37,6 +38,11 @@ export default function PricingPage() {
   const [currency, setCurrency] = useState("INR"); // "INR" | "USD"
 
   const [selectedPlan, setSelectedPlan] = useState("free");
+
+  const [confirmModalConfig, setConfirmModalConfig] = useState({
+    isOpen: false,
+    plan: "intern",
+  });
 
   useEffect(() => {
 
@@ -146,74 +152,49 @@ export default function PricingPage() {
 
   };
 
-  const handleUpgrade = async (targetPlan) => {
+  const handleUpgrade = async (targetPlan, overrideFellowship, overrideBillingCycle) => {
+    const effectiveFellowship = overrideFellowship || selectedFellowship;
+    const effectiveBilling = overrideBillingCycle || partnerBillingCycle;
 
     if (!user) {
-
+      setConfirmModalConfig((prev) => ({ ...prev, isOpen: false }));
       setModalConfig({
-
         isOpen: true,
-
         type: "info",
-
         title: "Authentication Required",
-
         message: "Please log in or sign up to upgrade your CareerSense subscription.",
-
       });
-
       return;
-
     }
 
     setLoadingPlan(true);
 
     try {
-
       const isLoaded = await loadRazorpayScript();
-
       if (!isLoaded) {
-
+        setConfirmModalConfig((prev) => ({ ...prev, isOpen: false }));
         setModalConfig({
-
           isOpen: true,
-
           type: "error",
-
           title: "Connection Error",
-
           message: "Failed to load Razorpay payment SDK. Please check your internet connection and try again.",
-
         });
-
         setLoadingPlan(false);
-
         return;
-
       }
 
       const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
 
       // 1. Create Razorpay Order
-
       const orderRes = await fetch(`${backendUrl}/careersense/subscription/create-order`, {
-
         method: "POST",
-
         headers: { "Content-Type": "application/json" },
-
         body: JSON.stringify({
-
           clerkId: user.id,
-
           planKey: targetPlan,
-
-          billingCycle: targetPlan === "partner" ? partnerBillingCycle : undefined,
-
-          fellowshipId: targetPlan === "intern" ? selectedFellowship : undefined,
-
+          billingCycle: targetPlan === "partner" ? effectiveBilling : undefined,
+          fellowshipId: targetPlan === "intern" ? effectiveFellowship : undefined,
         }),
-
       });
 
       const orderData = await orderRes.json();
@@ -275,29 +256,17 @@ export default function PricingPage() {
           try {
 
             const verifyRes = await fetch(`${backendUrl}/careersense/subscription/verify-payment`, {
-
               method: "POST",
-
               headers: { "Content-Type": "application/json" },
-
               body: JSON.stringify({
-
                 clerkId: user.id,
-
                 razorpay_order_id: response.razorpay_order_id,
-
                 razorpay_payment_id: response.razorpay_payment_id,
-
                 razorpay_signature: response.razorpay_signature,
-
                 planKey: targetPlan,
-
-                billingCycle: targetPlan === "partner" ? partnerBillingCycle : undefined,
-
-                fellowshipId: targetPlan === "intern" ? selectedFellowship : undefined,
-
+                billingCycle: targetPlan === "partner" ? effectiveBilling : undefined,
+                fellowshipId: targetPlan === "intern" ? effectiveFellowship : undefined,
               }),
-
             });
 
             const verifyData = await verifyRes.json();
@@ -381,7 +350,7 @@ export default function PricingPage() {
       };
 
       const rzp = new window.Razorpay(options);
-
+      setConfirmModalConfig((prev) => ({ ...prev, isOpen: false }));
       rzp.open();
 
     } catch (err) {
@@ -517,11 +486,7 @@ export default function PricingPage() {
       tokenDetail: "Refills monthly for 3 months",
 
       badge: "Fellowship",
-
       buttonText: "Join Fellowship Track",
-
-      hasFellowshipSelector: true,
-
       features: [
 
         { text: "All AI Career Tools Active", included: true },
@@ -1425,72 +1390,37 @@ export default function PricingPage() {
 
                   </div>
 
-                  {plan.hasFellowshipSelector && (
-
-                    <div className="cs-plan-selector">
-
-                      <label htmlFor="fellowship-track">SELECT FELLOWSHIP TRACK</label>
-
-                      <select id="fellowship-track" value={selectedFellowship} onChange={(e) => setSelectedFellowship(e.target.value)}>
-
-                        <option value="data-analyst">Data Analyst Fellowship</option>
-
-                        <option value="data-science">Data Science Fellowship</option>
-
-                        <option value="artificial-intelligence">Artificial Intelligence Fellowship</option>
-
-                        <option value="ui-ux-design">UI/UX Design Fellowship</option>
-
-                        <option value="app-development">App Development Fellowship</option>
-
-                        <option value="full-stack-development">Full Stack Development Fellowship</option>
-
-                      </select>
-
-                    </div>
-
-                  )}
-
                   {plan.id === "partner" && (
-
                     <div className="cs-plan-selector billing">
-
                       <label>PARTNER BILLING FREQUENCY</label>
-
                       <div className="cs-billing-control">
-
                         <button type="button" className={partnerBillingCycle === "monthly" ? "active" : ""} onClick={() => setPartnerBillingCycle("monthly")}>Monthly <span>({currency === "USD" ? "$24.99" : "₹2,499"})</span></button>
-
                         <button type="button" className={partnerBillingCycle === "half_yearly" ? "active" : ""} onClick={() => setPartnerBillingCycle("half_yearly")}>6-Month <span>({currency === "USD" ? "$99.99" : "₹10,000"})</span></button>
-
                       </div>
-
                     </div>
-
                   )}
 
                   <div className="cs-feature-list">
-
                     {plan.features.map((feature, index) => (
-
                       <div key={`${plan.id}-${index}`} className={`cs-feature ${feature.included ? "" : "excluded"}`}>
-
                         {feature.included ? <span className="cs-feature-check"><Check size={12} strokeWidth={3}/></span> : <X className="cs-feature-x" size={16}/>}
-
                         <span>{feature.text}{feature.note && <small>{feature.note}</small>}</span>
-
                       </div>
-
                     ))}
-
                   </div>
 
-                  <button type="button" className={`cs-plan-action ${plan.id}`} disabled={isCurrent || loadingPlan} onClick={() => { setSelectedPlan(plan.id); handleUpgrade(plan.id); }}>
-
+                  <button 
+                    type="button" 
+                    className={`cs-plan-action ${plan.id}`} 
+                    disabled={isCurrent || loadingPlan} 
+                    onClick={() => { 
+                      if (isCurrent || plan.id === "free") return;
+                      setSelectedPlan(plan.id); 
+                      setConfirmModalConfig({ isOpen: true, plan: plan.id });
+                    }}
+                  >
                     {isCurrent ? "Your Current Plan" : loadingPlan ? "Opening checkout…" : plan.buttonText}
-
                     {!isCurrent && !loadingPlan && <ArrowRight size={16}/>}
-
                   </button>
 
                 </article>
@@ -1523,7 +1453,14 @@ export default function PricingPage() {
 
             <div className="cs-topup-price" aria-label={`Top-up price ${currency === "INR" ? "₹99" : "$1"}`}><span className={currency === "INR" ? "selected" : ""}>₹99</span><span className={currency === "USD" ? "selected" : ""}>$1</span></div>
 
-            <button type="button" className="cs-buybutton" disabled={loadingPlan} onClick={() => handleUpgrade("token_addon")}><ShoppingCart size={17}/>{loadingPlan ? "Opening checkout…" : "Add 50,000 Tokens"}</button>
+            <button 
+              type="button" 
+              className="cs-buybutton" 
+              disabled={loadingPlan} 
+              onClick={() => setConfirmModalConfig({ isOpen: true, plan: "token_addon" })}
+            >
+              <ShoppingCart size={17}/>{loadingPlan ? "Opening checkout…" : "Add 50,000 Tokens"}
+            </button>
 
           </div>
 
@@ -1763,7 +1700,21 @@ export default function PricingPage() {
 
       )}
 
-
+      {/* Plan Confirmation Modal */}
+      <PlanConfirmationModal
+        isOpen={confirmModalConfig.isOpen}
+        onClose={() => setConfirmModalConfig((prev) => ({ ...prev, isOpen: false }))}
+        initialPlan={confirmModalConfig.plan}
+        currency={currency}
+        selectedFellowship={selectedFellowship}
+        onFellowshipChange={(track) => setSelectedFellowship(track)}
+        partnerBillingCycle={partnerBillingCycle}
+        onPartnerBillingChange={(cycle) => setPartnerBillingCycle(cycle)}
+        onProceedToPayment={(planKey, track, cycle) => {
+          handleUpgrade(planKey, track, cycle);
+        }}
+        loading={loadingPlan}
+      />
 
       <Footer heroTheme={heroTheme} />
 

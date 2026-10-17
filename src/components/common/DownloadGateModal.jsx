@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { X, Download, ShieldCheck, Zap, ArrowRight } from "lucide-react";
-import { useUser } from "@clerk/clerk-react";
+import { X, Download, ShieldCheck, Zap, ArrowRight, ArrowUpRight } from "lucide-react";
+import { useUser, SignInButton } from "@clerk/clerk-react";
 import { loadRazorpaySdk, createPassOrder, verifyPassPayment } from "../../services/downloadGateService";
 
 export default function DownloadGateModal({
@@ -94,13 +95,13 @@ export default function DownloadGateModal({
     }
   };
 
-  return (
+  const modalContent = (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs animate-in fade-in duration-200"
       role="dialog"
       aria-modal="true"
     >
-      <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/15 bg-[#081634] p-6 text-white shadow-2xl">
+      <div className="relative w-full max-w-[580px] overflow-hidden rounded-3xl border border-white/15 bg-[#081634] p-6 sm:p-8 text-white shadow-2xl">
         <button
           type="button"
           onClick={onClose}
@@ -115,14 +116,19 @@ export default function DownloadGateModal({
 
         <div className="mt-4 text-center">
           <span className="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest text-amber-400">
-            Free Tier Download Policy
+            ONE-TIME TRANSACTION FEE
           </span>
           <h3 className="mt-2 text-xl font-black tracking-tight text-white">
-            Unlock {resourceName}
+            Your Document Is Ready to Download
           </h3>
-          <p className="mt-2 text-xs font-medium leading-relaxed text-slate-300">
-            Free tier users get 30,000 one-time AI tokens. Downloading official PDFs, reports, or letters requires a nominal fee of <strong className="text-amber-400">₹1</strong> per document.
-          </p>
+          <div className="mt-3 space-y-2 text-xs font-medium leading-relaxed text-slate-300">
+            <p>
+              A small transaction fee helps cover payment processing and platform operating costs, allowing us to keep CareerSense AI running smoothly and reliably.
+            </p>
+            <p>
+              Pay once to unlock your document, with the flexibility to access and download it again anytime.
+            </p>
+          </div>
         </div>
 
         {error && (
@@ -131,35 +137,57 @@ export default function DownloadGateModal({
           </div>
         )}
 
-        <div className="mt-6 grid gap-3">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row items-center justify-end gap-3">
           <button
             type="button"
-            onClick={handlePayRupee}
+            onClick={onClose}
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-3 text-sm font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition hover:brightness-110 active:translate-y-0.5 disabled:opacity-60"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-white/15 bg-white/5 text-xs font-bold text-slate-300 hover:bg-white/10 transition"
           >
-            <ShieldCheck className="h-4 w-4" />
-            <span>{loading ? "Processing..." : "Pay ₹1 & Download Instantly"}</span>
+            Cancel
           </button>
 
-          <div className="relative my-1 flex items-center justify-center">
-            <div className="w-full border-t border-white/10" />
-            <span className="absolute bg-[#081634] px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              OR
-            </span>
-          </div>
+          {!user ? (
+            <SignInButton mode="modal">
+              <button
+                type="button"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#0EA8B9] px-6 py-2.5 text-xs font-bold text-white shadow-md hover:brightness-110 transition"
+              >
+                <span>Sign In to Pay ₹1 & Download</span>
+                <ArrowUpRight className="h-4 w-4" />
+              </button>
+            </SignInButton>
+          ) : (
+            <button
+              type="button"
+              onClick={handlePayRupee}
+              disabled={loading}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-6 py-2.5 text-xs font-bold text-slate-950 shadow-md hover:brightness-110 active:scale-95 transition disabled:opacity-60"
+            >
+              <span>{loading ? "Opening Checkout..." : "Pay ₹1 & Download"}</span>
+              <ArrowUpRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
 
+        <div className="mt-5 border-t border-white/10 pt-3 text-center">
           <Link
             to="/pricing"
             onClick={onClose}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-500/40 bg-[#0EA8B9]/15 px-5 py-3 text-xs font-bold text-[#0EA8B9] transition hover:bg-[#0EA8B9]/25"
+            className="inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-[#0EA8B9] transition whitespace-nowrap"
           >
-            <Zap className="h-4 w-4 text-amber-400" />
-            <span>Upgrade to Student Plan (Unlimited Free Downloads)</span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            <Zap className="h-3.5 w-3.5 text-amber-400 fill-amber-400 shrink-0" />
+            <span>Want unlimited downloads? Explore our Student Plan</span>
+            <ArrowRight className="h-3 w-3 shrink-0" />
           </Link>
         </div>
       </div>
     </div>
   );
+
+  if (typeof document !== "undefined") {
+    return createPortal(modalContent, document.body);
+  }
+
+  return modalContent;
 }
