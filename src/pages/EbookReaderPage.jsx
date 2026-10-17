@@ -14,6 +14,7 @@ export default function EbookReaderPage() {
   const { heroTheme } = useHeroTheme();
   const [isPdfLoading, setIsPdfLoading] = useState(true);
   const [isDownloadGateOpen, setIsDownloadGateOpen] = useState(false);
+  const [isCheckingPass, setIsCheckingPass] = useState(false);
 
   const item = ebookBySlug[slug];
   if (!item) return <Navigate to="/dashboard?tab=E-Learning" replace />;
@@ -30,17 +31,26 @@ export default function EbookReaderPage() {
 
   const handleDownloadClick = async (e) => {
     e.preventDefault();
-    if (user?.id) {
-      try {
-        const passCheck = await checkDownloadPass(user.id, "ebook_pdf", slug || "default");
-        if (!passCheck.canDownload) {
-          setIsDownloadGateOpen(true);
-          return;
-        }
-      } catch (err) {
-        console.warn("Download pass verification error:", err);
-      }
+    if (isCheckingPass) return;
+
+    if (!user?.id) {
+      setIsDownloadGateOpen(true);
+      return;
     }
+
+    setIsCheckingPass(true);
+    try {
+      const passCheck = await checkDownloadPass(user.id, "ebook_pdf", slug || "default");
+      if (!passCheck.canDownload) {
+        setIsDownloadGateOpen(true);
+        return;
+      }
+    } catch (err) {
+      console.warn("Download pass verification error:", err);
+    } finally {
+      setIsCheckingPass(false);
+    }
+
     triggerDirectDownload();
   };
 
@@ -61,9 +71,15 @@ export default function EbookReaderPage() {
           <button
             type="button"
             onClick={handleDownloadClick}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-6 text-sm font-bold text-white shadow-lg shadow-blue-500/20 cursor-pointer transition hover:brightness-110"
+            disabled={isCheckingPass}
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 via-teal-500 to-blue-600 px-6 text-sm font-bold text-white shadow-lg shadow-blue-500/20 cursor-pointer transition hover:brightness-110 disabled:opacity-60"
           >
-            <Download size={17} />Download PDF
+            {isCheckingPass ? (
+              <Loader2 size={17} className="animate-spin text-white" />
+            ) : (
+              <Download size={17} />
+            )}
+            {isCheckingPass ? "Preparing..." : "Download PDF"}
           </button>
         </div>
         <div className={`relative mt-8 overflow-hidden rounded-2xl border ${isLight ? "border-slate-200 bg-white" : "border-slate-700 bg-slate-900"}`}>

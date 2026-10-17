@@ -14,6 +14,7 @@ import PartnerProgramPage from "./pages/PartnerProgramPage";
 import DataAnalystFellowshipPage from "./pages/DataAnalystFellowshipPage";
 import PricingPage from "./pages/PricingPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import WelcomeTokensModal from "./components/common/WelcomeTokensModal";
 
 function ProtectedRoute({ children }) {
   return (
@@ -36,6 +37,7 @@ function ExternalRedirect({ url }) {
 export default function App() {
   return (
     <BrowserRouter>
+      <WelcomeTokensModal />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/pricing" element={<PricingPage />} />
