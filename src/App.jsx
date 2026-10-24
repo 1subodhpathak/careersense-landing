@@ -74,10 +74,10 @@ export default function App() {
           }
         />
         <Route path="/resume-builder" element={<ExternalRedirect url="https://resume.careersenseai.com/" />} />
-        <Route path="/cover-letter-builder" element={<ServicePlaceholderPage />} />
-        <Route path="/ats-checker" element={<ServicePlaceholderPage />} />
+        <Route path="/cover-letter-builder" element={<ExternalRedirect url="https://coverletter.careersenseai.com/" />} />
+        <Route path="/ats-checker" element={<ExternalRedirect url="https://ats.careersenseai.com/" />} />
         <Route path="/interview-simulator" element={<ServicePlaceholderPage />} />
-        <Route path="/skill-certification" element={<ServicePlaceholderPage />} />
+        <Route path="/skill-certification" element={<ExternalRedirect url="https://certifi.careersenseai.com/" />} />
       </Routes>
     </BrowserRouter>
   );
