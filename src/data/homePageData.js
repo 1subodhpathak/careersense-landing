@@ -64,14 +64,14 @@ export const platformFeatures = [
     title: "Cover Letter Builder",
     description: "Generate personalized cover letters tailored to each role with 1-click customization.",
     color: "text-orange-600 bg-orange-500",
-    href: "/cover-letter-builder",
+    href: "https://coverletter.careersenseai.com/",
   },
   {
     icon: SearchCheck,
     title: "ATS Score Checker",
     description: "Compare your resume with job descriptions and identify missing keywords.",
     color: "text-blue-600 bg-blue-50",
-    href: "/ats-checker",
+    href: "https://ats.careersenseai.com/",
   },
   {
     icon: MessagesSquare,
@@ -85,7 +85,7 @@ export const platformFeatures = [
     title: "Skill Certification",
     description: "Validate your skills through assessments and earn shareable certificates.",
     color: "text-emerald-600 bg-emerald-50",
-    href: "/skill-certification",
+    href: "https://certifi.careersenseai.com/",
   },
 ];
 
