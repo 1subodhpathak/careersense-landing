@@ -1,4 +1,11 @@
 {
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/resume-builder", "destination": "https://resume.careersenseai.com", "permanent": true },
+    { "source": "/cover-letter-builder", "destination": "https://coverletter.careersenseai.com", "permanent": true },
+    { "source": "/ats-checker", "destination": "https://ats.careersenseai.com", "permanent": true },
+    { "source": "/skill-certification", "destination": "https://certifi.careersenseai.com", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
