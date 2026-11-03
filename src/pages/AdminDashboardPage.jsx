@@ -22,6 +22,7 @@ import FellowshipSubmissionsHub from "../components/admin/FellowshipSubmissionsH
 import PartnerSubmissionsHub from "../components/admin/PartnerSubmissionsHub";
 import FinancialLedgerMonetization from "../components/admin/FinancialLedgerMonetization";
 import PlatformAnalyticsHub from "../components/admin/PlatformAnalyticsHub";
+import EmailMarketingHub from "../components/admin/EmailMarketingHub";
 import CandidateDossierDrawer from "../components/admin/CandidateDossierDrawer";
 import TokenGrantModal from "../components/admin/TokenGrantModal";
 
@@ -175,6 +176,7 @@ export default function AdminDashboardPage() {
                   {activeTab === "partner-submissions" && "Partner Program Submissions Hub"}
                   {activeTab === "monetization" && "Financial Ledger & Monetization"}
                   {activeTab === "analytics" && "Platform & Tool Usage Analytics"}
+                  {activeTab === "email-marketing" && "Email Marketing & Campaigns Hub"}
                 </h1>
                 <span className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold uppercase hidden sm:inline-flex">
                   Live Operations
@@ -186,6 +188,7 @@ export default function AdminDashboardPage() {
                 {activeTab === "partner-submissions" && "Executive grading and mentor review node for all 20 Partner Program startup milestones and attached evidence."}
                 {activeTab === "monetization" && "Executive financial audit node for tracking MRR, ₹1 instant download passes, fellowship tuition fees, and sales ledger."}
                 {activeTab === "analytics" && "Cross-platform intelligence node for ATS scan volume, AI token burn rates, top consumers, and tool metrics."}
+                {activeTab === "email-marketing" && "Broadcast branded email campaigns to platform candidates, imported CSVs, or custom email lists via Resend."}
               </p>
             </div>
           </div>
@@ -244,6 +247,11 @@ export default function AdminDashboardPage() {
           {/* Module 5: Platform & Tool Usage Analytics */}
           {activeTab === "analytics" && (
             <PlatformAnalyticsHub adminEmail={userEmail} />
+          )}
+
+          {/* Module 6: Email Marketing Campaigns Hub */}
+          {activeTab === "email-marketing" && (
+            <EmailMarketingHub candidates={candidates} adminEmail={userEmail} />
           )}
         </div>
       </section>

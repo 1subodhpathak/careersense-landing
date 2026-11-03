@@ -14,7 +14,8 @@ import {
   GraduationCap,
   X,
   ShieldCheck,
-  Briefcase
+  Briefcase,
+  Mail
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CSLogo from "../../Assets/CSlogo.png";
@@ -62,6 +63,15 @@ const navItems = [
     icon: BarChart3,
     badge: "Live",
     badgeClass: "bg-purple-50 text-purple-700 border border-purple-200",
+    disabled: false
+  },
+  {
+    id: "email-marketing",
+    label: "Email Marketing",
+    description: "Bulk campaigns & emailer",
+    icon: Mail,
+    badge: "New",
+    badgeClass: "bg-teal-50 text-teal-700 border border-teal-200",
     disabled: false
   }
 ];
