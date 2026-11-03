@@ -1,5 +1,4 @@
 {
-  "cleanUrls": true,
   "redirects": [
     { "source": "/resume-builder", "destination": "https://resume.careersenseai.com", "permanent": true },
     { "source": "/cover-letter-builder", "destination": "https://coverletter.careersenseai.com", "permanent": true },
