@@ -23,6 +23,7 @@ import PartnerSubmissionsHub from "../components/admin/PartnerSubmissionsHub";
 import FinancialLedgerMonetization from "../components/admin/FinancialLedgerMonetization";
 import PlatformAnalyticsHub from "../components/admin/PlatformAnalyticsHub";
 import EmailMarketingHub from "../components/admin/EmailMarketingHub";
+import AutomationsHub from "../components/admin/AutomationsHub";
 import CandidateDossierDrawer from "../components/admin/CandidateDossierDrawer";
 import TokenGrantModal from "../components/admin/TokenGrantModal";
 
@@ -252,6 +253,11 @@ export default function AdminDashboardPage() {
           {/* Module 6: Email Marketing Campaigns Hub */}
           {activeTab === "email-marketing" && (
             <EmailMarketingHub candidates={candidates} adminEmail={userEmail} />
+          )}
+
+          {/* Module 7: Automations & Recurring Scheduler Hub */}
+          {activeTab === "automations" && (
+            <AutomationsHub candidates={candidates} adminEmail={userEmail} />
           )}
         </div>
       </section>

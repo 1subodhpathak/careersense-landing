@@ -15,7 +15,8 @@ import {
   X,
   ShieldCheck,
   Briefcase,
-  Mail
+  Mail,
+  Clock
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CSLogo from "../../Assets/CSlogo.png";
@@ -70,8 +71,17 @@ const navItems = [
     label: "Email Marketing",
     description: "Bulk campaigns & emailer",
     icon: Mail,
-    badge: "New",
+    badge: "Live",
     badgeClass: "bg-teal-50 text-teal-700 border border-teal-200",
+    disabled: false
+  },
+  {
+    id: "automations",
+    label: "Automations & Scheduler",
+    description: "Onboarding & scheduled drips",
+    icon: Clock,
+    badge: "Auto",
+    badgeClass: "bg-indigo-50 text-indigo-700 border border-indigo-200",
     disabled: false
   }
 ];
