@@ -91,8 +91,44 @@ function buildDefaultHtmlTemplate({ title, headline, body, ctaText, ctaUrl }) {
 </html>`;
 }
 
-// 7 Default System Templates with FULL HTML code
+// 8 Default System Templates with FULL HTML code
 const DEFAULT_TEMPLATES = [
+  {
+    id: "candidate-onboarding-toolkit",
+    name: "Candidate Onboarding & Career Toolkit",
+    category: "Onboarding",
+    subject: "Welcome to CareerSense — your career toolkit is ready",
+    isSystem: true,
+    body: buildDefaultHtmlTemplate({
+      title: "Welcome to CareerSense — your career toolkit is ready",
+      headline: "Welcome to CareerSense, your personal AI career co-pilot",
+      ctaText: "Open Your CareerSense Workspace",
+      ctaUrl: "https://careersenseai.com/dashboard",
+      body: `Welcome aboard! We built CareerSense to give ambitious candidates a direct, unfair advantage in today's competitive hiring landscape.
+
+Whether you're polishing an existing resume, preparing for technical evaluations, or building production-grade capstones, here is your quick-access guide to our core career tools:
+
+• **ATS Resume Checker:** Audit your resume against top ATS parser algorithms, identify missing keywords, and ensure 100% parseable formatting:
+  <a href="https://ats.careersenseai.com/" target="_blank" style="color: #0d9488; font-weight: 600; text-decoration: underline;">ats.careersenseai.com</a>
+
+• **AI Resume Builder:** Restructure routine bullet points into quantifiable, achievement-driven impact metrics that catch recruiter attention:
+  <a href="https://resume.careersenseai.com/" target="_blank" style="color: #0d9488; font-weight: 600; text-decoration: underline;">resume.careersenseai.com</a>
+
+• **AI Cover Letter Generator:** Generate authentic, tailored cover letters customized for the exact target job description in under 30 seconds:
+  <a href="https://coverletter.careersenseai.com/" target="_blank" style="color: #0d9488; font-weight: 600; text-decoration: underline;">coverletter.careersenseai.com</a>
+
+• **Skill Certification (Certifi):** Complete hands-on technical assessments to earn verifiable credentials recognized by our hiring partner network:
+  <a href="https://certifi.careersenseai.com/" target="_blank" style="color: #0d9488; font-weight: 600; text-decoration: underline;">certifi.careersenseai.com</a>
+
+• **Career Fellowships:** Hands-on milestone capstone tracks in Data Analytics, Data Science, AI/ML, Full-Stack, and UI/UX Design:
+  <a href="https://careersenseai.com/fellowships/data-analyst" target="_blank" style="color: #0d9488; font-weight: 600; text-decoration: underline;">careersenseai.com/fellowships</a>
+
+• **Career GPS & Roadmap:** Map your personalized milestones from your current skill level directly to senior engineering and analytics roles:
+  <a href="https://careersenseai.com/career-gps" target="_blank" style="color: #0d9488; font-weight: 600; text-decoration: underline;">careersenseai.com/career-gps</a>
+
+Feel free to start with any tool that fits your immediate goals today. If you ever have a question or need feedback on your resume, simply reply directly to this email — our team reads and responds to every candidate message.`
+    })
+  },
   {
     id: "ats-resume-checker",
     name: "ATS Resume Checker",
@@ -395,7 +431,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
 
   // Templates from Database + Defaults
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
-  const [selectedTemplateId, setSelectedTemplateId] = useState("ats-resume-checker");
+  const [selectedTemplateId, setSelectedTemplateId] = useState(DEFAULT_TEMPLATES[0].id);
   const [customTemplateName, setCustomTemplateName] = useState("");
 
   // Email Content
@@ -840,7 +876,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
 
   return (
     <div className="space-y-6">
-      
+
       {/* TOP COMMAND HEADER */}
       <div className="rounded-2xl border border-teal-500/20 bg-gradient-to-r from-[#0b132b] via-[#111c40] to-[#0b132b] p-5 text-white shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -851,9 +887,6 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-base font-extrabold tracking-tight text-white">CareerSense Email Broadcast Center</h2>
-                <span className="rounded-full bg-teal-400/20 px-2 py-0.5 text-[10px] font-extrabold uppercase text-teal-300 border border-teal-400/30">
-                  Resend Live
-                </span>
               </div>
               <p className="mt-0.5 text-xs text-slate-300 leading-snug">
                 Dispatched from: <span className="font-bold text-teal-300">{fromAddress}</span>
@@ -935,566 +968,547 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
         </div>
       )}
 
-      {/* MAIN TWO-COLUMN WORKSPACE: LEFT COMPOSER (7 COLS) | RIGHT LIVE PREVIEW (5 COLS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* SINGLE-COLUMN STACKED WORKSPACE (FULL WIDTH RECIPIENTS -> EDITOR -> PREVIEW -> SEND) */}
+      <div className="space-y-6">
 
-        {/* ======================================================== */}
-        {/* LEFT COLUMN: 3-STEP INTUITIVE BROADCAST COMPOSER (7 COLS) */}
-        {/* ======================================================== */}
-        <div className="lg:col-span-7 space-y-5">
-
-          {/* ------------------------------------------------------ */}
-          {/* STEP 1: AUDIENCE SELECTION (FULL FILTERS & SELECTION)   */}
-          {/* ------------------------------------------------------ */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-[11px] font-black text-white">
-                  1
-                </span>
-                <h3 className="text-sm font-bold text-slate-900">Select Campaign Recipients</h3>
-              </div>
-              <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
-                {activeRecipients.length.toLocaleString()} Candidates Targeted
+        {/* ------------------------------------------------------ */}
+        {/* STEP 1: AUDIENCE SELECTION (FULL FILTERS & SELECTION)   */}
+        {/* ------------------------------------------------------ */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-[11px] font-black text-white">
+                1
               </span>
+              <h3 className="text-sm font-bold text-slate-900">Select Campaign Recipients</h3>
             </div>
-
-            {/* Recipient Source Tabs */}
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setRecipientSource("platform")}
-                className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${
-                  recipientSource === "platform"
-                    ? "bg-[#0b132b] text-teal-300 shadow-xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <Users size={14} />
-                <span>Platform Users ({candidates.length})</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRecipientSource("csv")}
-                className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${
-                  recipientSource === "csv"
-                    ? "bg-[#0b132b] text-teal-300 shadow-xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <Upload size={14} />
-                <span>CSV Upload {csvRecipients.length > 0 && `(${csvRecipients.length})`}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setRecipientSource("manual")}
-                className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${
-                  recipientSource === "manual"
-                    ? "bg-[#0b132b] text-teal-300 shadow-xs"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <FileText size={14} />
-                <span>Manual Paste</span>
-              </button>
-            </div>
-
-            {/* PLATFORM USERS: Filter chips, search bar & toggle selection */}
-            {recipientSource === "platform" && (
-              <div className="space-y-2.5 pt-1">
-                {/* Filter Chips */}
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Filter:</span>
-                  {[
-                    { id: "all", label: "All Users" },
-                    { id: "paid", label: "Paid Subscribers" },
-                    { id: "free", label: "Free Tier" },
-                    { id: "low_tokens", label: "< 5k Tokens" },
-                    { id: "burners", label: "AI Burners" }
-                  ].map((chip) => (
-                    <button
-                      key={chip.id}
-                      type="button"
-                      onClick={() => setPlatformFilter(chip.id)}
-                      className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${
-                        platformFilter === chip.id
-                          ? "bg-teal-600 text-white"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                      }`}
-                    >
-                      {chip.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Search Bar & Toggle Select All Button */}
-                <div className="flex items-center justify-between gap-3 pt-1">
-                  <div className="relative flex-1">
-                    <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="text"
-                      value={platformSearch}
-                      onChange={(e) => setPlatformSearch(e.target.value)}
-                      placeholder="Search candidates by name or email..."
-                      className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleToggleSelectAll}
-                    className="shrink-0 text-xs font-bold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-xl border border-teal-200 transition cursor-pointer"
-                  >
-                    Toggle Select All ({filteredCandidates.length})
-                  </button>
-                </div>
-
-                {/* Candidate Selection Checkbox Roster */}
-                <div className="max-h-40 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100 bg-slate-50/50 custom-scrollbar">
-                  {filteredCandidates.length === 0 ? (
-                    <div className="p-4 text-center text-xs text-slate-400">No candidates match this filter.</div>
-                  ) : (
-                    filteredCandidates.slice(0, 150).map((c) => {
-                      const id = c.clerkUserId || c.id || c.email;
-                      const isChecked = selectedCandidateIds.has(id);
-                      return (
-                        <label
-                          key={id}
-                          className="flex items-center justify-between px-3 py-1.5 text-xs hover:bg-slate-100/80 cursor-pointer select-none"
-                        >
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => {
-                                const next = new Set(selectedCandidateIds);
-                                if (isChecked) next.delete(id);
-                                else next.add(id);
-                                setSelectedCandidateIds(next);
-                              }}
-                              className="h-3.5 w-3.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
-                            />
-                            <div className="min-w-0">
-                              <span className="font-bold text-slate-800 truncate block text-xs">{c.fullName || "Candidate"}</span>
-                              <span className="text-[10px] text-slate-400 truncate block">{c.email}</span>
-                            </div>
-                          </div>
-                          <span
-                            className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded-full ${
-                              c.subscription?.isPaid ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"
-                            }`}
-                          >
-                            {c.subscription?.plan || "free"}
-                          </span>
-                        </label>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* CSV UPLOAD MODE */}
-            {recipientSource === "csv" && (
-              <div className="space-y-2 pt-1">
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  className="border-2 border-dashed border-slate-200 hover:border-teal-500 rounded-xl p-5 text-center bg-slate-50 cursor-pointer transition"
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".csv,text/csv,text/plain"
-                    onChange={handleCsvFileUpload}
-                    className="hidden"
-                  />
-                  <Upload size={22} className="mx-auto text-teal-600 mb-1" />
-                  <div className="text-xs font-bold text-slate-800">
-                    {csvFileName ? `File: ${csvFileName}` : "Click or drag & drop CSV file"}
-                  </div>
-                  <span className="text-[10px] text-slate-400">Auto-detects emails & cleans duplicates</span>
-                </div>
-                {csvParsingError && <div className="text-xs text-rose-600 font-bold">{csvParsingError}</div>}
-              </div>
-            )}
-
-            {/* MANUAL ENTRY MODE */}
-            {recipientSource === "manual" && (
-              <div className="space-y-1.5 pt-1">
-                <textarea
-                  rows={3}
-                  value={manualText}
-                  onChange={(e) => setManualText(e.target.value)}
-                  placeholder="Paste emails separated by commas or lines...&#10;e.g. user1@gmail.com, Subodh <subodh@domain.com>"
-                  className="w-full rounded-xl border border-slate-200 p-2.5 text-xs text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-teal-500 bg-slate-50"
-                />
-                <div className="text-right text-[11px] text-slate-500">
-                  {manualRecipients.length} valid address{manualRecipients.length === 1 ? "" : "es"} detected
-                </div>
-              </div>
-            )}
+            <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
+              {activeRecipients.length.toLocaleString()} Candidates Targeted
+            </span>
           </div>
 
-          {/* ------------------------------------------------------ */}
-          {/* STEP 2: TEMPLATE SELECTOR & HTML RUNNER EDITOR         */}
-          {/* ------------------------------------------------------ */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-[11px] font-black text-white">
-                  2
-                </span>
-                <h3 className="text-sm font-bold text-slate-900">Choose Template & Edit Email HTML</h3>
-              </div>
-              <span className="text-xs text-slate-400">Pure, Direct HTML Email</span>
-            </div>
+          {/* Recipient Source Tabs */}
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              type="button"
+              onClick={() => setRecipientSource("platform")}
+              className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${recipientSource === "platform"
+                  ? "bg-[#0b132b] text-teal-300 shadow-xs"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+            >
+              <Users size={14} />
+              <span>Platform Users ({candidates.length})</span>
+            </button>
 
-            {/* Template Dropdown Selector */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-700 block">Select from CareerSense Templates Library</label>
-              <div className="flex items-center gap-2">
-                <select
-                  value={selectedTemplateId}
-                  onChange={(e) => handleSelectTemplate(e.target.value)}
-                  className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+            <button
+              type="button"
+              onClick={() => setRecipientSource("csv")}
+              className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${recipientSource === "csv"
+                  ? "bg-[#0b132b] text-teal-300 shadow-xs"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+            >
+              <Upload size={14} />
+              <span>CSV Upload {csvRecipients.length > 0 && `(${csvRecipients.length})`}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRecipientSource("manual")}
+              className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${recipientSource === "manual"
+                  ? "bg-[#0b132b] text-teal-300 shadow-xs"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                }`}
+            >
+              <FileText size={14} />
+              <span>Manual Paste</span>
+            </button>
+          </div>
+
+          {/* PLATFORM USERS: Filter chips, search bar & toggle selection */}
+          {recipientSource === "platform" && (
+            <div className="space-y-2.5 pt-1">
+              {/* Filter Chips */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1">Filter:</span>
+                {[
+                  { id: "all", label: "All Users" },
+                  { id: "paid", label: "Paid Subscribers" },
+                  { id: "free", label: "Free Tier" },
+                  { id: "low_tokens", label: "< 5k Tokens" },
+                  { id: "burners", label: "AI Burners" }
+                ].map((chip) => (
+                  <button
+                    key={chip.id}
+                    type="button"
+                    onClick={() => setPlatformFilter(chip.id)}
+                    className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${platformFilter === chip.id
+                        ? "bg-teal-600 text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      }`}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Search Bar & Toggle Select All Button */}
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <div className="relative flex-1">
+                  <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={platformSearch}
+                    onChange={(e) => setPlatformSearch(e.target.value)}
+                    placeholder="Search candidates by name or email..."
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleToggleSelectAll}
+                  className="shrink-0 text-xs font-bold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-xl border border-teal-200 transition cursor-pointer"
                 >
-                  <optgroup label="CareerSense Tool Presets (Locked System Defaults)">
-                    {templates.filter((t) => t.isSystem).map((t) => (
+                  Toggle Select All ({filteredCandidates.length})
+                </button>
+              </div>
+
+              {/* Candidate Selection Checkbox Roster */}
+              <div className="max-h-56 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100 bg-slate-50/50 custom-scrollbar">
+                {filteredCandidates.length === 0 ? (
+                  <div className="p-4 text-center text-xs text-slate-400">No candidates match this filter.</div>
+                ) : (
+                  filteredCandidates.map((c) => {
+                    const id = c.clerkUserId || c.id || c.email;
+                    const isChecked = selectedCandidateIds.has(id);
+                    return (
+                      <label
+                        key={id}
+                        className="flex items-center justify-between px-3 py-1.5 text-xs hover:bg-slate-100/80 cursor-pointer select-none"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => {
+                              const next = new Set(selectedCandidateIds);
+                              if (isChecked) next.delete(id);
+                              else next.add(id);
+                              setSelectedCandidateIds(next);
+                            }}
+                            className="h-3.5 w-3.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                          />
+                          <div className="min-w-0">
+                            <span className="font-bold text-slate-800 truncate block text-xs">{c.fullName || "Candidate"}</span>
+                            <span className="text-[10px] text-slate-400 truncate block">{c.email}</span>
+                          </div>
+                        </div>
+                        <span
+                          className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded-full ${c.subscription?.isPaid ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"
+                            }`}
+                        >
+                          {c.subscription?.plan || "free"}
+                        </span>
+                      </label>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* CSV UPLOAD MODE */}
+          {recipientSource === "csv" && (
+            <div className="space-y-2 pt-1">
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-slate-200 hover:border-teal-500 rounded-xl p-5 text-center bg-slate-50 cursor-pointer transition"
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,text/csv,text/plain"
+                  onChange={handleCsvFileUpload}
+                  className="hidden"
+                />
+                <Upload size={22} className="mx-auto text-teal-600 mb-1" />
+                <div className="text-xs font-bold text-slate-800">
+                  {csvFileName ? `File: ${csvFileName}` : "Click or drag & drop CSV file"}
+                </div>
+                <span className="text-[10px] text-slate-400">Auto-detects emails & cleans duplicates</span>
+              </div>
+              {csvParsingError && <div className="text-xs text-rose-600 font-bold">{csvParsingError}</div>}
+            </div>
+          )}
+
+          {/* MANUAL ENTRY MODE */}
+          {recipientSource === "manual" && (
+            <div className="space-y-1.5 pt-1">
+              <textarea
+                rows={3}
+                value={manualText}
+                onChange={(e) => setManualText(e.target.value)}
+                placeholder="Paste emails separated by commas or lines...&#10;e.g. user1@gmail.com, Subodh <subodh@domain.com>"
+                className="w-full rounded-xl border border-slate-200 p-2.5 text-xs text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-teal-500 bg-slate-50"
+              />
+              <div className="text-right text-[11px] text-slate-500">
+                {manualRecipients.length} valid address{manualRecipients.length === 1 ? "" : "es"} detected
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ------------------------------------------------------ */}
+        {/* STEP 2: TEMPLATE SELECTOR & HTML RUNNER EDITOR         */}
+        {/* ------------------------------------------------------ */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-[11px] font-black text-white">
+                2
+              </span>
+              <h3 className="text-sm font-bold text-slate-900">Choose Template & Edit Email HTML</h3>
+            </div>
+            <span className="text-xs text-slate-400">Pure, Direct HTML Email</span>
+          </div>
+
+          {/* Template Dropdown Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 block">Select from CareerSense Templates Library</label>
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedTemplateId}
+                onChange={(e) => handleSelectTemplate(e.target.value)}
+                className="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer"
+              >
+                <optgroup label="CareerSense Tool Presets (Locked System Defaults)">
+                  {templates.filter((t) => t.isSystem).map((t) => (
+                    <option key={t.id || t._id} value={t.id || t._id}>
+                      🔒 {t.name} ({t.category})
+                    </option>
+                  ))}
+                </optgroup>
+                {templates.filter((t) => !t.isSystem).length > 0 && (
+                  <optgroup label="Custom Saved Templates">
+                    {templates.filter((t) => !t.isSystem).map((t) => (
                       <option key={t.id || t._id} value={t.id || t._id}>
-                        🔒 {t.name} ({t.category})
+                        ⭐ {t.name}
                       </option>
                     ))}
                   </optgroup>
-                  {templates.filter((t) => !t.isSystem).length > 0 && (
-                    <optgroup label="Custom Saved Templates">
-                      {templates.filter((t) => !t.isSystem).map((t) => (
-                        <option key={t.id || t._id} value={t.id || t._id}>
-                          ⭐ {t.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  )}
-                  <option value="blank">+ Create Fresh Custom HTML Campaign</option>
-                </select>
-
-                {isSelectedCustom && (
-                  <button
-                    type="button"
-                    onClick={() => setDeleteConfirmId(selectedTemplateId)}
-                    className="rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 text-xs font-bold transition cursor-pointer"
-                    title="Delete custom template"
-                  >
-                    <Trash2 size={14} />
-                  </button>
                 )}
-              </div>
+                <option value="blank">+ Create Fresh Custom HTML Campaign</option>
+              </select>
+
+              {isSelectedCustom && (
+                <button
+                  type="button"
+                  onClick={() => setDeleteConfirmId(selectedTemplateId)}
+                  className="rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 text-xs font-bold transition cursor-pointer"
+                  title="Delete custom template"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
             </div>
+          </div>
 
-            {/* Subject Line & Template Name */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">
-                  Email Subject Line{" "}
-                  <span className="text-[10px] font-normal text-slate-400">(Supports <code className="text-teal-600">{"{{name}}"}</code>)</span>
-                </label>
-                <input
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  placeholder="Subject line..."
-                  className="w-full rounded-xl border border-slate-200 p-2 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Template Name (in Repository)</label>
-                <input
-                  type="text"
-                  value={customTemplateName}
-                  onChange={(e) => setCustomTemplateName(e.target.value)}
-                  placeholder="e.g. October Feature Blast"
-                  className="w-full rounded-xl border border-slate-200 p-2 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-              </div>
-            </div>
-
-            {/* Quick Insertion Helpers */}
-            <div className="flex items-center gap-1.5 flex-wrap pt-0.5 text-xs">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Insert Tag:</span>
-              <button
-                type="button"
-                onClick={() => insertCodeSnippet("{{name}}")}
-                className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-mono font-bold text-slate-700 transition cursor-pointer"
-                title="Inserts recipient name merge tag"
-              >
-                {"{{name}}"}
-              </button>
-              <button
-                type="button"
-                onClick={() => insertCodeSnippet("{{email}}")}
-                className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-mono font-bold text-slate-700 transition cursor-pointer"
-              >
-                {"{{email}}"}
-              </button>
-              <button
-                type="button"
-                onClick={() => insertCodeSnippet("<strong>Bold Text</strong>")}
-                className="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 text-[11px] font-bold text-slate-700 transition cursor-pointer"
-              >
-                &lt;strong&gt;
-              </button>
-              <button
-                type="button"
-                onClick={() => insertCodeSnippet('<a href="https://careersenseai.com" target="_blank" style="background-color: #0d9488; color: #ffffff; display: inline-block; font-size: 14px; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 10px;">Click Here &rarr;</a>')}
-                className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-bold text-teal-700 transition cursor-pointer"
-              >
-                CTA Button
-              </button>
-              <button
-                type="button"
-                onClick={() => insertCodeSnippet('<div style="background-color: #f8fafc; border-left: 4px solid #0d9488; padding: 14px 18px; border-radius: 6px; margin: 16px 0;">\n  <h4 style="margin: 0 0 6px 0; color: #0b132b;">Key Takeaway</h4>\n  <p style="margin: 0; color: #475569; font-size: 14px;">Insert highlighted insight here.</p>\n</div>')}
-                className="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 text-[11px] font-bold text-slate-700 transition cursor-pointer"
-              >
-                Callout Box
-              </button>
-            </div>
-
-            {/* COMPACT VS CODE HTML EDITOR (~20 LINES HEIGHT WITH AUTO-SCROLL) */}
+          {/* Subject Line & Template Name */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                  <FileCode2 size={14} className="text-teal-600" />
-                  <span>HTML Email Markup (VS Code Dark+ Highlighting)</span>
-                </label>
-                <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
-                  Live Runner
-                </span>
-              </div>
-
-              <CompactVsCodeEditor
-                value={htmlCode}
-                onChange={setHtmlCode}
-                editorRef={editorRef}
-                height="360px"
+              <label className="text-xs font-bold text-slate-700 block mb-1">
+                Email Subject Line{" "}
+                <span className="text-[10px] font-normal text-slate-400">(Supports <code className="text-teal-600">{"{{name}}"}</code>)</span>
+              </label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder="Subject line..."
+                className="w-full rounded-xl border border-slate-200 p-2 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
             </div>
 
-            {/* Save Template Actions */}
-            <div className="flex items-center justify-between pt-1 border-t border-slate-100">
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  disabled={isSavingTemplate}
-                  onClick={() => handleSaveTemplate(false)}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer disabled:bg-slate-400"
-                >
-                  {isSavingTemplate ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                  <span>Save Template to Repository</span>
-                </button>
-
-                <button
-                  type="button"
-                  disabled={isSavingTemplate}
-                  onClick={() => handleSaveTemplate(true)}
-                  className="inline-flex items-center gap-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 text-xs font-bold transition cursor-pointer"
-                  title="Save as a new copy"
-                >
-                  <Copy size={12} />
-                  <span>Save Copy</span>
-                </button>
-              </div>
-
-              <span className="text-[11px] text-slate-400">
-                {selectedTemplateObj?.isSystem ? "🔒 System Default Preset" : "⭐ Custom Saved Template"}
-              </span>
+            <div>
+              <label className="text-xs font-bold text-slate-700 block mb-1">Template Name (in Repository)</label>
+              <input
+                type="text"
+                value={customTemplateName}
+                onChange={(e) => setCustomTemplateName(e.target.value)}
+                placeholder="e.g. October Feature Blast"
+                className="w-full rounded-xl border border-slate-200 p-2 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              />
             </div>
-
-            {saveStatus && (
-              <div
-                className={`text-xs p-2 rounded-xl font-bold flex items-center gap-1.5 ${
-                  saveStatus.success ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200"
-                }`}
-              >
-                {saveStatus.success ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
-                <span>{saveStatus.message}</span>
-              </div>
-            )}
           </div>
 
-          {/* ------------------------------------------------------ */}
-          {/* STEP 3: INSTANT TEST EMAIL & LAUNCH BROADCAST          */}
-          {/* ------------------------------------------------------ */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-[11px] font-black text-white">
-                3
+          {/* Quick Insertion Helpers */}
+          <div className="flex items-center gap-1.5 flex-wrap pt-0.5 text-xs">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-1">Insert Tag:</span>
+            <button
+              type="button"
+              onClick={() => insertCodeSnippet("{{name}}")}
+              className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-mono font-bold text-slate-700 transition cursor-pointer"
+              title="Inserts recipient name merge tag"
+            >
+              {"{{name}}"}
+            </button>
+            <button
+              type="button"
+              onClick={() => insertCodeSnippet("{{email}}")}
+              className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-mono font-bold text-slate-700 transition cursor-pointer"
+            >
+              {"{{email}}"}
+            </button>
+            <button
+              type="button"
+              onClick={() => insertCodeSnippet("<strong>Bold Text</strong>")}
+              className="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 text-[11px] font-bold text-slate-700 transition cursor-pointer"
+            >
+              &lt;strong&gt;
+            </button>
+            <button
+              type="button"
+              onClick={() => insertCodeSnippet('<a href="https://careersenseai.com" target="_blank" style="background-color: #0d9488; color: #ffffff; display: inline-block; font-size: 14px; font-weight: 700; text-decoration: none; padding: 12px 28px; border-radius: 10px;">Click Here &rarr;</a>')}
+              className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-bold text-teal-700 transition cursor-pointer"
+            >
+              CTA Button
+            </button>
+            <button
+              type="button"
+              onClick={() => insertCodeSnippet('<div style="background-color: #f8fafc; border-left: 4px solid #0d9488; padding: 14px 18px; border-radius: 6px; margin: 16px 0;">\n  <h4 style="margin: 0 0 6px 0; color: #0b132b;">Key Takeaway</h4>\n  <p style="margin: 0; color: #475569; font-size: 14px;">Insert highlighted insight here.</p>\n</div>')}
+              className="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 text-[11px] font-bold text-slate-700 transition cursor-pointer"
+            >
+              Callout Box
+            </button>
+          </div>
+
+          {/* COMPACT VS CODE HTML EDITOR (~20 LINES HEIGHT WITH AUTO-SCROLL) */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <FileCode2 size={14} className="text-teal-600" />
+                <span>HTML Email Markup (VS Code Dark+ Highlighting)</span>
+              </label>
+              <span className="text-[10px] text-teal-600 font-bold bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                Live Runner
               </span>
-              <h3 className="text-sm font-bold text-slate-900">Test & Send Broadcast</h3>
             </div>
 
-            {/* Quick Test Box */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                <span className="flex items-center gap-1 text-teal-700">
-                  <ShieldCheck size={14} /> Send Test Preview to Your Inbox
-                </span>
-                <span className="text-[10px] text-slate-400">Verifies layout before sending</span>
-              </div>
+            <CompactVsCodeEditor
+              value={htmlCode}
+              onChange={setHtmlCode}
+              editorRef={editorRef}
+              height="360px"
+            />
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
-                <div className="sm:col-span-4">
-                  <input
-                    type="text"
-                    value={testRecipientName}
-                    onChange={(e) => setTestRecipientName(e.target.value)}
-                    placeholder="Name (Subodh)"
-                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800"
-                  />
-                </div>
-                <div className="sm:col-span-5">
-                  <input
-                    type="email"
-                    value={testEmailAddress}
-                    onChange={(e) => setTestEmailAddress(e.target.value)}
-                    placeholder="Email"
-                    className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800"
-                  />
-                </div>
-                <div className="sm:col-span-3">
-                  <button
-                    type="button"
-                    disabled={isSendingTest || !testEmailAddress}
-                    onClick={handleSendTestEmail}
-                    className="w-full rounded-lg bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 text-xs font-bold transition cursor-pointer disabled:bg-slate-400 flex items-center justify-center gap-1"
-                  >
-                    {isSendingTest ? <Loader2 size={13} className="animate-spin" /> : <Send size={12} />}
-                    <span>Send Test</span>
-                  </button>
-                </div>
-              </div>
-
-              {testStatus && (
-                <div
-                  className={`text-xs p-2 rounded-lg font-medium ${
-                    testStatus.success ? "text-emerald-700 bg-emerald-50 border border-emerald-200" : "text-rose-700 bg-rose-50 border border-rose-200"
-                  }`}
-                >
-                  {testStatus.message}
-                </div>
-              )}
-            </div>
-
-            {/* Launch Campaign Button */}
-            <div className="pt-1">
+          {/* Save Template Actions */}
+          <div className="flex items-center justify-between pt-1 border-t border-slate-100">
+            <div className="flex items-center gap-2">
               <button
                 type="button"
-                disabled={activeRecipients.length === 0 || isSendingBulk || !subject || !htmlCode}
-                onClick={() => setIsConfirmModalOpen(true)}
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white p-3.5 text-sm font-bold shadow-md hover:shadow-lg transition cursor-pointer"
+                disabled={isSavingTemplate}
+                onClick={() => handleSaveTemplate(false)}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer disabled:bg-slate-400"
               >
-                {isSendingBulk ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    <span>Dispatching Emails via Resend...</span>
-                  </>
-                ) : (
-                  <>
-                    <Send size={18} />
-                    <span>Send Campaign to {activeRecipients.length.toLocaleString()} Recipients &rarr;</span>
-                  </>
-                )}
+                {isSavingTemplate ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
+                <span>Save Template to Repository</span>
               </button>
 
-              {bulkStatus && (
-                <div
-                  className={`mt-3 p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${
-                    bulkStatus.success ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200"
-                  }`}
-                >
-                  {bulkStatus.success ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
-                  <span>{bulkStatus.message}</span>
-                </div>
-              )}
+              <button
+                type="button"
+                disabled={isSavingTemplate}
+                onClick={() => handleSaveTemplate(true)}
+                className="inline-flex items-center gap-1 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 text-xs font-bold transition cursor-pointer"
+                title="Save as a new copy"
+              >
+                <Copy size={12} />
+                <span>Save Copy</span>
+              </button>
             </div>
 
+            <span className="text-[11px] text-slate-400">
+              {selectedTemplateObj?.isSystem ? "🔒 System Default Preset" : "⭐ Custom Saved Template"}
+            </span>
+          </div>
+
+          {saveStatus && (
+            <div
+              className={`text-xs p-2 rounded-xl font-bold flex items-center gap-1.5 ${saveStatus.success ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200"
+                }`}
+            >
+              {saveStatus.success ? <CheckCircle2 size={14} /> : <AlertCircle size={14} />}
+              <span>{saveStatus.message}</span>
+            </div>
+          )}
+        </div>
+
+        {/* ------------------------------------------------------ */}
+        {/* LIVE INBOX PREVIEW (NOW BELOW RECIPIENTS & EDITOR)      */}
+        {/* ------------------------------------------------------ */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+
+          {/* Toolbar */}
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <div className="flex items-center gap-2">
+              <Eye size={16} className="text-teal-600" />
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                Live Inbox Preview
+              </h3>
+            </div>
+
+            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
+              <button
+                type="button"
+                onClick={() => setPreviewMode("desktop")}
+                className={`p-1 rounded text-xs transition cursor-pointer ${previewMode === "desktop" ? "bg-white text-slate-900 shadow-xs" : "text-slate-400 hover:text-slate-700"
+                  }`}
+                title="Desktop View"
+              >
+                <Monitor size={14} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewMode("mobile")}
+                className={`p-1 rounded text-xs transition cursor-pointer ${previewMode === "mobile" ? "bg-white text-slate-900 shadow-xs" : "text-slate-400 hover:text-slate-700"
+                  }`}
+                title="Mobile View (360px)"
+              >
+                <Smartphone size={14} />
+              </button>
+            </div>
+          </div>
+
+          {/* Email Simulated Envelope Headers */}
+          <div className="rounded-xl border border-slate-100 bg-slate-50 p-3 text-xs space-y-1.5 mb-3 font-sans max-w-3xl mx-auto">
+            <div className="flex justify-between">
+              <span className="text-slate-400">From:</span>
+              <span className="font-bold text-slate-700 truncate">{fromAddress}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">To:</span>
+              <span className="font-bold text-slate-700">
+                {testRecipientName || "Subodh"} &lt;{testEmailAddress || "candidate@example.com"}&gt;
+              </span>
+            </div>
+            <div className="flex justify-between pt-1 border-t border-slate-200/50">
+              <span className="text-slate-400">Subject:</span>
+              <span className="font-bold text-teal-700 truncate">
+                {subject ? subject.replace(/{{\s*name\s*}}/gi, testRecipientName || "Subodh") : "(No subject)"}
+              </span>
+            </div>
+          </div>
+
+          {/* Sandboxed Live HTML Iframe (Zero CSS leakage, 100% accurate rendering) */}
+          <div className="rounded-xl border border-slate-200 overflow-hidden bg-slate-100 p-3">
+            <div className={`mx-auto transition-all ${previewMode === "mobile" ? "max-w-[360px]" : "max-w-3xl"}`}>
+              <iframe
+                title="Real-Time Email Preview"
+                srcDoc={livePreviewHtml}
+                className="w-full h-[580px] rounded-lg border border-slate-200 bg-white shadow-inner"
+                sandbox="allow-same-origin allow-popups"
+              />
+            </div>
           </div>
 
         </div>
 
-        {/* ======================================================== */}
-        {/* RIGHT COLUMN: STICKY REAL-TIME EMAIL PREVIEW (5 COLS)     */}
-        {/* ======================================================== */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="sticky top-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
-            
-            {/* Toolbar */}
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-              <div className="flex items-center gap-2">
-                <Eye size={16} className="text-teal-600" />
-                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
-                  Live Inbox Preview
-                </h3>
-              </div>
+        {/* ------------------------------------------------------ */}
+        {/* STEP 3: INSTANT TEST EMAIL & LAUNCH BROADCAST          */}
+        {/* ------------------------------------------------------ */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-teal-600 text-[11px] font-black text-white">
+              3
+            </span>
+            <h3 className="text-sm font-bold text-slate-900">Test & Send Broadcast</h3>
+          </div>
 
-              <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg">
-                <button
-                  type="button"
-                  onClick={() => setPreviewMode("desktop")}
-                  className={`p-1 rounded text-xs transition cursor-pointer ${
-                    previewMode === "desktop" ? "bg-white text-slate-900 shadow-xs" : "text-slate-400 hover:text-slate-700"
-                  }`}
-                  title="Desktop View"
-                >
-                  <Monitor size={14} />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPreviewMode("mobile")}
-                  className={`p-1 rounded text-xs transition cursor-pointer ${
-                    previewMode === "mobile" ? "bg-white text-slate-900 shadow-xs" : "text-slate-400 hover:text-slate-700"
-                  }`}
-                  title="Mobile View (360px)"
-                >
-                  <Smartphone size={14} />
-                </button>
-              </div>
+          {/* Quick Test Box */}
+          <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5 space-y-2">
+            <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+              <span className="flex items-center gap-1 text-teal-700">
+                <ShieldCheck size={14} /> Send Test Preview to Your Inbox
+              </span>
+              <span className="text-[10px] text-slate-400">Verifies layout before sending</span>
             </div>
 
-            {/* Email Simulated Envelope Headers */}
-            <div className="rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-[11px] space-y-1 mb-3 font-sans">
-              <div className="flex justify-between">
-                <span className="text-slate-400">From:</span>
-                <span className="font-bold text-slate-700 truncate max-w-[260px]">{fromAddress}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">To:</span>
-                <span className="font-bold text-slate-700">
-                  {testRecipientName || "Subodh"} &lt;{testEmailAddress || "candidate@example.com"}&gt;
-                </span>
-              </div>
-              <div className="flex justify-between pt-1 border-t border-slate-200/50">
-                <span className="text-slate-400">Subject:</span>
-                <span className="font-bold text-teal-700 truncate max-w-[260px]">
-                  {subject ? subject.replace(/{{\s*name\s*}}/gi, testRecipientName || "Subodh") : "(No subject)"}
-                </span>
-              </div>
-            </div>
-
-            {/* Sandboxed Live HTML Iframe (Zero CSS leakage, 100% accurate rendering) */}
-            <div className="rounded-xl border border-slate-200 overflow-hidden bg-slate-100 p-2">
-              <div className={`mx-auto transition-all ${previewMode === "mobile" ? "max-w-[340px]" : "w-full"}`}>
-                <iframe
-                  title="Real-Time Email Preview"
-                  srcDoc={livePreviewHtml}
-                  className="w-full h-[580px] rounded-lg border border-slate-200 bg-white shadow-inner"
-                  sandbox="allow-same-origin allow-popups"
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2">
+              <div className="sm:col-span-4">
+                <input
+                  type="text"
+                  value={testRecipientName}
+                  onChange={(e) => setTestRecipientName(e.target.value)}
+                  placeholder="Name (Subodh)"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800"
                 />
               </div>
+              <div className="sm:col-span-5">
+                <input
+                  type="email"
+                  value={testEmailAddress}
+                  onChange={(e) => setTestEmailAddress(e.target.value)}
+                  placeholder="Email"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800"
+                />
+              </div>
+              <div className="sm:col-span-3">
+                <button
+                  type="button"
+                  disabled={isSendingTest || !testEmailAddress}
+                  onClick={handleSendTestEmail}
+                  className="w-full rounded-lg bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 text-xs font-bold transition cursor-pointer disabled:bg-slate-400 flex items-center justify-center gap-1"
+                >
+                  {isSendingTest ? <Loader2 size={13} className="animate-spin" /> : <Send size={12} />}
+                  <span>Send Test</span>
+                </button>
+              </div>
             </div>
 
+            {testStatus && (
+              <div
+                className={`text-xs p-2 rounded-lg font-medium ${testStatus.success ? "text-emerald-700 bg-emerald-50 border border-emerald-200" : "text-rose-700 bg-rose-50 border border-rose-200"
+                  }`}
+              >
+                {testStatus.message}
+              </div>
+            )}
           </div>
+
+          {/* Launch Campaign Button */}
+          <div className="pt-1">
+            <button
+              type="button"
+              disabled={activeRecipients.length === 0 || isSendingBulk || !subject || !htmlCode}
+              onClick={() => setIsConfirmModalOpen(true)}
+              className="w-full flex items-center justify-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-700 disabled:bg-slate-200 disabled:text-slate-400 text-white p-3.5 text-sm font-bold shadow-md hover:shadow-lg transition cursor-pointer"
+            >
+              {isSendingBulk ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  <span>Dispatching Emails via Resend...</span>
+                </>
+              ) : (
+                <>
+                  <Send size={18} />
+                  <span>Send Campaign to {activeRecipients.length.toLocaleString()} Recipients &rarr;</span>
+                </>
+              )}
+            </button>
+
+            {bulkStatus && (
+              <div
+                className={`mt-3 p-3 rounded-xl text-xs font-bold flex items-center gap-2 ${bulkStatus.success ? "bg-emerald-50 text-emerald-800 border border-emerald-200" : "bg-rose-50 text-rose-800 border border-rose-200"
+                  }`}
+              >
+                {bulkStatus.success ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
+                <span>{bulkStatus.message}</span>
+              </div>
+            )}
+          </div>
+
         </div>
 
       </div>
