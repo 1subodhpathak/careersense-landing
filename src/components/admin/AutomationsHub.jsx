@@ -86,6 +86,15 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
   const [onboardingCtaUrl, setOnboardingCtaUrl] = useState("");
   const [followUpSteps, setFollowUpSteps] = useState([]); // Up to 5 optional follow-up steps
 
+  // Form State - Low Token Alert (< 5k Tokens, Dual Buttons)
+  const [tokenThreshold, setTokenThreshold] = useState(5000);
+  const [lowTokenTemplateId, setLowTokenTemplateId] = useState("low-token-balance-alert");
+  const [lowTokenSubjectOverride, setLowTokenSubjectOverride] = useState("");
+  const [upgradeCtaText, setUpgradeCtaText] = useState("Upgrade Subscription Plan");
+  const [upgradeCtaUrl, setUpgradeCtaUrl] = useState("https://careersenseai.com/pricing");
+  const [tokenAddonCtaText, setTokenAddonCtaText] = useState("Get Token Add-on Pack");
+  const [tokenAddonCtaUrl, setTokenAddonCtaUrl] = useState("https://careersenseai.com/pricing#addons");
+
   // Form State - Calendar Scheduler (Weekly 7 days / Monthly 30 days)
   const [scheduleScope, setScheduleScope] = useState("weekly"); // "weekly" | "monthly"
   const [startDateStr, setStartDateStr] = useState(new Date().toISOString().split("T")[0]);
@@ -227,6 +236,14 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
         setOnboardingCtaText(ruleToEdit.onboardingCtaText || ruleToEdit.steps?.[0]?.ctaTextOverride || "");
         setOnboardingCtaUrl(ruleToEdit.onboardingCtaUrl || ruleToEdit.steps?.[0]?.ctaUrlOverride || "");
         setFollowUpSteps(Array.isArray(ruleToEdit.steps) ? ruleToEdit.steps : []);
+      } else if (ruleToEdit.type === "low_tokens") {
+        setTokenThreshold(ruleToEdit.tokenThreshold || 5000);
+        setLowTokenTemplateId(ruleToEdit.lowTokenTemplateId || "low-token-balance-alert");
+        setLowTokenSubjectOverride(ruleToEdit.lowTokenSubjectOverride || "");
+        setUpgradeCtaText(ruleToEdit.upgradeCtaText || "Upgrade Subscription Plan");
+        setUpgradeCtaUrl(ruleToEdit.upgradeCtaUrl || "https://careersenseai.com/pricing");
+        setTokenAddonCtaText(ruleToEdit.tokenAddonCtaText || "Get Token Add-on Pack");
+        setTokenAddonCtaUrl(ruleToEdit.tokenAddonCtaUrl || "https://careersenseai.com/pricing#addons");
       } else {
         const scope = ruleToEdit.scheduleScope || "weekly";
         setScheduleScope(scope);
@@ -237,10 +254,20 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
       }
     } else {
       setEditingRule(null);
-      setFormType(activeTab === "calendar" ? "calendar_schedule" : "onboarding");
-      setFormName("");
-      setFormDescription("");
+      const defaultType = activeTab === "low_tokens" ? "low_tokens" : (activeTab === "calendar" ? "calendar_schedule" : "onboarding");
+      setFormType(defaultType);
+      setFormName(defaultType === "low_tokens" ? "Low Token Balance Alert (< 5k Tokens)" : "");
+      setFormDescription(defaultType === "low_tokens" ? "Automated one-time email sent when a candidate's token balance drops below 5,000 tokens." : "");
       setFormEnabled(false);
+
+      // Reset Low Token defaults
+      setTokenThreshold(5000);
+      setLowTokenTemplateId("low-token-balance-alert");
+      setLowTokenSubjectOverride("");
+      setUpgradeCtaText("Upgrade Subscription Plan");
+      setUpgradeCtaUrl("https://careersenseai.com/pricing");
+      setTokenAddonCtaText("Get Token Add-on Pack");
+      setTokenAddonCtaUrl("https://careersenseai.com/pricing#addons");
 
       // Reset Onboarding defaults (1 single clean email)
       setOnboardingTemplateId(templates[0]?.id || "");
@@ -366,6 +393,19 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
         onboardingCtaText,
         onboardingCtaUrl,
         steps: followUpSteps
+      };
+    } else if (formType === "low_tokens") {
+      const matchedTpl = templates.find((t) => t.id === lowTokenTemplateId || t._id === lowTokenTemplateId);
+      payload = {
+        ...payload,
+        tokenThreshold: Number(tokenThreshold) || 5000,
+        lowTokenTemplateId,
+        lowTokenTemplateName: matchedTpl?.name || "Low Token Balance Alert (< 5k Tokens)",
+        lowTokenSubjectOverride,
+        upgradeCtaText: upgradeCtaText || "Upgrade Subscription Plan",
+        upgradeCtaUrl: upgradeCtaUrl || "https://careersenseai.com/pricing",
+        tokenAddonCtaText: tokenAddonCtaText || "Get Token Add-on Pack",
+        tokenAddonCtaUrl: tokenAddonCtaUrl || "https://careersenseai.com/pricing#addons"
       };
     } else {
       // Calendar Scheduler
@@ -582,6 +622,17 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
   // Filtered lists
   const onboardingRules = rules.filter((r) => r.type === "onboarding");
   const calendarRules = rules.filter((r) => r.type === "calendar_schedule" || r.type === "recurring_schedule");
+  const lowTokenRules = rules.filter((r) => r.type === "low_tokens");
+
+  // Candidates with < 5k tokens
+  const lowTokenCandidatesCount = useMemo(() => {
+    return candidates.filter((c) => {
+      const tokens = typeof c.subscription?.tokensRemaining === "number"
+        ? c.subscription.tokensRemaining
+        : (typeof c.tokensRemaining === "number" ? c.tokensRemaining : 30000);
+      return tokens < 5000;
+    }).length;
+  }, [candidates]);
 
   const filteredLogs = logs.filter((log) => {
     if (logStatusFilter !== "all" && log.status !== logStatusFilter) return false;
@@ -669,7 +720,7 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
               <span className="text-xs font-semibold text-slate-400">/ {metrics?.totalRules ?? 0} Total</span>
             </div>
             <div className="text-[11px] text-slate-500 mt-1">
-              {metrics?.onboardingRules ?? 0} Onboarding • {metrics?.scheduledRules ?? 0} Calendar
+              {metrics?.onboardingRules ?? 0} Onboarding • {metrics?.scheduledRules ?? 0} Calendar • {lowTokenRules.length} Low Token
             </div>
           </div>
 
@@ -752,6 +803,25 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
             }`}
           >
             {calendarRules.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab("low_tokens")}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
+            activeTab === "low_tokens"
+              ? "bg-[#0b132b] text-white shadow-xs"
+              : "text-slate-600 hover:text-slate-950 hover:bg-slate-100"
+          }`}
+        >
+          <Zap size={14} className={activeTab === "low_tokens" ? "text-amber-400" : "text-amber-500"} />
+          <span>Low Token Alerts (&lt; 5k)</span>
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              activeTab === "low_tokens" ? "bg-white/20 text-white" : "bg-amber-100 text-amber-800"
+            }`}
+          >
+            {lowTokenRules.length}
           </span>
         </button>
 
@@ -1183,6 +1253,205 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
         </div>
       )}
 
+      {/* TAB: LOW TOKEN ALERTS (< 5K TOKENS) */}
+      {activeTab === "low_tokens" && (
+        <div className="space-y-4">
+          {/* Info Banner */}
+          <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 flex items-start gap-3">
+            <Zap className="text-amber-600 shrink-0 mt-0.5" size={17} />
+            <div className="text-xs text-amber-900 leading-relaxed">
+              <span className="font-bold">Low Token Balance Automation:</span> Automatically sends a one-time alert to any platform candidate whose AI token balance drops below 5,000 tokens. The email features two action buttons: <strong>Upgrade Plan</strong> and <strong>Token Add-on</strong>.
+              <div className="mt-1 font-medium text-amber-800">
+                • Target: All users (Free & Paid) below the 5k threshold • Guarantee: Strictly one-time email per user (deduplicated by logs).
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Roster Status */}
+          <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-amber-100/70 flex items-center justify-center text-amber-700 font-bold shrink-0">
+                <AlertTriangle size={18} />
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-800">
+                  {lowTokenCandidatesCount} Candidates Currently Below 5,000 Tokens
+                </div>
+                <div className="text-[11px] text-slate-500">
+                  Eligible candidates receive this alert once automatically during the 3-minute cron cycle when an automation rule is active.
+                </div>
+              </div>
+            </div>
+
+            {lowTokenRules.length === 0 && (
+              <button
+                onClick={() => openCreateModal()}
+                className="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-xs self-start sm:self-auto shrink-0"
+              >
+                + Setup Low Token Automation
+              </button>
+            )}
+          </div>
+
+          {lowTokenRules.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center">
+              <Zap size={36} className="mx-auto text-amber-500 mb-3" />
+              <h3 className="text-sm font-bold text-slate-800">No Low Token Automations Configured</h3>
+              <p className="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-4">
+                Set up an automated rule to alert candidates when they run low on AI tokens and prompt them to upgrade or top up.
+              </p>
+              <button
+                onClick={() => openCreateModal()}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-xs"
+              >
+                <Plus size={15} />
+                <span>Create Low Token Automation</span>
+              </button>
+            </div>
+          ) : (
+            lowTokenRules.map((rule) => {
+              const isBusy = actionLoading === rule._id || actionLoading === `trigger-${rule._id}`;
+              const tplId = rule.lowTokenTemplateId || "low-token-balance-alert";
+              const matchedTpl = templates.find((t) => t.id === tplId || t._id === tplId);
+
+              return (
+                <div
+                  key={rule._id}
+                  className="bg-white rounded-2xl border border-slate-200/90 shadow-xs overflow-hidden transition hover:border-slate-300"
+                >
+                  <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1.5 max-w-xl">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h4 className="text-base font-bold text-slate-900">{rule.name}</h4>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
+                          Trigger: &lt; {(rule.tokenThreshold || 5000).toLocaleString()} Tokens
+                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                          Strictly 1 Email / User
+                        </span>
+                        <span
+                          className={`inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                            rule.enabled
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : "bg-slate-100 text-slate-600"
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              rule.enabled ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
+                            }`}
+                          />
+                          {rule.enabled ? "Active" : "Paused"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500">{rule.description || "Alerts users when token balance is low."}</p>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleTriggerRule(rule)}
+                        disabled={isBusy}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition cursor-pointer disabled:opacity-50"
+                        title="Evaluate and run low token rule now"
+                      >
+                        <Play size={13} className={actionLoading === `trigger-${rule._id}` ? "animate-spin" : ""} />
+                        <span>Run Now</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleToggleRule(rule)}
+                        disabled={isBusy}
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition cursor-pointer disabled:opacity-50 ${
+                          rule.enabled
+                            ? "text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200"
+                            : "text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200"
+                        }`}
+                      >
+                        {rule.enabled ? <Pause size={13} /> : <Play size={13} />}
+                        <span>{rule.enabled ? "Pause" : "Enable"}</span>
+                      </button>
+
+                      <button
+                        onClick={() => openEditModal(rule)}
+                        disabled={isBusy}
+                        className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition cursor-pointer"
+                        title="Edit Automation"
+                      >
+                        <Edit2 size={15} />
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteRule(rule)}
+                        disabled={isBusy}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                        title="Delete Automation"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Rule Details & Button Configuration */}
+                  <div className="p-6 bg-slate-50/50 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-white rounded-xl border border-slate-200">
+                      <div>
+                        <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                          Assigned Email Template
+                        </div>
+                        <div className="text-xs font-bold text-slate-900 mt-0.5">
+                          {matchedTpl ? matchedTpl.name : rule.lowTokenTemplateName || tplId}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          Subject: "{rule.lowTokenSubjectOverride || matchedTpl?.subject || "Your CareerSense AI token balance is running low"}"
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={() => handlePreview(tplId)}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition cursor-pointer self-start sm:self-auto"
+                      >
+                        <Eye size={13} />
+                        <span>Preview Email</span>
+                      </button>
+                    </div>
+
+                    {/* Dual Action Buttons Preview */}
+                    <div className="p-4 bg-white rounded-xl border border-slate-200">
+                      <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                        Dual Call-to-Action Buttons Configured in Email
+                      </div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-lg text-xs">
+                          <span className="w-2 h-2 rounded-full bg-teal-600" />
+                          <span className="font-bold text-teal-900">{rule.upgradeCtaText || "Upgrade Subscription Plan"}</span>
+                          <span className="text-[10px] text-teal-700 font-mono">({rule.upgradeCtaUrl || "https://careersenseai.com/pricing"})</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-lg text-xs">
+                          <span className="w-2 h-2 rounded-full bg-slate-600" />
+                          <span className="font-bold text-slate-900">{rule.tokenAddonCtaText || "Get Token Add-on Pack"}</span>
+                          <span className="text-[10px] text-slate-700 font-mono">({rule.tokenAddonCtaUrl || "https://careersenseai.com/pricing#addons"})</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="px-6 py-3 bg-slate-50/40 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <div>
+                      Last Evaluated: <span className="font-semibold text-slate-700">{formatIST(rule.lastRunAt)}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span>Total Delivered: <strong className="text-emerald-700">{rule.totalSent || 0}</strong></span>
+                      <span>Total Failed: <strong className="text-slate-800">{rule.totalFailed || 0}</strong></span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+      )}
+
       {/* TAB 3: LIVE DELIVERY AUDIT LOGS */}
       {activeTab === "logs" && (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden space-y-4 p-5">
@@ -1347,10 +1616,15 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
                     <div>Hi Candidate,</div>
                     <div className="whitespace-pre-line">{previewTemplate.body}</div>
                     {previewTemplate.ctaText && (
-                      <div className="pt-2">
+                      <div className="pt-2 flex flex-wrap gap-2 items-center">
                         <span className="inline-block px-4 py-2 bg-teal-600 text-white font-bold rounded-lg text-xs">
                           {previewTemplate.ctaText} &rarr;
                         </span>
+                        {previewTemplate.secondaryCtaText && (
+                          <span className="inline-block px-4 py-2 bg-slate-100 text-slate-800 border border-slate-300 font-bold rounded-lg text-xs">
+                            {previewTemplate.secondaryCtaText} &rarr;
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1380,7 +1654,7 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
                   {editingRule ? "Edit Automation Setup" : "Create New Automation"}
                 </div>
                 <h3 className="text-base font-bold">
-                  {editingRule ? editingRule.name : formType === "onboarding" ? "New User Onboarding Workflow" : "Calendar Schedule Planner"}
+                  {editingRule ? editingRule.name : formType === "onboarding" ? "New User Onboarding Workflow" : formType === "low_tokens" ? "Low Token Alert Automation" : "Calendar Schedule Planner"}
                 </h3>
               </div>
               <button
@@ -1398,7 +1672,7 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
                   <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                     Automation Type
                   </label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setFormType("onboarding")}
@@ -1410,7 +1684,7 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
                         <Zap size={14} className="text-indigo-600" />
-                        New User Onboarding (Single Email)
+                        New User Onboarding
                       </div>
                       <div className="text-[11px] text-slate-500 mt-1">
                         Valid strictly for new signups. Zero historical users emailed.
@@ -1428,10 +1702,28 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
                     >
                       <div className="flex items-center gap-2 font-bold text-xs">
                         <Calendar size={14} className="text-indigo-600" />
-                        Weekly (Day 1-7) / Monthly (Day 1-30) Calendar
+                        Calendar Schedulers
                       </div>
                       <div className="text-[11px] text-slate-500 mt-1">
-                        Select days, choose templates & assign custom recipient lists per day.
+                        Weekly (7d) / Monthly (30d) calendar schedules with custom recipients.
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setFormType("low_tokens")}
+                      className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
+                        formType === "low_tokens"
+                          ? "border-amber-600 bg-amber-50/60 text-amber-950 ring-2 ring-amber-500/20"
+                          : "border-slate-200 hover:border-slate-300 text-slate-600"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2 font-bold text-xs">
+                        <Zap size={14} className="text-amber-600" />
+                        Low Token Alert (&lt; 5k)
+                      </div>
+                      <div className="text-[11px] text-slate-500 mt-1">
+                        One-time email alert for users with &lt; 5k tokens with dual CTA buttons.
                       </div>
                     </button>
                   </div>
@@ -1710,6 +2002,149 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
                         </div>
                       </div>
                     ))}
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION C: LOW TOKEN ALERT (< 5K TOKENS) */}
+              {formType === "low_tokens" && (
+                <div className="space-y-4 pt-3 border-t border-slate-100">
+                  <div className="bg-amber-50/70 p-3.5 rounded-xl border border-amber-200 text-xs text-amber-900 leading-relaxed">
+                    <strong className="font-bold">One-Time Low Token Trigger:</strong> This automation evaluates all platform users continuously. When a candidate's token balance drops below the threshold, they receive a single notification with direct buttons to upgrade their plan or buy token add-ons. Candidates are deduplicated and will never be spammed.
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Token Threshold <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          min="100"
+                          max="100000"
+                          step="500"
+                          required
+                          value={tokenThreshold}
+                          onChange={(e) => setTokenThreshold(Number(e.target.value))}
+                          className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl font-bold text-slate-800"
+                        />
+                        <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-semibold">
+                          Tokens Remaining
+                        </span>
+                      </div>
+                      <span className="text-[11px] text-slate-500 mt-1 block">
+                        Default: 5,000 tokens (Hot Leads threshold)
+                      </span>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1">
+                        Assigned Email Template <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={lowTokenTemplateId}
+                          onChange={(e) => setLowTokenTemplateId(e.target.value)}
+                          className="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl bg-white font-medium text-slate-800"
+                        >
+                          {templates.map((tpl) => (
+                            <option key={tpl.id || tpl._id} value={tpl.id || tpl._id}>
+                              {tpl.name} {tpl.isSystem ? "(Preset)" : "(Custom)"}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          onClick={() => handlePreview(lowTokenTemplateId)}
+                          className="px-3 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition cursor-pointer shrink-0"
+                          title="Preview Email"
+                        >
+                          <Eye size={14} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1">
+                      Subject Line Override (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Your CareerSense AI token balance is running low (leave blank to use template default)"
+                      value={lowTokenSubjectOverride}
+                      onChange={(e) => setLowTokenSubjectOverride(e.target.value)}
+                      className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl"
+                    />
+                  </div>
+
+                  {/* Dual Action Buttons Configuration */}
+                  <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                    <div className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                      <Zap size={14} className="text-amber-500" />
+                      Configure Dual Call-to-Action Buttons in Email
+                    </div>
+
+                    {/* Button 1: Upgrade Plan */}
+                    <div className="p-3 bg-white rounded-lg border border-teal-200 space-y-2">
+                      <div className="flex items-center gap-2 text-xs font-bold text-teal-800">
+                        <span className="w-2.5 h-2.5 rounded-full bg-teal-600" />
+                        Button 1: Upgrade Subscription Plan (Primary)
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Button Text</label>
+                          <input
+                            type="text"
+                            value={upgradeCtaText}
+                            onChange={(e) => setUpgradeCtaText(e.target.value)}
+                            placeholder="Upgrade Subscription Plan"
+                            className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Destination URL</label>
+                          <input
+                            type="text"
+                            value={upgradeCtaUrl}
+                            onChange={(e) => setUpgradeCtaUrl(e.target.value)}
+                            placeholder="https://careersenseai.com/pricing"
+                            className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg font-mono text-slate-700"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Button 2: Token Add-on */}
+                    <div className="p-3 bg-white rounded-lg border border-amber-200 space-y-2">
+                      <div className="flex items-center gap-2 text-xs font-bold text-amber-800">
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-600" />
+                        Button 2: Instant Token Add-on Pack (Secondary)
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Button Text</label>
+                          <input
+                            type="text"
+                            value={tokenAddonCtaText}
+                            onChange={(e) => setTokenAddonCtaText(e.target.value)}
+                            placeholder="Get Token Add-on Pack"
+                            className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-slate-600 mb-0.5">Destination URL</label>
+                          <input
+                            type="text"
+                            value={tokenAddonCtaUrl}
+                            onChange={(e) => setTokenAddonCtaUrl(e.target.value)}
+                            placeholder="https://careersenseai.com/pricing#addons"
+                            className="w-full px-3 py-1.5 text-xs border border-slate-200 rounded-lg font-mono text-slate-700"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
