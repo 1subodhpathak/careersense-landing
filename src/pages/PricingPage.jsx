@@ -72,6 +72,25 @@ export default function PricingPage() {
 
   }, [searchParams]);
 
+  // Support direct deep-linking to token add-ons via URL hash (#addons, #topup, #tokens)
+  useEffect(() => {
+    const handleHashScroll = () => {
+      const hash = (window.location.hash || "").toLowerCase().replace("#", "");
+      if (["addons", "topup", "tokens", "token-addons"].includes(hash)) {
+        setTimeout(() => {
+          const elem = document.getElementById("addons") || document.getElementById("topup");
+          if (elem) {
+            elem.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }, 200);
+      }
+    };
+
+    handleHashScroll();
+    window.addEventListener("hashchange", handleHashScroll);
+    return () => window.removeEventListener("hashchange", handleHashScroll);
+  }, []);
+
   // Custom Payment Modal State
 
   const [modalConfig, setModalConfig] = useState({
@@ -1435,6 +1454,8 @@ export default function PricingPage() {
 
 
 
+        {/* Anchor point for https://careersenseai.com/pricing#addons */}
+        <div id="addons" style={{ scrollMarginTop: "110px" }} />
         <section id="topup" className="cs-container cs-topup">
 
           <div>

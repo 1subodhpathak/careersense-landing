@@ -32,8 +32,8 @@ import {
   Filter
 } from "lucide-react";
 
-// Helper to pre-render production-grade responsive HTML for the 7 system templates
-function buildDefaultHtmlTemplate({ title, headline, body, ctaText, ctaUrl }) {
+// Helper to pre-render production-grade responsive HTML for the system templates
+function buildDefaultHtmlTemplate({ title, headline, body, ctaText, ctaUrl, secondaryCtaText, secondaryCtaUrl }) {
   const formattedBody = body
     .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #0f172a; font-weight: 700;">$1</strong>')
     .replace(/\n/g, "<br>\n      ");
@@ -68,9 +68,21 @@ function buildDefaultHtmlTemplate({ title, headline, body, ctaText, ctaUrl }) {
 
     ${ctaText && ctaUrl ? `
     <div style="margin: 28px 0;">
-      <a href="${ctaUrl}" target="_blank" style="background-color: #0d9488; color: #ffffff; display: inline-block; font-size: 14px; font-weight: 700; line-height: 44px; padding: 0 28px; border-radius: 10px; text-decoration: none;">
-        ${ctaText} &rarr;
-      </a>
+      <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate;">
+        <tr>
+          <td align="left" style="padding-right: 12px; padding-bottom: 10px;">
+            <a href="${ctaUrl}" target="_blank" style="background-color: #0d9488; color: #ffffff; display: inline-block; font-size: 14px; font-weight: 700; line-height: 44px; padding: 0 24px; border-radius: 10px; text-decoration: none; text-align: center;">
+              ${ctaText} &rarr;
+            </a>
+          </td>
+          ${secondaryCtaText && secondaryCtaUrl ? `
+          <td align="left" style="padding-bottom: 10px;">
+            <a href="${secondaryCtaUrl}" target="_blank" style="background-color: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; display: inline-block; font-size: 14px; font-weight: 700; line-height: 42px; padding: 0 22px; border-radius: 10px; text-decoration: none; text-align: center;">
+              ${secondaryCtaText} &rarr;
+            </a>
+          </td>` : ''}
+        </tr>
+      </table>
     </div>` : ""}
 
     <!-- Founder Signoff -->
@@ -254,6 +266,30 @@ Work through 20 hands-on milestone challenges covering:
 • **Capstone Pitch:** Executive presentation directly to startup founders
 
 Earn executive badges, profit-sharing incentives, and 1,000,000 platform AI credits.`
+    })
+  },
+  {
+    id: "low-token-balance-alert",
+    name: "Low Token Balance Alert (< 5k Tokens)",
+    category: "Alerts",
+    subject: "Your CareerSense AI token balance is running low",
+    isSystem: true,
+    body: buildDefaultHtmlTemplate({
+      title: "Your CareerSense AI token balance is running low",
+      headline: "Your CareerSense AI token balance is running low",
+      ctaText: "Upgrade Subscription Plan",
+      ctaUrl: "https://careersenseai.com/pricing",
+      secondaryCtaText: "Get Token Add-on Pack",
+      secondaryCtaUrl: "https://careersenseai.com/pricing#addons",
+      body: `Your current CareerSense AI token balance has dropped below 5,000 tokens.
+
+Tokens power your AI-assisted career tools across CareerSense:
+• **ATS Resume Scanner:** Deep keyword optimization, parse audit, and match scoring
+• **AI Resume Builder:** Bullet point restructuring and achievement-based rewrites
+• **AI Cover Letter Generator:** Authentic, job-specific cover letters tailored in 30 seconds
+• **Career GPS & Roadmaps:** Step-by-step career path simulations and skill gap analysis
+
+To continue using these tools without interruption, you can either upgrade your subscription plan for larger recurring monthly token allowances, or grab a 50,000 token add-on pack.`
     })
   },
   {
