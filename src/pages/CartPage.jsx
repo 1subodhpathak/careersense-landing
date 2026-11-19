@@ -399,10 +399,10 @@ export default function CartPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
+            {/* <div className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
               <Lock size={12} className="text-teal-600" />
               <span>256-Bit SSL Encrypted</span>
-            </div>
+            </div> */}
             <Link
               to="/pricing"
               className="text-xs font-bold text-slate-500 hover:text-slate-800 inline-flex items-center gap-1 transition"
@@ -470,11 +470,10 @@ export default function CartPage() {
                     <button
                       key={p.id}
                       onClick={() => handlePlanChange(p.id)}
-                      className={`flex-1 min-w-[130px] sm:min-w-0 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${
-                        isSelected
+                      className={`flex-1 min-w-[130px] sm:min-w-0 py-2.5 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer ${isSelected
                           ? "bg-[#0b132b] text-white shadow-md scale-[1.01]"
                           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                      }`}
+                        }`}
                     >
                       <Icon size={14} className={isSelected ? "text-cyan-400" : "text-slate-400"} />
                       <span>{p.label}</span>
@@ -576,11 +575,10 @@ export default function CartPage() {
                               key={t.id}
                               type="button"
                               onClick={() => setSelectedTrack(t.id)}
-                              className={`p-3 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between min-h-[72px] ${
-                                isTrackSelected
+                              className={`p-3 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between min-h-[72px] ${isTrackSelected
                                   ? "border-teal-600 bg-white text-teal-950 shadow-md ring-2 ring-teal-500/20"
                                   : "border-teal-200/80 bg-white/70 hover:bg-white text-slate-700 hover:border-teal-400"
-                              }`}
+                                }`}
                             >
                               <span className="text-xs font-bold leading-tight">{t.name}</span>
                               <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-slate-100 text-[10px] text-slate-500 font-semibold">
@@ -699,11 +697,10 @@ export default function CartPage() {
                         <button
                           type="button"
                           onClick={() => handleBillingChange("monthly")}
-                          className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${
-                            billingCycle === "monthly"
+                          className={`p-3.5 rounded-xl border text-left transition cursor-pointer ${billingCycle === "monthly"
                               ? "border-amber-600 bg-white text-slate-900 shadow-md ring-2 ring-amber-500/20"
                               : "border-amber-200 bg-white/70 hover:bg-white text-slate-700"
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-xs">Monthly Partner Package</span>
@@ -715,11 +712,10 @@ export default function CartPage() {
                         <button
                           type="button"
                           onClick={() => handleBillingChange("half_yearly")}
-                          className={`p-3.5 rounded-xl border text-left transition cursor-pointer relative overflow-hidden ${
-                            billingCycle === "half_yearly"
+                          className={`p-3.5 rounded-xl border text-left transition cursor-pointer relative overflow-hidden ${billingCycle === "half_yearly"
                               ? "border-amber-600 bg-white text-slate-900 shadow-md ring-2 ring-amber-500/20"
                               : "border-amber-200 bg-white/70 hover:bg-white text-slate-700"
-                          }`}
+                            }`}
                         >
                           <span className="absolute top-0 right-0 bg-amber-500 text-slate-950 text-[9.5px] font-black uppercase px-2 py-0.5 rounded-bl-lg">
                             Save 33%
@@ -992,11 +988,10 @@ export default function CartPage() {
                   type="button"
                   onClick={handleProceedToPayment}
                   disabled={!hasAcceptedTerms || loadingPayment || isCurrentPlan}
-                  className={`w-full py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 ${
-                    isCurrentPlan
+                  className={`w-full py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider shadow-md transition-all flex items-center justify-center gap-2 ${isCurrentPlan
                       ? "bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed"
                       : "bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-500 hover:to-cyan-500 active:scale-[0.99] text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   {isCurrentPlan ? (
                     <>
