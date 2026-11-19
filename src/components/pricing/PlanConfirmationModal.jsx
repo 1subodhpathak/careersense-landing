@@ -14,7 +14,9 @@ import {
   Award, 
   BadgeCheck,
   ArrowRight,
-  Layers
+  Layers,
+  Tag,
+  Loader2
 } from "lucide-react";
 
 export const FELLOWSHIP_TRACKS = [
@@ -43,6 +45,13 @@ export default function PlanConfirmationModal({
   const [localBilling, setLocalBilling] = useState(partnerBillingCycle);
   const [hasAcceptedTerms, setHasAcceptedTerms] = useState(false);
 
+  // Coupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [showCouponBox, setShowCouponBox] = useState(false);
+
   // Sync internal states when modal opens or initial values change
   useEffect(() => {
     if (isOpen) {
@@ -50,8 +59,18 @@ export default function PlanConfirmationModal({
       setLocalTrack(selectedFellowship || "data-analyst");
       setLocalBilling(partnerBillingCycle || "monthly");
       setHasAcceptedTerms(false);
+      setCouponInput("");
+      setCouponError("");
+      setAppliedCoupon(null);
+      setShowCouponBox(false);
     }
   }, [isOpen, initialPlan, selectedFellowship, partnerBillingCycle]);
+
+  // Reset applied coupon when user changes plan or billing cycle
+  useEffect(() => {
+    setAppliedCoupon(null);
+    setCouponError("");
+  }, [activePlan, localBilling]);
 
   if (!isOpen) return null;
 
@@ -72,59 +91,109 @@ export default function PlanConfirmationModal({
     }
   };
 
+  const handleApplyCoupon = async (e) => {
+    if (e) e.preventDefault();
+    const cleanCode = couponInput.trim().toUpperCase();
+    if (!cleanCode) {
+      setCouponError("Please enter a coupon code.");
+      return;
+    }
+
+    setValidatingCoupon(true);
+    setCouponError("");
+
+    try {
+      const backendUrl =
+        import.meta.env.VITE_API_URL ||
+        import.meta.env.VITE_BACKEND_URL ||
+        import.meta.env.VITE_API_BASE_URL ||
+        "https://server.datasenseai.com";
+
+      const res = await fetch(`${backendUrl}/careersense/subscription/validate-coupon`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          couponCode: cleanCode,
+          planKey: activePlan,
+          billingCycle: localBilling,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success && data.valid) {
+        setAppliedCoupon(data);
+        setCouponError("");
+      } else {
+        setCouponError(data.message || "Invalid coupon code.");
+      }
+    } catch (err) {
+      console.error("[Validate Coupon Error]:", err);
+      setCouponError("Network error while validating coupon code.");
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput("");
+    setCouponError("");
+  };
+
   const handleProceed = () => {
     if (!hasAcceptedTerms || loading) return;
     if (onProceedToPayment) {
-      onProceedToPayment(activePlan, localTrack, localBilling);
+      onProceedToPayment(activePlan, localTrack, localBilling, appliedCoupon);
     }
   };
 
   // Pricing calculations
   const getOrderDetails = () => {
+    let basePriceFormatted = "₹0";
+    let name = "Plan";
+    let duration = "Subscription";
+    let periodText = "";
+    let accent = "#0ea59e";
+
     if (activePlan === "student") {
-      return {
-        name: "Student Plan",
-        duration: "Monthly subscription",
-        priceFormatted: isUsd ? "$3.99" : "₹250",
-        periodText: "/ month (~₹8/day)",
-        accent: "#0ea59e",
-      };
-    }
-    if (activePlan === "intern") {
+      name = "Student Plan";
+      duration = "Monthly subscription";
+      basePriceFormatted = isUsd ? "$3.99" : "₹250";
+      periodText = "/ month (~₹8/day)";
+      accent = "#0ea59e";
+    } else if (activePlan === "intern") {
       const trackObj = FELLOWSHIP_TRACKS.find((t) => t.id === localTrack) || FELLOWSHIP_TRACKS[0];
-      return {
-        name: trackObj.name,
-        duration: "One 3-month fellowship",
-        priceFormatted: isUsd ? "$24.99" : "₹2,000",
-        periodText: "/ 3-month internship",
-        accent: "#0a9d89",
-      };
-    }
-    if (activePlan === "partner") {
+      name = trackObj.name;
+      duration = "One 3-month fellowship";
+      basePriceFormatted = isUsd ? "$24.99" : "₹2,000";
+      periodText = "/ 3-month internship";
+      accent = "#0a9d89";
+    } else if (activePlan === "partner") {
       const isSixMonth = localBilling === "half_yearly";
-      return {
-        name: "Partner Program",
-        duration: isSixMonth ? "6-month partner package" : "Monthly partner package",
-        priceFormatted: isSixMonth ? (isUsd ? "$99.99" : "₹10,000") : (isUsd ? "$24.99" : "₹2,499"),
-        periodText: isSixMonth ? "total for 6 months" : "/ month",
-        accent: "#c08b32",
-      };
+      name = "Partner Program";
+      duration = isSixMonth ? "6-month partner package" : "Monthly partner package";
+      basePriceFormatted = isSixMonth ? (isUsd ? "$99.99" : "₹10,000") : (isUsd ? "$24.99" : "₹2,499");
+      periodText = isSixMonth ? "total for 6 months" : "/ month";
+      accent = "#c08b32";
+    } else if (activePlan === "token_addon") {
+      name = "50,000 AI Token Add-on";
+      duration = "Instant token top-up";
+      basePriceFormatted = isUsd ? "$1" : "₹99";
+      periodText = "one-time payment";
+      accent = "#b87616";
     }
-    if (activePlan === "token_addon") {
-      return {
-        name: "50,000 AI Token Add-on",
-        duration: "Instant token top-up",
-        priceFormatted: isUsd ? "$1" : "₹99",
-        periodText: "one-time payment",
-        accent: "#b87616",
-      };
-    }
+
+    const hasCouponDiscount = Boolean(appliedCoupon && appliedCoupon.valid && !isUsd);
+    const finalPriceFormatted = hasCouponDiscount ? `₹${appliedCoupon.finalAmountINR}` : basePriceFormatted;
+
     return {
-      name: "Plan",
-      duration: "Subscription",
-      priceFormatted: "₹0",
-      periodText: "",
-      accent: "#0ea59e",
+      name,
+      duration,
+      priceFormatted: finalPriceFormatted,
+      originalPriceFormatted: hasCouponDiscount ? basePriceFormatted : null,
+      discountFormatted: hasCouponDiscount ? `-₹${appliedCoupon.discountINR}` : null,
+      periodText,
+      accent,
     };
   };
 
@@ -710,6 +779,81 @@ export default function PlanConfirmationModal({
 
         {/* Modal Footer */}
         <div className="px-6 sm:px-8 py-4 bg-slate-50/80 border-t border-slate-100 flex-none">
+          {/* Promo Coupon Code Section */}
+          <div className="mb-3">
+            {!appliedCoupon ? (
+              <div>
+                {!showCouponBox ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowCouponBox(true)}
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-600 hover:text-teal-700 transition cursor-pointer"
+                  >
+                    <Tag size={13} />
+                    <span>Have a promo coupon code?</span>
+                  </button>
+                ) : (
+                  <form onSubmit={handleApplyCoupon} className="space-y-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="relative flex-1">
+                        <Tag size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          value={couponInput}
+                          onChange={(e) => setCouponInput(e.target.value.toUpperCase().replace(/\s+/g, ""))}
+                          placeholder="Enter promo code (e.g. WELCOME30)"
+                          className="w-full pl-8 pr-3 py-1.5 text-xs font-mono font-bold uppercase tracking-wider rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 bg-white"
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        disabled={validatingCoupon || !couponInput.trim()}
+                        className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition disabled:opacity-50 cursor-pointer flex items-center gap-1"
+                      >
+                        {validatingCoupon ? <Loader2 size={12} className="animate-spin" /> : null}
+                        <span>Apply</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowCouponBox(false);
+                          setCouponError("");
+                        }}
+                        className="p-1.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                    {couponError && (
+                      <p className="text-[11px] text-red-600 font-medium pl-1">{couponError}</p>
+                    )}
+                  </form>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">
+                    ✓
+                  </span>
+                  <div>
+                    <span className="font-mono font-bold text-emerald-950 uppercase">{appliedCoupon.coupon.code}</span>
+                    <span className="text-emerald-700 font-semibold ml-1.5">
+                      applied ({order.discountFormatted} discount)
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRemoveCoupon}
+                  className="text-slate-400 hover:text-red-600 text-[11px] font-semibold underline cursor-pointer"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Order Summary Line */}
           <div className="flex items-center justify-between gap-3 mb-3">
             <div>
@@ -722,11 +866,16 @@ export default function PlanConfirmationModal({
             </div>
 
             <div className="text-right">
+              {order.originalPriceFormatted && (
+                <div className="text-xs text-slate-400 line-through font-semibold leading-none mb-0.5">
+                  {order.originalPriceFormatted}
+                </div>
+              )}
               <div className="text-xl sm:text-2xl font-black text-[#122A42] leading-tight">
                 {order.priceFormatted}
               </div>
               <div className="text-[10px] text-slate-400 font-semibold">
-                Total before Razorpay
+                Total payable via Razorpay
               </div>
             </div>
           </div>

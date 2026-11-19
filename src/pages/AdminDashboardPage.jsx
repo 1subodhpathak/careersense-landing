@@ -24,6 +24,7 @@ import FinancialLedgerMonetization from "../components/admin/FinancialLedgerMone
 import PlatformAnalyticsHub from "../components/admin/PlatformAnalyticsHub";
 import EmailMarketingHub from "../components/admin/EmailMarketingHub";
 import AutomationsHub from "../components/admin/AutomationsHub";
+import CouponManagerHub from "../components/admin/CouponManagerHub";
 import CandidateDossierDrawer from "../components/admin/CandidateDossierDrawer";
 import TokenGrantModal from "../components/admin/TokenGrantModal";
 
@@ -258,6 +259,11 @@ export default function AdminDashboardPage() {
           {/* Module 7: Automations & Recurring Scheduler Hub */}
           {activeTab === "automations" && (
             <AutomationsHub candidates={candidates} adminEmail={userEmail} />
+          )}
+
+          {/* Module 8: Coupons & Discounts Manager Hub */}
+          {activeTab === "coupons" && (
+            <CouponManagerHub adminEmail={userEmail} />
           )}
         </div>
       </section>

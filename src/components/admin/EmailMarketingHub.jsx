@@ -26,6 +26,10 @@ import {
   Plus,
   Save,
   Lock,
+  Unlock,
+  Pencil,
+  EyeOff,
+  X,
   ChevronDown,
   ChevronUp,
   FileCode2,
@@ -85,17 +89,17 @@ function buildDefaultHtmlTemplate({ title, headline, body, ctaText, ctaUrl, seco
       </table>
     </div>` : ""}
 
-    <!-- Founder Signoff -->
+    <!-- Signoff -->
     <div style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
       <p style="margin: 0; font-size: 15px; color: #334155;">
         Best regards,<br>
-        <strong style="color: #0f172a;">Shagun from CareerSense</strong>
+        <strong style="color: #0f172a;">CareerSense</strong>
       </p>
     </div>
 
     <!-- Minimal Footer -->
     <div style="margin-top: 36px; padding-top: 16px; border-top: 1px solid #f1f5f9; font-size: 12px; color: #94a3b8; line-height: 1.5;">
-      CareerSense AI | <a href="mailto:support@careersenseai.com" style="color: #0d9488; text-decoration: none;">support@careersenseai.com</a> | <a href="https://careersenseai.com" target="_blank" style="color: #0d9488; text-decoration: none;">careersenseai.com</a>
+      CareerSense AI | <a href="mailto:support@careersenseai.com" style="color: #0d9488; text-decoration: none;">support@careersenseai.com</a> | <a href="https://careersenseai.com" target="_blank" style="color: #0d9488; text-decoration: none;">careersenseai.com</a> | <a href="{{unsubscribe_url}}" target="_blank" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>
     </div>
 
   </div>
@@ -316,6 +320,7 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
   const preRef = useRef(null);
   const lineNumbersRef = useRef(null);
   const [copied, setCopied] = useState(false);
+  const [scrollbars, setScrollbars] = useState({ bottom: 0, right: 0 });
 
   const lines = useMemo(() => value.split("\n"), [value]);
 
@@ -336,6 +341,14 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
     }
   }, [value]);
 
+  const updateScrollbars = () => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const bottom = Math.max(0, ta.offsetHeight - ta.clientHeight);
+    const right = Math.max(0, ta.offsetWidth - ta.clientWidth);
+    setScrollbars((prev) => (prev.bottom !== bottom || prev.right !== right ? { bottom, right } : prev));
+  };
+
   const handleScroll = (e) => {
     const { scrollTop, scrollLeft } = e.target;
     if (preRef.current) {
@@ -345,6 +358,7 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
     if (lineNumbersRef.current) {
       lineNumbersRef.current.scrollTop = scrollTop;
     }
+    updateScrollbars();
   };
 
   const handleKeyDown = (e) => {
@@ -375,6 +389,27 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
     }
   }, [editorRef]);
 
+  useEffect(() => {
+    updateScrollbars();
+    const ta = textareaRef.current;
+    if (!ta) return;
+    let ro = null;
+    if (typeof ResizeObserver !== "undefined") {
+      ro = new ResizeObserver(() => updateScrollbars());
+      ro.observe(ta);
+    }
+    window.addEventListener("resize", updateScrollbars);
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener("resize", updateScrollbars);
+    };
+  }, [value]);
+
+  const editorFontFamily = 'Consolas, Monaco, "Courier New", monospace';
+  const editorFontSize = "12.5px";
+  const editorLineHeight = "20px";
+  const editorPadding = "12px 12px 64px 12px";
+
   return (
     <div className="rounded-xl overflow-hidden border border-[#2b2b2b] bg-[#1e1e1e] shadow-sm flex flex-col font-mono text-[12.5px]">
       {/* Top VS Code Tab */}
@@ -403,8 +438,12 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
         <div
           ref={lineNumbersRef}
           aria-hidden="true"
-          className="w-11 bg-[#1e1e1e] border-r border-[#2d2d2d] py-3 pr-2 text-right text-[11px] text-[#5a5a5a] select-none overflow-hidden shrink-0 font-mono"
-          style={{ lineHeight: "20px" }}
+          className="w-11 bg-[#1e1e1e] border-r border-[#2d2d2d] pt-3 pr-2 text-right text-[11px] text-[#5a5a5a] select-none overflow-hidden shrink-0 font-mono"
+          style={{
+            lineHeight: editorLineHeight,
+            fontFamily: editorFontFamily,
+            paddingBottom: `${12 + scrollbars.bottom + 64}px`
+          }}
         >
           {lines.map((_, i) => (
             <div key={i}>{i + 1}</div>
@@ -416,9 +455,14 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
           <pre
             ref={preRef}
             aria-hidden="true"
-            className="vscode-prism-canvas absolute inset-0 m-0 p-3 overflow-hidden font-mono text-[12.5px] pointer-events-none select-none"
+            className="vscode-prism-canvas absolute inset-0 m-0 overflow-hidden font-mono select-none pointer-events-none"
             style={{
-              lineHeight: "20px",
+              padding: editorPadding,
+              bottom: `${scrollbars.bottom}px`,
+              right: `${scrollbars.right}px`,
+              fontFamily: editorFontFamily,
+              fontSize: editorFontSize,
+              lineHeight: editorLineHeight,
               tabSize: 2,
               whiteSpace: "pre",
               wordBreak: "normal"
@@ -433,9 +477,12 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
             onScroll={handleScroll}
             onKeyDown={handleKeyDown}
             spellCheck="false"
-            className="absolute inset-0 w-full h-full m-0 p-3 font-mono text-[12.5px] bg-transparent text-transparent caret-[#2dd4bf] resize-none outline-none border-none overflow-auto custom-scrollbar selection:bg-[#264f78]"
+            className="vscode-editor-scroll absolute inset-0 w-full h-full m-0 font-mono bg-transparent text-transparent caret-[#2dd4bf] resize-none outline-none border-none overflow-auto selection:bg-[#264f78]"
             style={{
-              lineHeight: "20px",
+              padding: editorPadding,
+              fontFamily: editorFontFamily,
+              fontSize: editorFontSize,
+              lineHeight: editorLineHeight,
               tabSize: 2,
               whiteSpace: "pre",
               wordBreak: "normal"
@@ -453,6 +500,25 @@ function CompactVsCodeEditor({ value, onChange, editorRef, height = "360px" }) {
         .vscode-prism-canvas .token.attr-name { color: #9cdcfe !important; }
         .vscode-prism-canvas .token.attr-value, .vscode-prism-canvas .token.string { color: #ce9178 !important; }
         .vscode-prism-canvas .token.property { color: #9cdcfe !important; }
+
+        .vscode-editor-scroll::-webkit-scrollbar {
+          width: 10px;
+          height: 10px;
+        }
+        .vscode-editor-scroll::-webkit-scrollbar-track {
+          background: #1e1e1e;
+        }
+        .vscode-editor-scroll::-webkit-scrollbar-thumb {
+          background: #424242;
+          border-radius: 5px;
+          border: 2px solid #1e1e1e;
+        }
+        .vscode-editor-scroll::-webkit-scrollbar-thumb:hover {
+          background: #4f4f4f;
+        }
+        .vscode-editor-scroll::-webkit-scrollbar-corner {
+          background: #1e1e1e;
+        }
       `}</style>
     </div>
   );
@@ -468,6 +534,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   // Templates from Database + Defaults
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
   const [selectedTemplateId, setSelectedTemplateId] = useState(DEFAULT_TEMPLATES[0].id);
+  const selectedTemplateIdRef = useRef(DEFAULT_TEMPLATES[0].id);
   const [customTemplateName, setCustomTemplateName] = useState("");
 
   // Email Content
@@ -475,7 +542,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   const [htmlCode, setHtmlCode] = useState(DEFAULT_TEMPLATES[0].body);
 
   // Sender Identity
-  const [fromAddress, setFromAddress] = useState("Shagun from CareerSense <shagun@careersenseai.com>");
+  const [fromAddress, setFromAddress] = useState("Prachi Choudhary from CareerSense <prachi@careersenseai.com>");
 
   // ==========================================
   // RECIPIENT SELECTION (Full Toggle & Filters)
@@ -513,6 +580,15 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Locked System Template In-Place Unlock & Password State
+  const [unlockedTemplateId, setUnlockedTemplateId] = useState(null);
+  const [storedUnlockPassword, setStoredUnlockPassword] = useState("");
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(null);
+  const [isVerifyingPassword, setIsVerifyingPassword] = useState(false);
+
   // Preview Mode
   const [previewMode, setPreviewMode] = useState("desktop");
 
@@ -537,14 +613,22 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     fetchCampaigns();
   }, []);
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = async (overrideSelectedId = null) => {
     try {
-      const res = await fetch(`${apiBase}/careersense/admin/marketing/templates`, {
+      const res = await fetch(`${apiBase}/careersense/admin/marketing/templates?_t=${Date.now()}`, {
+        cache: "no-store",
         headers: { "x-admin-email": adminEmail }
       });
       const data = await res.json();
       if (data.success && Array.isArray(data.templates) && data.templates.length > 0) {
         setTemplates(data.templates);
+        const targetId = overrideSelectedId || selectedTemplateIdRef.current;
+        const currentActive = data.templates.find((t) => (t.id || t._id) === targetId) || data.templates[0];
+        if (currentActive && targetId !== "blank") {
+          setCustomTemplateName(currentActive.name);
+          setSubject(currentActive.subject || "");
+          setHtmlCode(currentActive.body || "");
+        }
       }
       if (data.fromAddress) {
         setFromAddress(data.fromAddress);
@@ -574,7 +658,12 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   // Change selected template
   const handleSelectTemplate = (templateId) => {
     setSelectedTemplateId(templateId);
+    selectedTemplateIdRef.current = templateId;
     setSaveStatus(null);
+    if (unlockedTemplateId && unlockedTemplateId !== templateId) {
+      setUnlockedTemplateId(null);
+      setStoredUnlockPassword("");
+    }
 
     if (templateId === "blank") {
       setCustomTemplateName("New Custom Campaign");
@@ -588,6 +677,48 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     setCustomTemplateName(t.name);
     setSubject(t.subject || "");
     setHtmlCode(t.body || "");
+  };
+
+  // Verify Unlock Password for Locked System Templates
+  const handleVerifyUnlockPassword = async (e) => {
+    if (e) e.preventDefault();
+    if (!passwordInput.trim()) {
+      setPasswordError("Please enter the master admin password.");
+      return;
+    }
+
+    setIsVerifyingPassword(true);
+    setPasswordError(null);
+
+    try {
+      const res = await fetch(`${apiBase}/careersense/admin/marketing/templates/verify-unlock`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-email": adminEmail
+        },
+        body: JSON.stringify({ password: passwordInput.trim() })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || "Incorrect admin password.");
+      }
+
+      setUnlockedTemplateId(selectedTemplateId);
+      setStoredUnlockPassword(passwordInput.trim());
+      setIsPasswordModalOpen(false);
+      setPasswordInput("");
+      setPasswordError(null);
+      setSaveStatus({
+        success: true,
+        message: `Template "${selectedTemplateObj?.name || 'System Template'}" unlocked! You can now edit and save changes directly to this original template.`
+      });
+    } catch (err) {
+      setPasswordError(err.message || "Password verification failed.");
+    } finally {
+      setIsVerifyingPassword(false);
+    }
   };
 
   // Filtered platform candidates
@@ -707,9 +838,11 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   const livePreviewHtml = useMemo(() => {
     const name = testRecipientName || "Subodh";
     const email = testEmailAddress || "candidate@example.com";
+    const unsubscribeUrl = `https://careersenseai.com/unsubscribe?email=${encodeURIComponent(email)}`;
     return (htmlCode || "")
       .replace(/{{\s*name\s*}}/gi, name)
-      .replace(/{{\s*email\s*}}/gi, email);
+      .replace(/{{\s*email\s*}}/gi, email)
+      .replace(/{{\s*unsubscribe_url\s*}}/gi, unsubscribeUrl);
   }, [htmlCode, testRecipientName, testEmailAddress]);
 
   // Insert code snippet into editor at cursor
@@ -730,7 +863,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     }, 50);
   };
 
-  // Save current HTML code as custom template
+  // Save current HTML code as custom template or in-place update for unlocked system template
   const handleSaveTemplate = async (asNewCopy = false) => {
     const currentT = templates.find((t) => (t.id || t._id) === selectedTemplateId);
     const nameToSave = customTemplateName.trim() || currentT?.name || "My Custom Template";
@@ -740,17 +873,48 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
       return;
     }
 
+    // If it's a locked system template and user wants to save changes to it directly
+    const isUnlockedSystemEdit = currentT?.isSystem && unlockedTemplateId === selectedTemplateId && !asNewCopy;
+
+    // If user attempts to save changes to a locked system template without saving as copy and hasn't unlocked it yet
+    if (currentT?.isSystem && !asNewCopy && unlockedTemplateId !== selectedTemplateId) {
+      setIsPasswordModalOpen(true);
+      setPasswordError(null);
+      return;
+    }
+
     setIsSavingTemplate(true);
     setSaveStatus(null);
 
     const isExistingCustom = !asNewCopy && selectedTemplateId && !currentT?.isSystem && selectedTemplateId !== "blank";
 
     try {
-      const url = isExistingCustom
-        ? `${apiBase}/careersense/admin/marketing/templates/${selectedTemplateId}`
-        : `${apiBase}/careersense/admin/marketing/templates`;
+      let url = `${apiBase}/careersense/admin/marketing/templates`;
+      let method = "POST";
+      let bodyPayload = {
+        name: nameToSave,
+        category: "Custom",
+        subject: subject.trim(),
+        body: htmlCode,
+        layoutStyle: "raw_html"
+      };
 
-      const method = isExistingCustom ? "PUT" : "POST";
+      if (isUnlockedSystemEdit) {
+        url = `${apiBase}/careersense/admin/marketing/templates/${selectedTemplateId}`;
+        method = "PUT";
+        bodyPayload = {
+          name: nameToSave,
+          category: currentT?.category || "Preset",
+          subject: subject.trim(),
+          body: htmlCode,
+          layoutStyle: "raw_html",
+          isSystem: true,
+          unlockPassword: storedUnlockPassword
+        };
+      } else if (isExistingCustom) {
+        url = `${apiBase}/careersense/admin/marketing/templates/${selectedTemplateId}`;
+        method = "PUT";
+      }
 
       const res = await fetch(url, {
         method,
@@ -758,13 +922,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
           "Content-Type": "application/json",
           "x-admin-email": adminEmail
         },
-        body: JSON.stringify({
-          name: nameToSave,
-          category: "Custom",
-          subject: subject.trim(),
-          body: htmlCode,
-          layoutStyle: "raw_html"
-        })
+        body: JSON.stringify(bodyPayload)
       });
 
       const data = await res.json();
@@ -774,17 +932,24 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
 
       setSaveStatus({
         success: true,
-        message: isExistingCustom
-          ? `Template "${nameToSave}" successfully updated!`
-          : `Template "${nameToSave}" saved to template repository!`
+        message: isUnlockedSystemEdit
+          ? `Locked template "${nameToSave}" successfully updated in-place!`
+          : isExistingCustom
+            ? `Template "${nameToSave}" successfully updated!`
+            : `Template "${nameToSave}" saved to template repository!`
       });
 
-      if (data.template) {
-        setSelectedTemplateId(data.template.id || data.template._id);
+      const nextTargetId = isUnlockedSystemEdit
+        ? selectedTemplateId
+        : (data.template?.id || data.template?._id || selectedTemplateId);
+
+      if (data.template && !isUnlockedSystemEdit) {
+        setSelectedTemplateId(nextTargetId);
+        selectedTemplateIdRef.current = nextTargetId;
         setCustomTemplateName(data.template.name);
       }
 
-      await fetchTemplates();
+      await fetchTemplates(nextTargetId);
     } catch (err) {
       setSaveStatus({ success: false, message: err.message || "Failed to save template" });
     } finally {
@@ -1029,8 +1194,8 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
               type="button"
               onClick={() => setRecipientSource("platform")}
               className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${recipientSource === "platform"
-                  ? "bg-[#0b132b] text-teal-300 shadow-xs"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-[#0b132b] text-teal-300 shadow-xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
             >
               <Users size={14} />
@@ -1041,8 +1206,8 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
               type="button"
               onClick={() => setRecipientSource("csv")}
               className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${recipientSource === "csv"
-                  ? "bg-[#0b132b] text-teal-300 shadow-xs"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-[#0b132b] text-teal-300 shadow-xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
             >
               <Upload size={14} />
@@ -1053,8 +1218,8 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
               type="button"
               onClick={() => setRecipientSource("manual")}
               className={`flex items-center justify-center gap-2 rounded-xl py-2 px-3 text-xs font-bold transition cursor-pointer ${recipientSource === "manual"
-                  ? "bg-[#0b132b] text-teal-300 shadow-xs"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-[#0b132b] text-teal-300 shadow-xs"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                 }`}
             >
               <FileText size={14} />
@@ -1080,8 +1245,8 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
                     type="button"
                     onClick={() => setPlatformFilter(chip.id)}
                     className={`rounded-lg px-2.5 py-1 text-[11px] font-bold transition cursor-pointer ${platformFilter === chip.id
-                        ? "bg-teal-600 text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      ? "bg-teal-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                   >
                     {chip.label}
@@ -1238,11 +1403,43 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
                 <option value="blank">+ Create Fresh Custom HTML Campaign</option>
               </select>
 
+              {/* Locked System Template Edit Button */}
+              {selectedTemplateObj?.isSystem && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsPasswordModalOpen(true);
+                    setPasswordError(null);
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-bold transition cursor-pointer shrink-0 ${unlockedTemplateId === selectedTemplateId
+                      ? "border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 shadow-xs"
+                      : "border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100 shadow-xs"
+                    }`}
+                  title={
+                    unlockedTemplateId === selectedTemplateId
+                      ? "Unlocked for in-place editing. Click to re-enter password or manage unlock."
+                      : "Edit locked system template (requires master password)"
+                  }
+                >
+                  {unlockedTemplateId === selectedTemplateId ? (
+                    <>
+                      <Unlock size={14} className="text-emerald-600" />
+                      <span>Unlocked</span>
+                    </>
+                  ) : (
+                    <>
+                      <Pencil size={13} className="text-amber-700" />
+                      <span>Edit Locked</span>
+                    </>
+                  )}
+                </button>
+              )}
+
               {isSelectedCustom && (
                 <button
                   type="button"
                   onClick={() => setDeleteConfirmId(selectedTemplateId)}
-                  className="rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 text-xs font-bold transition cursor-pointer"
+                  className="rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-600 p-2 text-xs font-bold transition cursor-pointer shrink-0"
                   title="Delete custom template"
                 >
                   <Trash2 size={14} />
@@ -1299,6 +1496,14 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
             </button>
             <button
               type="button"
+              onClick={() => insertCodeSnippet('<a href="{{unsubscribe_url}}" target="_blank" style="color: #94a3b8; text-decoration: underline;">Unsubscribe</a>')}
+              className="rounded-lg bg-slate-100 hover:bg-teal-50 hover:text-teal-700 px-2 py-0.5 text-[11px] font-mono font-bold text-slate-700 transition cursor-pointer"
+              title="Inserts unsubscribe link"
+            >
+              {"{{unsubscribe}}"}
+            </button>
+            <button
+              type="button"
               onClick={() => insertCodeSnippet("<strong>Bold Text</strong>")}
               className="rounded-lg bg-slate-100 hover:bg-slate-200 px-2 py-0.5 text-[11px] font-bold text-slate-700 transition cursor-pointer"
             >
@@ -1318,7 +1523,37 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
             >
               Callout Box
             </button>
+            <button
+              type="button"
+              onClick={() => insertCodeSnippet('<div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px dashed #16a34a; border-radius: 12px; padding: 18px 20px; text-align: center; margin: 24px 0;">\n  <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #166534; margin-bottom: 6px;">Special Candidate Promo</div>\n  <div style="font-size: 22px; font-weight: 900; color: #0b132b; font-family: monospace; letter-spacing: 2px;">WELCOME30</div>\n  <div style="font-size: 13px; color: #15803d; margin-top: 6px; font-weight: 600;">Apply code at checkout on careersenseai.com/pricing</div>\n</div>')}
+              className="rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 text-[11px] font-bold transition cursor-pointer"
+              title="Inserts styled promo coupon block"
+            >
+              Coupon Block
+            </button>
           </div>
+
+          {/* Unlocked In-Place Edit Banner */}
+          {selectedTemplateObj?.isSystem && unlockedTemplateId === selectedTemplateId && (
+            <div className="flex items-center justify-between gap-2 p-3 rounded-xl bg-amber-50/90 border border-amber-200 text-amber-900 text-xs font-medium">
+              <div className="flex items-center gap-2">
+                <Unlock size={15} className="text-amber-600 shrink-0" />
+                <span>
+                  <strong>Admin Edit Mode Active:</strong> You have unlocked <strong>{selectedTemplateObj.name}</strong>. Any changes saved will update the original system template in-place without creating duplicates.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setUnlockedTemplateId(null);
+                  setStoredUnlockPassword("");
+                }}
+                className="text-[11px] font-bold text-amber-800 underline hover:text-amber-950 shrink-0 cursor-pointer"
+              >
+                Re-lock Template
+              </button>
+            </div>
+          )}
 
           {/* COMPACT VS CODE HTML EDITOR (~20 LINES HEIGHT WITH AUTO-SCROLL) */}
           <div>
@@ -1347,10 +1582,19 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
                 type="button"
                 disabled={isSavingTemplate}
                 onClick={() => handleSaveTemplate(false)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer disabled:bg-slate-400"
+                className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition shadow-xs cursor-pointer disabled:bg-slate-400 ${selectedTemplateObj?.isSystem && unlockedTemplateId === selectedTemplateId
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white"
+                    : "bg-slate-800 hover:bg-slate-900 text-white"
+                  }`}
               >
                 {isSavingTemplate ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                <span>Save Template to Repository</span>
+                <span>
+                  {selectedTemplateObj?.isSystem && unlockedTemplateId === selectedTemplateId
+                    ? "Save Changes to System Template"
+                    : selectedTemplateObj?.isSystem
+                      ? "Save as Custom Copy"
+                      : "Save Template to Repository"}
+                </span>
               </button>
 
               <button
@@ -1366,7 +1610,11 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
             </div>
 
             <span className="text-[11px] text-slate-400">
-              {selectedTemplateObj?.isSystem ? "🔒 System Default Preset" : "⭐ Custom Saved Template"}
+              {selectedTemplateObj?.isSystem
+                ? unlockedTemplateId === selectedTemplateId
+                  ? "🔓 Unlocked System Template (In-Place Edit)"
+                  : "🔒 System Default Preset (Locked)"
+                : "⭐ Custom Saved Template"}
             </span>
           </div>
 
@@ -1548,6 +1796,112 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
         </div>
 
       </div>
+
+      {/* PASSWORD UNLOCK MODAL FOR LOCKED SYSTEM TEMPLATES */}
+      {isPasswordModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
+                  <Lock size={20} />
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-slate-900">Unlock System Template</h3>
+                  <p className="text-xs text-slate-500">
+                    Editing <span className="font-bold text-slate-700">{selectedTemplateObj?.name || "System Template"}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsPasswordModalOpen(false);
+                  setPasswordInput("");
+                  setPasswordError(null);
+                }}
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="rounded-xl bg-slate-50 border border-slate-200 p-3 text-xs text-slate-600 space-y-1">
+              <p className="font-medium">
+                Locked system templates cannot be deleted or duplicated unnecessarily.
+              </p>
+              <p className="text-slate-500 text-[11px]">
+                Enter the master admin password to unlock and edit the original HTML template directly in place.
+              </p>
+            </div>
+
+            <form onSubmit={handleVerifyUnlockPassword} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Admin Master Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={passwordInput}
+                    onChange={(e) => {
+                      setPasswordInput(e.target.value);
+                      if (passwordError) setPasswordError(null);
+                    }}
+                    placeholder="careersense@2026"
+                    autoFocus
+                    className="w-full rounded-xl border border-slate-300 py-2.5 pl-3.5 pr-10 text-xs font-mono font-medium text-slate-900 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                </div>
+                {passwordError && (
+                  <p className="mt-1.5 text-xs text-rose-600 font-bold flex items-center gap-1">
+                    <AlertCircle size={13} className="shrink-0" />
+                    <span>{passwordError}</span>
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsPasswordModalOpen(false);
+                    setPasswordInput("");
+                    setPasswordError(null);
+                  }}
+                  className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isVerifyingPassword || !passwordInput.trim()}
+                  className="flex items-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:bg-slate-300 text-white px-5 py-2 text-xs font-bold transition shadow-sm cursor-pointer"
+                >
+                  {isVerifyingPassword ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>Verifying...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Unlock size={14} />
+                      <span>Verify & Unlock</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* CONFIRMATION SAFETY MODAL: DELETE TEMPLATE */}
       {deleteConfirmId && (

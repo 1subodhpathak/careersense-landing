@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   Briefcase,
   Mail,
-  Clock
+  Clock,
+  Tag
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import CSLogo from "../../Assets/CSlogo.png";
@@ -83,6 +84,15 @@ const navItems = [
     badge: "Auto",
     badgeClass: "bg-indigo-50 text-indigo-700 border border-indigo-200",
     disabled: false
+  },
+  {
+    id: "coupons",
+    label: "Coupons & Discounts",
+    description: "Promo codes & redemptions",
+    icon: Tag,
+    badge: "New",
+    badgeClass: "bg-emerald-50 text-emerald-700 border border-emerald-200",
+    disabled: false
   }
 ];
 
@@ -117,7 +127,7 @@ export default function AdminSidebar({
         className={`fixed top-0 bottom-0 left-0 z-50 flex w-72 flex-col justify-between border-r border-slate-900 bg-[#0b132b] p-5 text-slate-300 shadow-[0_20px_60px_rgba(0,0,0,0.35)] transition-transform duration-300 lg:static lg:translate-x-0 ${isMobileOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
-        <div className="flex-1 overflow-y-auto custom-scrollbar">
+        <div className="flex-1 overflow-y-auto custom-scrollbar admin-sidebar-scroll pr-1.5">
           {/* Brand Header */}
           <div className="mb-6 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3">
