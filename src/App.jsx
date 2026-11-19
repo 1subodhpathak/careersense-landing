@@ -13,7 +13,9 @@ import EbookReaderPage from "./pages/EbookReaderPage";
 import PartnerProgramPage from "./pages/PartnerProgramPage";
 import DataAnalystFellowshipPage from "./pages/DataAnalystFellowshipPage";
 import PricingPage from "./pages/PricingPage";
+import CartPage from "./pages/CartPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import UnsubscribePage from "./pages/UnsubscribePage";
 import WelcomeTokensModal from "./components/common/WelcomeTokensModal";
 
 function ProtectedRoute({ children }) {
@@ -41,6 +43,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/pricing" element={<PricingPage />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CartPage />} />
+        <Route path="/unsubscribe" element={<UnsubscribePage />} />
         <Route path="/u/:publicId" element={<PublicProfilePage />} />
         <Route path="/public-profile/:publicId" element={<PublicProfilePage />} />
         <Route

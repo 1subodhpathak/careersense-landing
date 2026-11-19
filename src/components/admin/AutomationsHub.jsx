@@ -1590,7 +1590,7 @@ export default function AutomationsHub({ adminEmail, candidates = [] }) {
             <div className="px-6 py-3 bg-slate-50 border-b border-slate-200 text-xs space-y-1">
               <div>
                 <span className="text-slate-400 font-medium">From:</span>{" "}
-                <span className="text-slate-800 font-semibold">Shagun from CareerSense &lt;shagun@careersenseai.com&gt;</span>
+                <span className="text-slate-800 font-semibold">Prachi Choudhary from CareerSense &lt;prachi@careersenseai.com&gt;</span>
               </div>
               <div>
                 <span className="text-slate-400 font-medium">Subject:</span>{" "}

@@ -74,21 +74,29 @@ export default function PricingPage() {
 
   // Support direct deep-linking to token add-ons via URL hash (#addons, #topup, #tokens)
   useEffect(() => {
-    const handleHashScroll = () => {
+    const scrollToTarget = () => {
       const hash = (window.location.hash || "").toLowerCase().replace("#", "");
-      if (["addons", "topup", "tokens", "token-addons"].includes(hash)) {
-        setTimeout(() => {
-          const elem = document.getElementById("addons") || document.getElementById("topup");
-          if (elem) {
-            elem.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }, 200);
+      if (["addons", "topup", "tokens", "token-addons", "addon"].includes(hash)) {
+        const elem = document.getElementById("addons") || document.getElementById("topup");
+        if (elem) {
+          elem.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
       }
     };
 
-    handleHashScroll();
-    window.addEventListener("hashchange", handleHashScroll);
-    return () => window.removeEventListener("hashchange", handleHashScroll);
+    // Attempt immediately and retry at intervals as assets/DOM render
+    scrollToTarget();
+    const t1 = setTimeout(scrollToTarget, 150);
+    const t2 = setTimeout(scrollToTarget, 450);
+    const t3 = setTimeout(scrollToTarget, 900);
+
+    window.addEventListener("hashchange", scrollToTarget);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener("hashchange", scrollToTarget);
+    };
   }, []);
 
   // Custom Payment Modal State
@@ -171,7 +179,7 @@ export default function PricingPage() {
 
   };
 
-  const handleUpgrade = async (targetPlan, overrideFellowship, overrideBillingCycle) => {
+  const handleUpgrade = async (targetPlan, overrideFellowship, overrideBillingCycle, appliedCoupon) => {
     const effectiveFellowship = overrideFellowship || selectedFellowship;
     const effectiveBilling = overrideBillingCycle || partnerBillingCycle;
 
@@ -205,6 +213,7 @@ export default function PricingPage() {
       const backendUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_BASE_URL || "https://server.datasenseai.com";
 
       // 1. Create Razorpay Order
+      const targetCouponCode = appliedCoupon?.coupon?.code || appliedCoupon?.code || undefined;
       const orderRes = await fetch(`${backendUrl}/careersense/subscription/create-order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -213,6 +222,7 @@ export default function PricingPage() {
           planKey: targetPlan,
           billingCycle: targetPlan === "partner" ? effectiveBilling : undefined,
           fellowshipId: targetPlan === "intern" ? effectiveFellowship : undefined,
+          couponCode: targetCouponCode,
         }),
       });
 
@@ -279,12 +289,16 @@ export default function PricingPage() {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 clerkId: user.id,
+                userEmail: user.primaryEmailAddress?.emailAddress || "",
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_signature: response.razorpay_signature,
                 planKey: targetPlan,
                 billingCycle: targetPlan === "partner" ? effectiveBilling : undefined,
                 fellowshipId: targetPlan === "intern" ? effectiveFellowship : undefined,
+                couponCode: targetCouponCode,
+                discountPaise: appliedCoupon?.discountPaise || 0,
+                finalAmountPaise: orderData.amount,
               }),
             });
 
@@ -1435,7 +1449,7 @@ export default function PricingPage() {
                     onClick={() => { 
                       if (isCurrent || plan.id === "free") return;
                       setSelectedPlan(plan.id); 
-                      setConfirmModalConfig({ isOpen: true, plan: plan.id });
+                      navigate(`/cart?plan=${plan.id}&track=${selectedFellowship}&cycle=${partnerBillingCycle}`);
                     }}
                   >
                     {isCurrent ? "Your Current Plan" : loadingPlan ? "Opening checkout…" : plan.buttonText}
@@ -1455,8 +1469,8 @@ export default function PricingPage() {
 
 
         {/* Anchor point for https://careersenseai.com/pricing#addons */}
-        <div id="addons" style={{ scrollMarginTop: "110px" }} />
-        <section id="topup" className="cs-container cs-topup">
+        <div id="addons" style={{ scrollMarginTop: "120px" }} />
+        <section id="topup" className="cs-container cs-topup" style={{ scrollMarginTop: "120px" }}>
 
           <div>
 
@@ -1478,7 +1492,7 @@ export default function PricingPage() {
               type="button" 
               className="cs-buybutton" 
               disabled={loadingPlan} 
-              onClick={() => setConfirmModalConfig({ isOpen: true, plan: "token_addon" })}
+              onClick={() => navigate('/cart?plan=token_addon')}
             >
               <ShoppingCart size={17}/>{loadingPlan ? "Opening checkout…" : "Add 50,000 Tokens"}
             </button>
@@ -1731,8 +1745,8 @@ export default function PricingPage() {
         onFellowshipChange={(track) => setSelectedFellowship(track)}
         partnerBillingCycle={partnerBillingCycle}
         onPartnerBillingChange={(cycle) => setPartnerBillingCycle(cycle)}
-        onProceedToPayment={(planKey, track, cycle) => {
-          handleUpgrade(planKey, track, cycle);
+        onProceedToPayment={(planKey, track, cycle, appliedCoupon) => {
+          handleUpgrade(planKey, track, cycle, appliedCoupon);
         }}
         loading={loadingPlan}
       />
