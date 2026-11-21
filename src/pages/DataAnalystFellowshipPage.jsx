@@ -649,7 +649,7 @@ export default function DataAnalystFellowshipPage() {
   // Dynamic CTAs
   const ctaLink = isPurchased
     ? `/dashboard?tab=Fellowship%20Program&fellowship=${programId}`
-    : `/pricing?fellowship=${programId}`;
+    : `/fellowships/${programId}/apply`;
 
   const heroCtaText = isPurchased ? "View Fellowship Workspace" : "Apply Now";
   const bannerCtaText = isPurchased ? `Go to ${track.name} Workspace` : `Apply Now for ${track.name} Fellowship`;

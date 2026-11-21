@@ -12,6 +12,8 @@ import ELearningPage from "./pages/ELearningPage";
 import EbookReaderPage from "./pages/EbookReaderPage";
 import PartnerProgramPage from "./pages/PartnerProgramPage";
 import DataAnalystFellowshipPage from "./pages/DataAnalystFellowshipPage";
+import FellowshipApplicationPage from "./pages/FellowshipApplicationPage";
+import PartnerApplicationPage from "./pages/PartnerApplicationPage";
 import PricingPage from "./pages/PricingPage";
 import CartPage from "./pages/CartPage";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
@@ -59,7 +61,31 @@ export default function App() {
         <Route path="/career-gps" element={<CareerGpsPage />} />
         <Route path="/linkedin-optimizer" element={<LinkedInOptimizerPage />} />
         <Route path="/partner-program" element={<PartnerProgramPage />} />
+        <Route
+          path="/partner-program/apply"
+          element={
+            <ProtectedRoute>
+              <PartnerApplicationPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/fellowships/:programId" element={<DataAnalystFellowshipPage />} />
+        <Route
+          path="/fellowships/:programId/apply"
+          element={
+            <ProtectedRoute>
+              <FellowshipApplicationPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/fellowships/apply"
+          element={
+            <ProtectedRoute>
+              <FellowshipApplicationPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/learning/:slug" element={<ProtectedRoute><ELearningPage /></ProtectedRoute>} />
         <Route path="/ebooks/:slug" element={<ProtectedRoute><EbookReaderPage /></ProtectedRoute>} />
         <Route
