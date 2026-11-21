@@ -25,7 +25,15 @@ async function prerender() {
       '/learning',
       '/ebooks',
       '/u',
-      '/public-profile'
+      '/public-profile',
+      '/partner-program/apply',
+      '/fellowships/apply',
+      '/fellowships/data-analyst/apply',
+      '/fellowships/data-science/apply',
+      '/fellowships/artificial-intelligence/apply',
+      '/fellowships/ui-ux-design/apply',
+      '/fellowships/app-development/apply',
+      '/fellowships/full-stack-development/apply'
     ];
 
     const appShellLoader = '<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #F8FAFC;"><div style="width: 36px; height: 36px; border: 3.5px solid #E2E8F0; border-top-color: #0284c7; border-radius: 50%; animation: cs-spin 0.8s linear infinite;"></div></div>';

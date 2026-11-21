@@ -5,8 +5,9 @@
     { "src": "/ats-checker", "status": 308, "headers": { "Location": "https://ats.careersenseai.com" } },
     { "src": "/skill-certification", "status": 308, "headers": { "Location": "https://certifi.careersenseai.com" } },
     { "handle": "filesystem" },
-    { "src": "/(dashboard|admin|career-assessment|interview-simulator|learning|ebooks|u|public-profile)(.*)", "dest": "/app.html" },
+    { "src": "/(dashboard|admin|career-assessment|interview-simulator|learning|ebooks|u|public-profile|partner-program/apply|fellowships/.*/apply|fellowships/apply)(.*)", "dest": "/app.html" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
 
+ 

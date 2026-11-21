@@ -4,7 +4,7 @@ import heroDarkImg from "../../Assets/partnerProgram/hero-dark.png";
 import { CheckCircle2, ArrowRight, PlayCircle } from "lucide-react";
 
 // const DEFAULT_APPLY_LINK = "mailto:support.careersense@gmail.com?subject=CareerSense%20Partner%20Program%20Application&body=Hello%20CareerSense%20Team%2C%0A%0AI%20would%20like%20to%20apply%20for%20the%20CareerSense%20Partner%20Program.%0A%0AName%3A%0ACollege%20%2F%20Company%3A%0ALocation%3A%0AArea%20of%20Interest%3A%0ALinkedIn%3A%0A";
-const DEFAULT_APPLY_LINK = "/pricing";
+const DEFAULT_APPLY_LINK = "/partner-program/apply";
 
 const passBenefits = [
   "500,000 Credits / Month",

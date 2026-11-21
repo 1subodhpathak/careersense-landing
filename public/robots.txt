@@ -5,5 +5,8 @@ Disallow: /admin
 Disallow: /career-assessment
 Disallow: /learning/
 Disallow: /ebooks/
+Disallow: /partner-program/apply
+Disallow: /fellowships/*/apply
+Disallow: /fellowships/apply
 
 Sitemap: https://careersenseai.com/sitemap.xml
