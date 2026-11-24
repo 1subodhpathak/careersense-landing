@@ -554,6 +554,8 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
 
   // CSV State
   const [csvRecipients, setCsvRecipients] = useState([]);
+  const [selectedCsvEmails, setSelectedCsvEmails] = useState(new Set());
+  const [csvSearch, setCsvSearch] = useState("");
   const [csvFileName, setCsvFileName] = useState("");
   const [csvParsingError, setCsvParsingError] = useState("");
   const fileInputRef = useRef(null);
@@ -775,7 +777,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     return Array.from(unique.values());
   }, [manualText]);
 
-  // CSV File Upload
+  // CSV File Upload & Smart Parser (extracts both name & email)
   const handleCsvFileUpload = (event) => {
     setCsvParsingError("");
     const file = event.target.files?.[0];
@@ -789,30 +791,132 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
         const content = e.target?.result;
         if (typeof content !== "string") return;
 
-        const lines = content.split(/\r?\n/).filter((l) => l.trim().length > 0);
+        const lines = content.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length > 0);
         if (lines.length === 0) {
           setCsvParsingError("Uploaded CSV is empty.");
+          setCsvRecipients([]);
+          setSelectedCsvEmails(new Set());
           return;
         }
 
         const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/;
-        const parsed = new Map();
 
-        lines.forEach((line) => {
-          const m = line.match(emailRegex);
-          if (m) {
-            const email = m[1].toLowerCase().trim();
-            if (!parsed.has(email)) {
-              parsed.set(email, { email, name: "" });
+        // Helper to split row cells respecting single and double quotes
+        const splitRow = (row) => {
+          const cells = [];
+          let current = "";
+          let inQuotes = false;
+          for (let i = 0; i < row.length; i++) {
+            const char = row[i];
+            if (char === '"' || char === "'") {
+              inQuotes = !inQuotes;
+            } else if ((char === "," || char === "\t" || char === ";") && !inQuotes) {
+              cells.push(current.trim().replace(/^["']|["']$/g, "").trim());
+              current = "";
+            } else {
+              current += char;
             }
           }
+          cells.push(current.trim().replace(/^["']|["']$/g, "").trim());
+          return cells;
+        };
+
+        // Detect if row 0 has header names
+        const headerCells = splitRow(lines[0]);
+        let emailColIdx = -1;
+        let nameColIdx = -1;
+        let firstNameColIdx = -1;
+        let lastNameColIdx = -1;
+
+        headerCells.forEach((h, idx) => {
+          const cleanH = h.toLowerCase().replace(/[^a-z0-9]/g, "");
+          if (/^(email|emailaddress|candidateemail|useremail|mail)$/i.test(cleanH) || cleanH.includes("email")) {
+            if (emailColIdx === -1) emailColIdx = idx;
+          } else if (/^(fullname|candidatename|username|contactname|name)$/i.test(cleanH)) {
+            if (nameColIdx === -1) nameColIdx = idx;
+          } else if (/^(firstname|fname)$/i.test(cleanH)) {
+            firstNameColIdx = idx;
+          } else if (/^(lastname|lname|surname)$/i.test(cleanH)) {
+            lastNameColIdx = idx;
+          }
         });
+
+        const hasHeader = emailColIdx !== -1;
+        const startIndex = hasHeader ? 1 : 0;
+        const parsed = new Map();
+
+        for (let i = startIndex; i < lines.length; i++) {
+          const line = lines[i];
+          const cells = splitRow(line);
+
+          let email = "";
+          let name = "";
+
+          // 1. If header mapping is active
+          if (hasHeader && emailColIdx < cells.length && emailRegex.test(cells[emailColIdx])) {
+            const match = cells[emailColIdx].match(emailRegex);
+            email = match ? match[1].toLowerCase().trim() : "";
+
+            if (nameColIdx !== -1 && cells[nameColIdx]) {
+              name = cells[nameColIdx].trim();
+            } else if (firstNameColIdx !== -1 || lastNameColIdx !== -1) {
+              const fn = firstNameColIdx !== -1 ? (cells[firstNameColIdx] || "") : "";
+              const ln = lastNameColIdx !== -1 ? (cells[lastNameColIdx] || "") : "";
+              name = `${fn} ${ln}`.trim();
+            }
+          }
+
+          // 2. If no header or header match failed, check any cell for email
+          if (!email) {
+            cells.forEach((cell, idx) => {
+              if (!email && emailRegex.test(cell)) {
+                const match = cell.match(emailRegex);
+                email = match ? match[1].toLowerCase().trim() : "";
+                // If another cell exists, treat it as candidate name
+                if (idx > 0 && cells[0]) {
+                  name = cells[0].trim();
+                } else if (idx === 0 && cells[1]) {
+                  name = cells[1].trim();
+                }
+              }
+            });
+          }
+
+          // 3. Fallback: regex across entire line
+          if (!email) {
+            const match = line.match(emailRegex);
+            if (match) {
+              email = match[1].toLowerCase().trim();
+              const remaining = line
+                .replace(match[0], "")
+                .replace(/[<>"',;]/g, " ")
+                .replace(/\s+/g, " ")
+                .trim();
+              if (remaining && /[a-zA-Z]/.test(remaining) && !/^(true|false|null|undefined|\d+)$/i.test(remaining)) {
+                name = remaining;
+              }
+            }
+          }
+
+          if (email && !parsed.has(email)) {
+            parsed.set(email, {
+              id: email,
+              email,
+              name: name || ""
+            });
+          }
+        }
 
         const list = Array.from(parsed.values());
         if (list.length === 0) {
           setCsvParsingError("No valid email addresses found in CSV.");
+          setCsvRecipients([]);
+          setSelectedCsvEmails(new Set());
         } else {
           setCsvRecipients(list);
+          setSelectedCsvEmails(new Set(list.map((r) => r.email)));
+          setCsvSearch("");
+          setCsvParsingError("");
         }
       } catch (err) {
         setCsvParsingError("Failed to parse CSV: " + err.message);
@@ -820,6 +924,43 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     };
 
     reader.readAsText(file);
+    // Reset file input so selecting the same file again triggers onChange
+    event.target.value = "";
+  };
+
+  // Filtered CSV recipients based on search query
+  const filteredCsvRecipients = useMemo(() => {
+    if (!csvSearch.trim()) return csvRecipients;
+    const q = csvSearch.toLowerCase().trim();
+    return csvRecipients.filter(
+      (c) =>
+        (c.email && c.email.toLowerCase().includes(q)) ||
+        (c.name && c.name.toLowerCase().includes(q))
+    );
+  }, [csvRecipients, csvSearch]);
+
+  // Toggle Select All filtered CSV candidates
+  const handleToggleSelectAllCsv = () => {
+    const currentFilteredEmails = filteredCsvRecipients.map((c) => c.email).filter(Boolean);
+    const allSelected = currentFilteredEmails.length > 0 && currentFilteredEmails.every((email) => selectedCsvEmails.has(email));
+
+    const next = new Set(selectedCsvEmails);
+    if (allSelected) {
+      currentFilteredEmails.forEach((email) => next.delete(email));
+    } else {
+      currentFilteredEmails.forEach((email) => next.add(email));
+    }
+    setSelectedCsvEmails(next);
+  };
+
+  // Clear uploaded CSV and reset state
+  const handleClearCsv = () => {
+    setCsvRecipients([]);
+    setSelectedCsvEmails(new Set());
+    setCsvFileName("");
+    setCsvParsingError("");
+    setCsvSearch("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   // Determine active recipients list
@@ -829,10 +970,12 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
         .filter((c) => selectedCandidateIds.has(c.clerkUserId || c.id || c.email) && c.email && c.email.includes("@"))
         .map((c) => ({ email: c.email.trim(), name: c.fullName || "" }));
     }
-    if (recipientSource === "csv") return csvRecipients;
+    if (recipientSource === "csv") {
+      return csvRecipients.filter((r) => selectedCsvEmails.has(r.email));
+    }
     if (recipientSource === "manual") return manualRecipients;
     return [];
-  }, [recipientSource, candidates, selectedCandidateIds, csvRecipients, manualRecipients]);
+  }, [recipientSource, candidates, selectedCandidateIds, csvRecipients, selectedCsvEmails, manualRecipients]);
 
   // Real-time Preview HTML generator
   const livePreviewHtml = useMemo(() => {
@@ -1211,7 +1354,11 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
                 }`}
             >
               <Upload size={14} />
-              <span>CSV Upload {csvRecipients.length > 0 && `(${csvRecipients.length})`}</span>
+              <span>
+                CSV Upload{" "}
+                {csvRecipients.length > 0 &&
+                  `(${selectedCsvEmails.size}${selectedCsvEmails.size !== csvRecipients.length ? `/${csvRecipients.length}` : ""})`}
+              </span>
             </button>
 
             <button
@@ -1322,25 +1469,151 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
 
           {/* CSV UPLOAD MODE */}
           {recipientSource === "csv" && (
-            <div className="space-y-2 pt-1">
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="border-2 border-dashed border-slate-200 hover:border-teal-500 rounded-xl p-5 text-center bg-slate-50 cursor-pointer transition"
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".csv,text/csv,text/plain"
-                  onChange={handleCsvFileUpload}
-                  className="hidden"
-                />
-                <Upload size={22} className="mx-auto text-teal-600 mb-1" />
-                <div className="text-xs font-bold text-slate-800">
-                  {csvFileName ? `File: ${csvFileName}` : "Click or drag & drop CSV file"}
+            <div className="space-y-2.5 pt-1">
+              {/* File Dropzone or Compact Loaded Banner */}
+              {csvRecipients.length === 0 ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="border-2 border-dashed border-slate-200 hover:border-teal-500 rounded-xl p-5 text-center bg-slate-50 cursor-pointer transition group"
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".csv,text/csv,text/plain"
+                    onChange={handleCsvFileUpload}
+                    className="hidden"
+                  />
+                  <Upload size={22} className="mx-auto text-teal-600 mb-1 group-hover:scale-110 transition-transform" />
+                  <div className="text-xs font-bold text-slate-800">
+                    Click or drag & drop CSV file
+                  </div>
+                  <span className="text-[10px] text-slate-400">
+                    Auto-detects candidate names, emails & cleans duplicates
+                  </span>
                 </div>
-                <span className="text-[10px] text-slate-400">Auto-detects emails & cleans duplicates</span>
-              </div>
-              {csvParsingError && <div className="text-xs text-rose-600 font-bold">{csvParsingError}</div>}
+              ) : (
+                <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".csv,text/csv,text/plain"
+                      onChange={handleCsvFileUpload}
+                      className="hidden"
+                    />
+                    <div className="w-8 h-8 rounded-lg bg-teal-50 border border-teal-200 flex items-center justify-center shrink-0 text-teal-700">
+                      <Upload size={15} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold text-slate-800 truncate text-xs flex items-center gap-1.5">
+                        <span className="truncate">{csvFileName || "Uploaded CSV"}</span>
+                        <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-100 shrink-0">
+                          {csvRecipients.length} total
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-slate-400">
+                        {selectedCsvEmails.size} of {csvRecipients.length} selected for campaign
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="text-[11px] font-bold text-teal-700 hover:text-teal-800 bg-white hover:bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 shadow-2xs transition cursor-pointer"
+                    >
+                      Change File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleClearCsv}
+                      className="text-[11px] font-bold text-rose-600 hover:text-rose-700 bg-white hover:bg-rose-50 px-2 py-1 rounded-lg border border-slate-200 shadow-2xs transition cursor-pointer"
+                      title="Clear and upload new CSV"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {csvParsingError && (
+                <div className="p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-bold flex items-center gap-2">
+                  <AlertCircle size={14} className="shrink-0" />
+                  <span>{csvParsingError}</span>
+                </div>
+              )}
+
+              {/* CSV Candidate Checkbox Roster with Search and Toggle Select All */}
+              {csvRecipients.length > 0 && (
+                <div className="space-y-2 pt-0.5">
+                  {/* Search Bar & Toggle Select All Button */}
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="relative flex-1">
+                      <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type="text"
+                        value={csvSearch}
+                        onChange={(e) => setCsvSearch(e.target.value)}
+                        placeholder="Search CSV candidates by name or email..."
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-800 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleToggleSelectAllCsv}
+                      className="shrink-0 text-xs font-bold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 px-3 py-1.5 rounded-xl border border-teal-200 transition cursor-pointer"
+                    >
+                      Toggle Select All ({filteredCsvRecipients.length})
+                    </button>
+                  </div>
+
+                  {/* Candidate Selection Checkbox Roster */}
+                  <div className="max-h-56 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100 bg-slate-50/50 custom-scrollbar">
+                    {filteredCsvRecipients.length === 0 ? (
+                      <div className="p-4 text-center text-xs text-slate-400">
+                        No CSV candidates match &ldquo;{csvSearch}&rdquo;.
+                      </div>
+                    ) : (
+                      filteredCsvRecipients.map((c) => {
+                        const isChecked = selectedCsvEmails.has(c.email);
+                        return (
+                          <label
+                            key={c.email}
+                            className="flex items-center justify-between px-3 py-1.5 text-xs hover:bg-slate-100/80 cursor-pointer select-none"
+                          >
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <input
+                                type="checkbox"
+                                checked={isChecked}
+                                onChange={() => {
+                                  const next = new Set(selectedCsvEmails);
+                                  if (isChecked) next.delete(c.email);
+                                  else next.add(c.email);
+                                  setSelectedCsvEmails(next);
+                                }}
+                                className="h-3.5 w-3.5 rounded border-slate-300 text-teal-600 focus:ring-teal-500 cursor-pointer"
+                              />
+                              <div className="min-w-0">
+                                <span className="font-bold text-slate-800 truncate block text-xs">
+                                  {c.name || c.email.split("@")[0]}
+                                </span>
+                                <span className="text-[10px] text-slate-400 truncate block">
+                                  {c.email}
+                                </span>
+                              </div>
+                            </div>
+                            <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded-full bg-slate-200 text-slate-600">
+                              CSV
+                            </span>
+                          </label>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
