@@ -33,7 +33,8 @@ import {
   ChevronDown,
   ChevronUp,
   FileCode2,
-  Filter
+  Filter,
+  Calendar
 } from "lucide-react";
 
 // Helper to pre-render production-grade responsive HTML for the system templates
@@ -551,6 +552,8 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   const [selectedCandidateIds, setSelectedCandidateIds] = useState(new Set());
   const [platformFilter, setPlatformFilter] = useState("all");
   const [platformSearch, setPlatformSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   // CSV State
   const [csvRecipients, setCsvRecipients] = useState([]);
@@ -725,11 +728,22 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
 
   // Filtered platform candidates
   const filteredCandidates = useMemo(() => {
+    const startBound = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
+    const endBound = dateTo ? new Date(`${dateTo}T23:59:59.999`).getTime() : null;
+
     return candidates.filter((c) => {
       if (platformFilter === "paid" && !c.subscription?.isPaid) return false;
       if (platformFilter === "free" && c.subscription?.isPaid) return false;
       if (platformFilter === "low_tokens" && (c.subscription?.tokensRemaining >= 5000 || c.subscription?.isPaid)) return false;
       if (platformFilter === "burners" && (!c.subscription?.tokensUsed || c.subscription.tokensUsed <= 0)) return false;
+
+      if (startBound !== null || endBound !== null) {
+        if (!c.createdAt) return false;
+        const regTime = new Date(c.createdAt).getTime();
+        if (Number.isNaN(regTime)) return false;
+        if (startBound !== null && regTime < startBound) return false;
+        if (endBound !== null && regTime > endBound) return false;
+      }
 
       if (platformSearch.trim()) {
         const q = platformSearch.toLowerCase().trim();
@@ -740,7 +754,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
       }
       return true;
     });
-  }, [candidates, platformFilter, platformSearch]);
+  }, [candidates, platformFilter, platformSearch, dateFrom, dateTo]);
 
   // Toggle Select All filtered platform candidates
   const handleToggleSelectAll = () => {
@@ -1401,6 +1415,47 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
                 ))}
               </div>
 
+              {/* Registration Date Range Filter */}
+              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50/70 px-3 py-2">
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider mr-1">
+                  <Calendar size={13} className="text-teal-600" />
+                  <span>Registered:</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-slate-500">From</span>
+                  <input
+                    type="date"
+                    value={dateFrom}
+                    max={dateTo || undefined}
+                    onChange={(e) => setDateFrom(e.target.value)}
+                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-slate-500">To</span>
+                  <input
+                    type="date"
+                    value={dateTo}
+                    min={dateFrom || undefined}
+                    onChange={(e) => setDateTo(e.target.value)}
+                    className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                {(dateFrom || dateTo) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDateFrom("");
+                      setDateTo("");
+                    }}
+                    className="ml-auto inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-bold text-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition cursor-pointer"
+                  >
+                    <X size={12} />
+                    <span>Clear Dates</span>
+                  </button>
+                )}
+              </div>
+
               {/* Search Bar & Toggle Select All Button */}
               <div className="flex items-center justify-between gap-3 pt-1">
                 <div className="relative flex-1">
@@ -1453,12 +1508,23 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
                             <span className="text-[10px] text-slate-400 truncate block">{c.email}</span>
                           </div>
                         </div>
-                        <span
-                          className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded-full ${c.subscription?.isPaid ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"
-                            }`}
-                        >
-                          {c.subscription?.plan || "free"}
-                        </span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          {c.createdAt && (
+                            <span className="text-[10px] font-medium text-slate-400">
+                              {new Date(c.createdAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "2-digit"
+                              })}
+                            </span>
+                          )}
+                          <span
+                            className={`text-[9px] font-bold uppercase px-1.5 py-0.2 rounded-full ${c.subscription?.isPaid ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"
+                              }`}
+                          >
+                            {c.subscription?.plan || "free"}
+                          </span>
+                        </div>
                       </label>
                     );
                   })
