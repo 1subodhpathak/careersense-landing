@@ -561,6 +561,11 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
   const [csvSearch, setCsvSearch] = useState("");
   const [csvFileName, setCsvFileName] = useState("");
   const [csvParsingError, setCsvParsingError] = useState("");
+  const [savedCsvs, setSavedCsvs] = useState([]);
+  const [activeSavedCsvId, setActiveSavedCsvId] = useState(null);
+  const [loadingSavedCsvs, setLoadingSavedCsvs] = useState(false);
+  const [renamingCsvId, setRenamingCsvId] = useState(null);
+  const [renameCsvValue, setRenameCsvValue] = useState("");
   const fileInputRef = useRef(null);
 
   // Manual State
@@ -612,11 +617,29 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     }
   }, [candidates]);
 
-  // Load templates & campaigns
+  // Load templates, campaigns & saved CSVs
   useEffect(() => {
     fetchTemplates();
     fetchCampaigns();
+    fetchSavedCsvs();
   }, []);
+
+  const fetchSavedCsvs = async () => {
+    setLoadingSavedCsvs(true);
+    try {
+      const res = await fetch(`${apiBase}/careersense/admin/marketing/csvs`, {
+        headers: { "x-admin-email": adminEmail }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSavedCsvs(data.csvs || []);
+      }
+    } catch (err) {
+      console.error("[EmailMarketingHub] Fetch saved CSVs error:", err);
+    } finally {
+      setLoadingSavedCsvs(false);
+    }
+  };
 
   const fetchTemplates = async (overrideSelectedId = null) => {
     try {
@@ -800,7 +823,7 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     setCsvFileName(file.name);
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const content = e.target?.result;
         if (typeof content !== "string") return;
@@ -926,11 +949,36 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
           setCsvParsingError("No valid email addresses found in CSV.");
           setCsvRecipients([]);
           setSelectedCsvEmails(new Set());
+          setActiveSavedCsvId(null);
         } else {
           setCsvRecipients(list);
           setSelectedCsvEmails(new Set(list.map((r) => r.email)));
           setCsvSearch("");
           setCsvParsingError("");
+
+          // Persist uploaded CSV to Saved CSVs repository
+          try {
+            const cleanTitle = file.name.replace(/\.[^/.]+$/, "") || file.name;
+            const saveRes = await fetch(`${apiBase}/careersense/admin/marketing/csvs`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-admin-email": adminEmail
+              },
+              body: JSON.stringify({
+                name: cleanTitle,
+                originalFileName: file.name,
+                recipients: list.map((r) => ({ name: r.name || "", email: r.email }))
+              })
+            });
+            const saveData = await saveRes.json();
+            if (saveData.success && saveData.csv) {
+              setSavedCsvs((prev) => [saveData.csv, ...prev]);
+              setActiveSavedCsvId(saveData.csv._id);
+            }
+          } catch (saveErr) {
+            console.warn("[EmailMarketingHub] Auto-save CSV warning:", saveErr);
+          }
         }
       } catch (err) {
         setCsvParsingError("Failed to parse CSV: " + err.message);
@@ -972,9 +1020,70 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
     setCsvRecipients([]);
     setSelectedCsvEmails(new Set());
     setCsvFileName("");
+    setActiveSavedCsvId(null);
     setCsvParsingError("");
     setCsvSearch("");
     if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  // Load a saved CSV into the active checklist
+  const handleSelectSavedCsv = (csvDoc) => {
+    const list = (csvDoc.recipients || []).map((r) => ({
+      id: r.email,
+      email: r.email,
+      name: r.name || ""
+    }));
+    setCsvRecipients(list);
+    setSelectedCsvEmails(new Set(list.map((r) => r.email)));
+    setCsvFileName(csvDoc.name || csvDoc.originalFileName || "Saved CSV");
+    setActiveSavedCsvId(csvDoc._id);
+    setCsvSearch("");
+    setCsvParsingError("");
+  };
+
+  // Rename a saved CSV
+  const handleRenameSavedCsv = async (id) => {
+    const trimmed = renameCsvValue.trim();
+    if (!trimmed) return;
+    try {
+      const res = await fetch(`${apiBase}/careersense/admin/marketing/csvs/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-email": adminEmail
+        },
+        body: JSON.stringify({ name: trimmed })
+      });
+      const data = await res.json();
+      if (data.success && data.csv) {
+        setSavedCsvs((prev) => prev.map((c) => (c._id === id ? data.csv : c)));
+        if (activeSavedCsvId === id) {
+          setCsvFileName(data.csv.name);
+        }
+        setRenamingCsvId(null);
+      }
+    } catch (err) {
+      console.error("[EmailMarketingHub] Rename CSV error:", err);
+    }
+  };
+
+  // Delete a saved CSV
+  const handleDeleteSavedCsv = async (id) => {
+    try {
+      const res = await fetch(`${apiBase}/careersense/admin/marketing/csvs/${id}`, {
+        method: "DELETE",
+        headers: { "x-admin-email": adminEmail }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSavedCsvs((prev) => prev.filter((c) => c._id !== id));
+        if (activeSavedCsvId === id) {
+          handleClearCsv();
+        }
+      }
+    } catch (err) {
+      console.error("[EmailMarketingHub] Delete CSV error:", err);
+    }
   };
 
   // Determine active recipients list
@@ -1536,6 +1645,107 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
           {/* CSV UPLOAD MODE */}
           {recipientSource === "csv" && (
             <div className="space-y-2.5 pt-1">
+              {/* Saved CSVs Repository */}
+              {savedCsvs.length > 0 && (
+                <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+                      <Folder size={13} className="text-teal-600" />
+                      <span>Saved CSVs ({savedCsvs.length})</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400">Click to load into roster</span>
+                  </div>
+                  <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                    {savedCsvs.map((csvDoc) => {
+                      const isActive = activeSavedCsvId === csvDoc._id;
+                      const isRenaming = renamingCsvId === csvDoc._id;
+                      return (
+                        <div
+                          key={csvDoc._id}
+                          className={`flex items-center justify-between gap-2 rounded-lg border px-2.5 py-1.5 text-xs transition ${
+                            isActive
+                              ? "border-teal-400 bg-teal-50/70"
+                              : "border-slate-200 bg-white hover:border-slate-300"
+                          }`}
+                        >
+                          {isRenaming ? (
+                            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                              <input
+                                type="text"
+                                value={renameCsvValue}
+                                onChange={(e) => setRenameCsvValue(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") handleRenameSavedCsv(csvDoc._id);
+                                  if (e.key === "Escape") setRenamingCsvId(null);
+                                }}
+                                autoFocus
+                                className="flex-1 rounded-md border border-teal-400 px-2 py-0.5 text-xs text-slate-800 focus:outline-none"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRenameSavedCsv(csvDoc._id)}
+                                className="p-1 rounded bg-emerald-50 text-emerald-700 hover:bg-emerald-100 cursor-pointer"
+                                title="Save Name"
+                              >
+                                <Check size={12} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setRenamingCsvId(null)}
+                                className="p-1 rounded bg-slate-100 text-slate-600 hover:bg-slate-200 cursor-pointer"
+                                title="Cancel"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleSelectSavedCsv(csvDoc)}
+                                className="flex items-center gap-2 flex-1 min-w-0 text-left cursor-pointer"
+                              >
+                                <FileText size={13} className={isActive ? "text-teal-600 shrink-0" : "text-slate-400 shrink-0"} />
+                                <span className="font-bold text-slate-800 truncate">{csvDoc.name}</span>
+                                <span className="text-[10px] font-semibold text-teal-700 bg-teal-50 px-1.5 py-0.2 rounded border border-teal-100 shrink-0">
+                                  {csvDoc.recipientCount || (csvDoc.recipients || []).length}
+                                </span>
+                                {csvDoc.createdAt && (
+                                  <span className="text-[10px] text-slate-400 hidden sm:inline shrink-0">
+                                    {new Date(csvDoc.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                                  </span>
+                                )}
+                              </button>
+                              <div className="flex items-center gap-1 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRenamingCsvId(csvDoc._id);
+                                    setRenameCsvValue(csvDoc.name || "");
+                                  }}
+                                  className="p-1 rounded text-slate-500 hover:bg-slate-100 hover:text-slate-800 cursor-pointer"
+                                  title="Rename CSV"
+                                >
+                                  <Pencil size={12} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteSavedCsv(csvDoc._id)}
+                                  className="p-1 rounded text-rose-500 hover:bg-rose-50 hover:text-rose-700 cursor-pointer"
+                                  title="Delete Saved CSV"
+                                >
+                                  <Trash2 size={12} />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* File Dropzone or Compact Loaded Banner */}
               {csvRecipients.length === 0 ? (
                 <div
@@ -2132,6 +2342,100 @@ export default function EmailMarketingHub({ candidates = [], adminEmail = "" }) 
             )}
           </div>
 
+        </div>
+
+        {/* ------------------------------------------------------ */}
+        {/* BATCH EMAIL DISPATCH LOGS (Always Visible at Bottom)   */}
+        {/* ------------------------------------------------------ */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-3">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <Clock size={16} className="text-teal-600" />
+              <div>
+                <h3 className="text-sm font-bold text-slate-900">Batch Email Dispatch Logs</h3>
+                <p className="text-[11px] text-slate-400">Complete audit history of all bulk email campaigns sent from this hub</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={fetchCampaigns}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 transition cursor-pointer"
+            >
+              <RefreshCw size={12} className={loadingHistory ? "animate-spin" : ""} />
+              <span>Refresh Logs</span>
+            </button>
+          </div>
+
+          {campaigns.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-400">
+              No batch email campaigns have been dispatched yet.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50 text-[10.5px] font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="py-2.5 px-3">Date &amp; Time</th>
+                    <th className="py-2.5 px-3">Campaign Subject</th>
+                    <th className="py-2.5 px-3">Source</th>
+                    <th className="py-2.5 px-3 text-center">Targeted</th>
+                    <th className="py-2.5 px-3 text-center">Sent</th>
+                    <th className="py-2.5 px-3 text-center">Failed</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3">Sent By</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {campaigns.map((camp) => (
+                    <tr key={camp._id} className="hover:bg-slate-50/70 transition">
+                      <td className="py-2.5 px-3 text-slate-500 whitespace-nowrap text-[11px]">
+                        {new Date(camp.createdAt).toLocaleString("en-IN", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit"
+                        })}
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-slate-800 max-w-xs truncate" title={camp.subject}>
+                        {camp.subject}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className="uppercase text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                          {camp.recipientSource || "platform"}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-center font-semibold text-slate-700">
+                        {camp.totalRecipients ?? 0}
+                      </td>
+                      <td className="py-2.5 px-3 text-center font-bold text-emerald-700">
+                        {camp.sentCount ?? 0}
+                      </td>
+                      <td className="py-2.5 px-3 text-center font-bold text-rose-600">
+                        {camp.failedCount ?? 0}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span
+                          className={`uppercase text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            camp.status === "completed"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                              : camp.status === "partially_failed"
+                                ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                : "bg-rose-50 text-rose-700 border border-rose-200"
+                          }`}
+                        >
+                          {camp.status}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-[11px] text-slate-500 truncate max-w-[160px]">
+                        {camp.sentBy || "Admin"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
 
       </div>

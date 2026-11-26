@@ -25,6 +25,7 @@ import PlatformAnalyticsHub from "../components/admin/PlatformAnalyticsHub";
 import EmailMarketingHub from "../components/admin/EmailMarketingHub";
 import AutomationsHub from "../components/admin/AutomationsHub";
 import CouponManagerHub from "../components/admin/CouponManagerHub";
+import ResumeExtractionHub from "../components/admin/ResumeExtractionHub";
 import CandidateDossierDrawer from "../components/admin/CandidateDossierDrawer";
 import TokenGrantModal from "../components/admin/TokenGrantModal";
 
@@ -179,6 +180,7 @@ export default function AdminDashboardPage() {
                   {activeTab === "monetization" && "Financial Ledger & Monetization"}
                   {activeTab === "analytics" && "Platform & Tool Usage Analytics"}
                   {activeTab === "email-marketing" && "Email Marketing & Campaigns Hub"}
+                  {activeTab === "resume-extraction" && "Resume Extraction & Lead CSV Builder"}
                 </h1>
                 <span className="rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 text-[10px] font-bold uppercase hidden sm:inline-flex">
                   Live Operations
@@ -191,6 +193,7 @@ export default function AdminDashboardPage() {
                 {activeTab === "monetization" && "Executive financial audit node for tracking MRR, ₹1 instant download passes, fellowship tuition fees, and sales ledger."}
                 {activeTab === "analytics" && "Cross-platform intelligence node for ATS scan volume, AI token burn rates, top consumers, and tool metrics."}
                 {activeTab === "email-marketing" && "Broadcast branded email campaigns to platform candidates, imported CSVs, or custom email lists via Resend."}
+                {activeTab === "resume-extraction" && "Upload external resumes to a dedicated S3 vault and extract Name, Email & CRM-formatted Phone Numbers for CSV export."}
               </p>
             </div>
           </div>
@@ -264,6 +267,11 @@ export default function AdminDashboardPage() {
           {/* Module 8: Coupons & Discounts Manager Hub */}
           {activeTab === "coupons" && (
             <CouponManagerHub adminEmail={userEmail} />
+          )}
+
+          {/* Module 9: Resume Extraction Hub */}
+          {activeTab === "resume-extraction" && (
+            <ResumeExtractionHub adminEmail={userEmail} />
           )}
         </div>
       </section>

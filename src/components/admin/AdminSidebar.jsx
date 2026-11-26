@@ -93,6 +93,15 @@ const navItems = [
     badge: "New",
     badgeClass: "bg-emerald-50 text-emerald-700 border border-emerald-200",
     disabled: false
+  },
+  {
+    id: "resume-extraction",
+    label: "Resume Extraction",
+    description: "Extract Name, Email & Phone",
+    icon: FileCheck2,
+    badge: "New",
+    badgeClass: "bg-cyan-50 text-cyan-700 border border-cyan-200",
+    disabled: false
   }
 ];
 
@@ -168,8 +177,8 @@ export default function AdminSidebar({
                     setIsMobileOpen(false);
                   }}
                   className={`group flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-[13.5px] font-medium transition-all cursor-pointer ${isSelected
-                      ? "bg-[#1c2541] text-teal-400 border border-slate-700/50 shadow-xs"
-                      : "text-slate-400 hover:bg-slate-800/40 hover:text-white"
+                    ? "bg-[#1c2541] text-teal-400 border border-slate-700/50 shadow-xs"
+                    : "text-slate-400 hover:bg-slate-800/40 hover:text-white"
                     }`}
                 >
                   <Icon
@@ -181,9 +190,9 @@ export default function AdminSidebar({
                       {item.label}
                     </div>
                   </div>
-                  <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase ${item.badgeClass}`}>
+                  {/* <span className={`rounded-full px-2 py-0.5 text-[9px] font-extrabold uppercase ${item.badgeClass}`}>
                     {item.badge}
-                  </span>
+                  </span> */}
                 </button>
               );
             })}
